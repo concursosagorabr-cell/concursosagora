@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { GoogleAnalytics } from '@next/third-parties/google';
+import Script from 'next/script';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { client } from '@/lib/sanity';
@@ -95,8 +96,6 @@ export default async function RootLayout({
     sameAs: [],
   };
 
-  const gaId = process.env.NEXT_PUBLIC_GA_ID;
-
   return (
     <html lang="pt-BR" className={inter.variable}>
       <head>
@@ -115,8 +114,21 @@ export default async function RootLayout({
           {children}
         </main>
         <Footer />
-        {/* Google Analytics — carregado apenas quando NEXT_PUBLIC_GA_ID está definido */}
-        {gaId && <GoogleAnalytics gaId={gaId} />}
+        {/* Google Analytics 4 — gtag.js */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-YX2KZMH82Y"
+          strategy="afterInteractive"
+        />
+        <Script id="ga4-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-YX2KZMH82Y');
+          `}
+        </Script>
+        {/* Vercel Speed Insights */}
+        <SpeedInsights />
       </body>
     </html>
   );
