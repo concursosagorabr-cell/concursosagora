@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CookieBanner from '@/components/CookieBanner';
@@ -151,7 +152,8 @@ export default async function RootLayout({
             window.gtag('config', 'G-YX2KZMH82Y');
           `}
         </Script>
-        {/* Vercel Speed Insights */}
+        {/* Vercel Analytics + Speed Insights */}
+        <Analytics />
         <SpeedInsights />
         {/* Banner de consentimento de cookies — LGPD Lei nº 13.709/2018 */}
         <CookieBanner />
