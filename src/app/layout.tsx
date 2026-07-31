@@ -55,14 +55,8 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  icons: {
-    icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/icon.png', type: 'image/png' },
-    ],
-    shortcut: '/favicon.ico',
-    apple: '/icon.png',
-  },
+  // favicon e apple-icon são resolvidos automaticamente pelo Next.js
+  // a partir dos arquivos src/app/icon.png e src/app/apple-icon.png
 };
 
 export const revalidate = 60; // Revalida a cada 60 segundos (ISR)
