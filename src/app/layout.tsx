@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { client } from '@/lib/sanity';
@@ -129,6 +130,8 @@ export default async function RootLayout({
         </Script>
         {/* Vercel Speed Insights */}
         <SpeedInsights />
+        {/* Vercel Web Analytics */}
+        <Analytics />
       </body>
     </html>
   );
