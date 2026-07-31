@@ -4,6 +4,7 @@ import Script from 'next/script';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import CookieBanner from '@/components/CookieBanner';
 import { client } from '@/lib/sanity';
 import { allCategoriesQuery } from '@/lib/queries';
 import { Category } from '@/types';
@@ -107,6 +108,29 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
+        {/*
+          Google Consent Mode v2 — deve rodar de forma síncrona ANTES do gtag.js
+          para que o GA respeite o consentimento desde o primeiro hit.
+          Todos os consentimentos começam como 'denied' (padrão LGPD).
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              window.gtag = window.gtag || function(){window.dataLayer.push(arguments);};
+              window.gtag('consent', 'default', {
+                analytics_storage: 'denied',
+                ad_storage: 'denied',
+                ad_user_data: 'denied',
+                ad_personalization: 'denied',
+                functionality_storage: 'granted',
+                personalization_storage: 'denied',
+                security_storage: 'granted',
+                wait_for_update: 2000
+              });
+            `,
+          }}
+        />
       </head>
       <body className="font-sans bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col antialiased">
         <Header categories={categories} />
@@ -114,7 +138,7 @@ export default async function RootLayout({
           {children}
         </main>
         <Footer />
-        {/* Google Analytics 4 — gtag.js */}
+        {/* Google Analytics 4 — gtag.js (carregado após hidração) */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-YX2KZMH82Y"
           strategy="afterInteractive"
@@ -122,13 +146,15 @@ export default async function RootLayout({
         <Script id="ga4-init" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-YX2KZMH82Y');
+            window.gtag = window.gtag || function(){window.dataLayer.push(arguments);};
+            window.gtag('js', new Date());
+            window.gtag('config', 'G-YX2KZMH82Y');
           `}
         </Script>
         {/* Vercel Speed Insights */}
         <SpeedInsights />
+        {/* Banner de consentimento de cookies — LGPD Lei nº 13.709/2018 */}
+        <CookieBanner />
       </body>
     </html>
   );
