@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { GoogleAnalytics } from '@next/third-parties/google';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { client } from '@/lib/sanity';
@@ -94,6 +95,8 @@ export default async function RootLayout({
     sameAs: [],
   };
 
+  const gaId = process.env.NEXT_PUBLIC_GA_ID;
+
   return (
     <html lang="pt-BR" className={inter.variable}>
       <head>
@@ -112,6 +115,8 @@ export default async function RootLayout({
           {children}
         </main>
         <Footer />
+        {/* Google Analytics — carregado apenas quando NEXT_PUBLIC_GA_ID está definido */}
+        {gaId && <GoogleAnalytics gaId={gaId} />}
       </body>
     </html>
   );
