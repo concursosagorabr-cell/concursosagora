@@ -95,7 +95,13 @@ export default async function RootLayout({
     name: 'Concursos Agora',
     url: 'https://concursosagora.com.br',
     logo: 'https://concursosagora.com.br/logo.png',
-    sameAs: [],
+    sameAs: [
+      'https://www.instagram.com/concursosagorabr/',
+      'https://www.facebook.com/profile.php?id=61592443961535',
+      'https://x.com/home',
+      'https://www.threads.com/@concursosagorabr?hl=pt-br',
+      'https://www.youtube.com/@ConcursosAgora',
+    ],
   };
 
   return (

@@ -18,6 +18,7 @@ import PortableText from '@/components/PortableText';
 import Breadcrumb from '@/components/Breadcrumb';
 import AuthorCard from '@/components/AuthorCard';
 import RelatedPosts from '@/components/RelatedPosts';
+import PostHubWidget from '@/components/PostHubWidget';
 import Sidebar from '@/components/Sidebar';
 
 interface PostPageProps {
@@ -61,6 +62,17 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
     title: post.title,
     description: post.excerpt || `Confira a matéria completa sobre ${post.title}`,
     alternates: { canonical: url },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
     openGraph: {
       type: 'article',
       locale: 'pt_BR',
@@ -309,6 +321,12 @@ export default async function PostPage({ params }: PostPageProps) {
             <div className="bg-white dark:bg-slate-900 p-6 md:p-10 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
               {post.body && <PortableText value={post.body} />}
             </div>
+
+            {/* Widget de Linkagem Interna Bidirecional (Hub de Conteúdo SEO) */}
+            <PostHubWidget
+              postTitle={post.title}
+              categoryTitles={uniquePostCategories.map((c) => c.title)}
+            />
 
             {/* Card do Autor */}
             <AuthorCard author={post.author} />

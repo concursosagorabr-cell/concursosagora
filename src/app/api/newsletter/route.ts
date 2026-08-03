@@ -29,10 +29,17 @@ export async function POST(request: NextRequest) {
   // ── Verificação de configuração ───────────────────────────────────────────
   const apiKey = process.env.BREVO_API_KEY;
   if (!apiKey) {
-    console.error('[newsletter] BREVO_API_KEY não configurada.');
+    console.error('[newsletter] BREVO_API_KEY não configurada no ambiente.');
     return NextResponse.json(
-      { error: 'Serviço indisponível no momento.' },
+      { error: 'Serviço de newsletter não configurado.' },
       { status: 503 },
+    );
+  }
+
+  // Alerta caso o usuário tenha colado uma chave SMTP em vez de uma Chave API
+  if (apiKey.startsWith('xsmtpsib-')) {
+    console.error(
+      '[newsletter] ERRO DE CONFIGURAÇÃO: A chave configurada (xsmtpsib-...) é uma Chave SMTP. A API da Brevo exige uma Chave API v3 (que começa com xkeysib-). Gerar em: Brevo -> SMTP & API -> Chaves API.',
     );
   }
 
@@ -76,10 +83,9 @@ export async function POST(request: NextRequest) {
   try {
     const payload: Record<string, unknown> = {
       email,
-      updateEnabled: true, // se já existir, apenas atualiza sem erro
+      updateEnabled: true, // Se o contato já existir, atualiza sem dar erro
     };
 
-    // Se BREVO_LIST_ID estiver configurado, adiciona à lista específica
     const listId = process.env.BREVO_LIST_ID;
     if (listId && !isNaN(Number(listId))) {
       payload.listIds = [Number(listId)];
@@ -95,26 +101,59 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify(payload),
     });
 
-    // 201 = criado, 204 = já existia (updateEnabled) — ambos são sucesso
+    // 201 = Criado, 204/200 = Sucesso ou Atualizado
     if (response.status === 201) {
       return NextResponse.json({ success: true, alreadySubscribed: false });
     }
-    if (response.status === 204) {
+    if (response.status === 204 || response.status === 200) {
       return NextResponse.json({ success: true, alreadySubscribed: true });
     }
 
-    // Erro da Brevo
-    const errorData = await response.json().catch(() => ({}));
-    console.error('[newsletter] Brevo retornou erro:', response.status, errorData);
+    const errorData = (await response.json().catch(() => ({}))) as {
+      code?: string;
+      message?: string;
+    };
+
+    console.error('[newsletter] Brevo status:', response.status, errorData);
+
+    // Trata caso a Brevo retorne erro de contato duplicado (HTTP 400)
+    if (
+      response.status === 400 &&
+      (errorData.code === 'duplicate_parameter' ||
+        errorData.message?.toLowerCase().includes('already exist'))
+    ) {
+      return NextResponse.json({ success: true, alreadySubscribed: true });
+    }
+
+    // Chave inválida / 401 / IP não autorizado
+    if (response.status === 401) {
+      if (errorData.message?.toLowerCase().includes('ip address')) {
+        console.error('[newsletter] Brevo bloqueou por IP não autorizado:', errorData.message);
+        return NextResponse.json(
+          {
+            error:
+              'A Brevo bloqueou o acesso devido à restrição de IP. Acesse Configurações -> Segurança -> IPs Autorizados na Brevo e remova o bloqueio de IP para permitir a hospedagem em nuvem (Vercel).',
+          },
+          { status: 401 },
+        );
+      }
+      return NextResponse.json(
+        {
+          error:
+            'Erro de autenticação com a Brevo. Verifique se a chave cadastrada é uma Chave API (xkeysib-...) ativa.',
+        },
+        { status: 401 },
+      );
+    }
 
     return NextResponse.json(
-      { error: 'Não foi possível completar o cadastro. Tente novamente.' },
-      { status: 502 },
+      { error: errorData.message || 'Não foi possível completar o cadastro. Tente novamente.' },
+      { status: 400 },
     );
   } catch (err) {
-    console.error('[newsletter] Erro inesperado:', err);
+    console.error('[newsletter] Erro de rede ou servidor:', err);
     return NextResponse.json(
-      { error: 'Erro interno. Tente novamente em instantes.' },
+      { error: 'Erro de conexão ao salvar e-mail. Tente novamente.' },
       { status: 500 },
     );
   }

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Category } from '@/types';
+import { CONTENT_HUBS } from '@/utils/hubs';
 
 interface NavbarProps {
   categories?: Category[];
@@ -184,6 +185,21 @@ export default function Navbar({ categories = [] }: NavbarProps) {
             {c.label}
           </Link>
         ))}
+      </DropdownMenu>
+
+      {/* Dropdown Hubs de Conteúdo (SEO Silos) */}
+      <DropdownMenu label="Hubs SEO" id="hubs" active={activeDropdown} onActivate={setActiveDropdown}>
+        <div className="w-64 max-h-80 overflow-y-auto">
+          <Link href="/hub" className={`${dropdownItemClass} font-extrabold text-blue-600 dark:text-blue-400 border-b border-slate-100 dark:border-slate-800`}>
+            🎯 Todos os Hubs de Conteúdo
+          </Link>
+          {CONTENT_HUBS.map((h) => (
+            <Link key={h.slug} href={`/hub/${h.slug}`} className={dropdownItemClass}>
+              <span className="mr-1.5">{h.icon}</span>
+              {h.shortTitle}
+            </Link>
+          ))}
+        </div>
       </DropdownMenu>
 
       {/* Dropdown Categorias do Sanity */}

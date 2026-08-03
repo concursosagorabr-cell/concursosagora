@@ -148,6 +148,27 @@ export const searchPostsQuery = `
   }
 `;
 
+// 10b. Consulta de posts por conjunto de palavras-chave para Hubs de Conteúdo (Silos)
+export const postsByKeywordsPaginatedQuery = `
+  *[_type == "post" && (
+    count((categories[]->slug.current)[@ in $keywords]) > 0 ||
+    count((categories[]->title)[lower(@) in $keywords]) > 0 ||
+    title match "*" + $mainKeyword + "*" ||
+    pt::text(body) match "*" + $mainKeyword + "*"
+  )] | order(publishedAt desc) [$start..$end] {
+    ${postFields}
+  }
+`;
+
+export const postsByKeywordsCountQuery = `
+  count(*[_type == "post" && (
+    count((categories[]->slug.current)[@ in $keywords]) > 0 ||
+    count((categories[]->title)[lower(@) in $keywords]) > 0 ||
+    title match "*" + $mainKeyword + "*" ||
+    pt::text(body) match "*" + $mainKeyword + "*"
+  )])
+`;
+
 // 11. Consulta de todos os Slugs como strings planas (para generateStaticParams e Sitemap)
 export const allPostSlugsQuery = `
   *[_type == "post" && defined(title)] {

@@ -5,6 +5,7 @@ import { getImageUrl } from '@/lib/image';
 import { deduplicateCategories } from '@/utils/categories';
 import SearchBar from './SearchBar';
 import Newsletter from './Newsletter';
+import { InstagramIcon, FacebookIcon, XIcon, ThreadsIcon, YouTubeIcon } from './SocialIcons';
 
 interface SidebarProps {
   recentPosts?: Post[];
@@ -81,6 +82,63 @@ export default function Sidebar({ recentPosts = [], categories = [] }: SidebarPr
           </div>
         </div>
       )}
+
+      {/* Widget Redes Sociais */}
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+          <span>📲</span> Siga o Concursos Agora
+        </h3>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+          Acompanhe editais abertos, notícias urgentes e dicas exclusivas:
+        </p>
+        <div className="grid grid-cols-1 gap-2.5 text-xs font-bold">
+          <a
+            href="https://www.instagram.com/concursosagorabr/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-amber-500/10 hover:from-pink-500/20 hover:to-amber-500/20 text-pink-600 dark:text-pink-400 transition-all border border-pink-500/20 group"
+          >
+            <InstagramIcon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
+            <span>Instagram (@concursosagorabr)</span>
+          </a>
+          <a
+            href="https://www.facebook.com/profile.php?id=61592443961535"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 p-3 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 transition-all border border-blue-500/20 group"
+          >
+            <FacebookIcon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
+            <span>Facebook Oficial</span>
+          </a>
+          <a
+            href="https://x.com/home"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 p-3 rounded-xl bg-slate-500/10 hover:bg-slate-500/20 text-slate-800 dark:text-slate-200 transition-all border border-slate-500/20 group"
+          >
+            <XIcon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
+            <span>X (Twitter)</span>
+          </a>
+          <a
+            href="https://www.threads.com/@concursosagorabr?hl=pt-br"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 p-3 rounded-xl bg-slate-500/10 hover:bg-slate-500/20 text-slate-800 dark:text-slate-200 transition-all border border-slate-500/20 group"
+          >
+            <ThreadsIcon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
+            <span>Threads</span>
+          </a>
+          <a
+            href="https://www.youtube.com/@ConcursosAgora"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 p-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 transition-all border border-red-500/20 group"
+          >
+            <YouTubeIcon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
+            <span>YouTube (@ConcursosAgora)</span>
+          </a>
+        </div>
+      </div>
 
       {/* Widget Newsletter */}
       <Newsletter />

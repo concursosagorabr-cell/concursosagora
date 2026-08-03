@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { client } from '@/lib/sanity';
 import { allPostSlugsQuery, allCategorySlugsQuery } from '@/lib/queries';
+import { CONTENT_HUBS } from '@/utils/hubs';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://concursosagora.com.br';
@@ -31,6 +32,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
+  const hubUrls: MetadataRoute.Sitemap = CONTENT_HUBS.map((hub) => ({
+    url: `${baseUrl}/hub/${hub.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily',
+    priority: 0.9,
+  }));
+
   return [
     {
       url: baseUrl,
@@ -39,11 +47,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1.0,
     },
     {
+      url: `${baseUrl}/hub`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/search`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.3,
     },
+    ...hubUrls,
     ...postUrls,
     ...categoryUrls,
   ];

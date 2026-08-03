@@ -1,10 +1,10 @@
-'use client';
-
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Category } from '@/types';
 import SearchBar from './SearchBar';
+import { CONTENT_HUBS } from '@/utils/hubs';
+import { InstagramIcon, FacebookIcon, XIcon, ThreadsIcon, YouTubeIcon } from './SocialIcons';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -205,6 +205,28 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
             ))}
           </SectionToggle>
 
+          {/* Hubs de Conteúdo (SEO Silos) */}
+          <SectionToggle title="Hubs de Conteúdo (Silos)" defaultOpen={true}>
+            <Link
+              href="/hub"
+              onClick={onClose}
+              className={`${linkClass} font-extrabold text-blue-600 dark:text-blue-400 border-b border-slate-100 dark:border-slate-800`}
+            >
+              🎯 Ver Todos os Hubs
+            </Link>
+            {CONTENT_HUBS.map((h) => (
+              <Link
+                key={h.slug}
+                href={`/hub/${h.slug}`}
+                onClick={onClose}
+                className={linkClass}
+              >
+                <span className="mr-1.5">{h.icon}</span>
+                {h.title}
+              </Link>
+            ))}
+          </SectionToggle>
+
           {/* Regiões */}
           <SectionToggle title="Por Região">
             {REGION_LINKS.map((link) => (
@@ -242,6 +264,31 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
               </div>
             </SectionToggle>
           )}
+          {/* Redes Sociais Oficiais */}
+          <SectionToggle title="📲 Nossas Redes Sociais" defaultOpen={true}>
+            <div className="flex flex-col gap-1.5 px-2 pt-1 pb-2 text-xs font-bold">
+              <a href="https://www.instagram.com/concursosagorabr/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 p-2.5 rounded-xl bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/20">
+                <InstagramIcon className="w-4 h-4 shrink-0" />
+                <span>Instagram</span>
+              </a>
+              <a href="https://www.facebook.com/profile.php?id=61592443961535" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 p-2.5 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                <FacebookIcon className="w-4 h-4 shrink-0" />
+                <span>Facebook</span>
+              </a>
+              <a href="https://x.com/home" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-500/10 text-slate-800 dark:text-slate-200 border border-slate-500/20">
+                <XIcon className="w-4 h-4 shrink-0" />
+                <span>X (Twitter)</span>
+              </a>
+              <a href="https://www.threads.com/@concursosagorabr?hl=pt-br" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-500/10 text-slate-800 dark:text-slate-200 border border-slate-500/20">
+                <ThreadsIcon className="w-4 h-4 shrink-0" />
+                <span>Threads</span>
+              </a>
+              <a href="https://www.youtube.com/@ConcursosAgora" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 p-2.5 rounded-xl bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
+                <YouTubeIcon className="w-4 h-4 shrink-0" />
+                <span>YouTube</span>
+              </a>
+            </div>
+          </SectionToggle>
         </div>
 
         {/* Footer do drawer */}

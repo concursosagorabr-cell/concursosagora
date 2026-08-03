@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { InstagramIcon, FacebookIcon, XIcon, ThreadsIcon, YouTubeIcon } from './SocialIcons';
 
 export default function Footer() {
   return (
@@ -24,14 +25,15 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Coluna 2: Concursos por Status */}
+          {/* Coluna 2: Concursos por Status & Hubs */}
           <div>
-            <h3 className="text-white font-bold text-xs tracking-wider uppercase mb-4">Status & Destaques</h3>
+            <h3 className="text-white font-bold text-xs tracking-wider uppercase mb-4">Hubs & Destaques</h3>
             <ul className="space-y-2 text-xs md:text-sm">
+              <li><Link href="/hub" className="text-blue-400 font-bold hover:underline">🎯 Hubs de Conteúdo (Silos)</Link></li>
+              <li><Link href="/hub/concursos-municipais" className="hover:text-white transition-colors">🏛️ Hub Municipais</Link></li>
+              <li><Link href="/hub/concursos-policiais" className="hover:text-white transition-colors">🚓 Hub Policiais</Link></li>
+              <li><Link href="/hub/concursos-tribunais" className="hover:text-white transition-colors">⚖️ Hub Tribunais</Link></li>
               <li><Link href="/search?q=aberto" className="hover:text-emerald-400 transition-colors">🔥 Inscrições Abertas</Link></li>
-              <li><Link href="/search?q=previsto" className="hover:text-blue-400 transition-colors">👀 Editais Previstos</Link></li>
-              <li><Link href="/search?q=encerrado" className="hover:text-slate-300 transition-colors">📌 Concursos Encerrados</Link></li>
-              <li><Link href="/search?q=Nacional" className="hover:text-white transition-colors">🇧🇷 Concursos Nacionais</Link></li>
             </ul>
           </div>
 
@@ -49,13 +51,35 @@ export default function Footer() {
 
           {/* Coluna 4: Institucional & Links Legais */}
           <div>
-            <h3 className="text-white font-bold text-xs tracking-wider uppercase mb-4">Institucional</h3>
-            <ul className="space-y-2 text-xs md:text-sm">
+            <h3 className="text-white font-bold text-xs tracking-wider uppercase mb-4">Institucional & Redes</h3>
+            <ul className="space-y-2 text-xs md:text-sm mb-4">
               <li><Link href="/sobre-nos" className="hover:text-white transition-colors font-medium">👥 Sobre Nós</Link></li>
               <li><Link href="/politica-de-privacidade" className="hover:text-white transition-colors font-medium">🔒 Política de Privacidade</Link></li>
               <li><Link href="/aviso-legal" className="hover:text-white transition-colors font-medium">⚖️ Aviso Legal e Termos</Link></li>
-              <li><Link href="/sitemap.xml" className="opacity-0 hover:text-white transition-colors">🗺️ Sitemap XML</Link></li>
             </ul>
+            <h4 className="text-white font-bold text-[11px] tracking-wider uppercase mb-3">Siga o Concursos Agora</h4>
+            <div className="flex flex-wrap gap-2 text-xs">
+              <a href="https://www.instagram.com/concursosagorabr/" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-pink-400 hover:text-white hover:border-pink-500 transition-colors flex items-center gap-1.5" title="Instagram">
+                <InstagramIcon className="w-4 h-4" />
+                <span>Instagram</span>
+              </a>
+              <a href="https://www.facebook.com/profile.php?id=61592443961535" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-blue-400 hover:text-white hover:border-blue-500 transition-colors flex items-center gap-1.5" title="Facebook">
+                <FacebookIcon className="w-4 h-4" />
+                <span>Facebook</span>
+              </a>
+              <a href="https://x.com/home" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:text-white hover:border-slate-500 transition-colors flex items-center gap-1.5" title="X (Twitter)">
+                <XIcon className="w-4 h-4" />
+                <span>X</span>
+              </a>
+              <a href="https://www.threads.com/@concursosagorabr?hl=pt-br" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-500 transition-colors flex items-center gap-1.5" title="Threads">
+                <ThreadsIcon className="w-4 h-4" />
+                <span>Threads</span>
+              </a>
+              <a href="https://www.youtube.com/@ConcursosAgora" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-red-400 hover:text-white hover:border-red-500 transition-colors flex items-center gap-1.5" title="YouTube">
+                <YouTubeIcon className="w-4 h-4" />
+                <span>YouTube</span>
+              </a>
+            </div>
           </div>
         </div>
 

@@ -3,6 +3,8 @@ import PostCard from '@/components/PostCard';
 import CategoryCard from '@/components/CategoryCard';
 import Sidebar from '@/components/Sidebar';
 import Pagination from '@/components/Pagination';
+import HubCard from '@/components/HubCard';
+import { CONTENT_HUBS } from '@/utils/hubs';
 import { client } from '@/lib/sanity';
 import {
   postsPaginatedQuery,
@@ -61,6 +63,30 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       {/* Hero Carousel (Destaques Principais na 1ª página) */}
       {currentPage === 1 && carouselPosts.length > 0 && (
         <HeroCarousel posts={carouselPosts} />
+      )}
+
+      {/* Grid de Hubs de Conteúdo (Silos de SEO) */}
+      {currentPage === 1 && (
+        <section className="my-12">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <span className="text-xs font-black uppercase tracking-wider text-blue-600 dark:text-blue-400 block">
+                Arquitetura de Conteúdo
+              </span>
+              <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                <span>🎯</span> Hubs de Conteúdo & Silos Temáticos
+              </h2>
+            </div>
+            <a href="/hub" className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
+              Ver Todos ({CONTENT_HUBS.length}) →
+            </a>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            {CONTENT_HUBS.slice(0, 4).map((hub) => (
+              <HubCard key={hub.slug} hub={hub} />
+            ))}
+          </div>
+        </section>
       )}
 
       {/* Grid de Categorias Sem Duplicatas */}
