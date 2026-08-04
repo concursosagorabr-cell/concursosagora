@@ -59,6 +59,10 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  icons: {
+    icon: '/favicon.png',
+    shortcut: '/favicon.png',
+  },
   // favicon e apple-icon são resolvidos automaticamente pelo Next.js
   // a partir dos arquivos src/app/icon.png e src/app/apple-icon.png
 };
