@@ -7,16 +7,6 @@ const postFields = `
   title,
   "slug": coalesce(slug.current, _id),
   publishedAt,
-  enrollmentEndDate,
-  examDate,
-  "isExpired": select(
-    defined(coalesce(enrollmentEndDate, examDate)) => dateTime(coalesce(enrollmentEndDate, examDate)) < dateTime(now()),
-    (dateTime(coalesce(publishedAt, _createdAt)) + 31536000) < dateTime(now())
-  ),
-  "statusLabel": select(
-    (defined(coalesce(enrollmentEndDate, examDate)) && dateTime(coalesce(enrollmentEndDate, examDate)) < dateTime(now())) || (!defined(coalesce(enrollmentEndDate, examDate)) && (dateTime(coalesce(publishedAt, _createdAt)) + 31536000) < dateTime(now())) => "Concurso Encerrado",
-    "Concurso Aberto"
-  ),
   mainImage,
   "excerpt": array::join(string::split(pt::text(body), " ")[0..35], " ") + "...",
   "author": author->{
@@ -85,14 +75,9 @@ export const allCategoriesQuery = `
   }
 `;
 
-// 8. Consulta de uma categoria por Slug, ID ou Título (case-insensitive)
+// 8. Consulta de uma categoria por Slug ou por ID
 export const categoryBySlugQuery = `
-  *[_type == "category" && (
-    slug.current == $slug ||
-    lower(slug.current) == lower($slug) ||
-    _id == $slug ||
-    lower(title) == lower($slug)
-  )][0] {
+  *[_type == "category" && (slug.current == $slug || _id == $slug)][0] {
     _id,
     title,
     "slug": coalesce(slug.current, _id),
@@ -111,14 +96,16 @@ export const postsByCategoryQuery = `
   }
 `;
 
-// 9b. Consulta de posts por categoria paginados (10 por 10) com busca flexível
+// 9b. Consulta de posts por categoria paginados (10 por 10) com busca flexível e unificação de sinônimos
 export const postsByCategoryPaginatedQuery = `
   *[_type == "post" && (
     $categorySlug in categories[]->slug.current ||
     lower($categorySlug) in categories[]->slug.current ||
     $categorySlug in categories[]->_id ||
     lower($categorySlug) in categories[]->title ||
-    $categorySlug in categories[]->title
+    $categorySlug in categories[]->title ||
+    count((categories[]->slug.current)[@ in $categorySlugs]) > 0 ||
+    count((categories[]->title)[lower(@) in $categorySlugs]) > 0
   )] | order(publishedAt desc) [$start..$end] {
     ${postFields}
   }
@@ -131,7 +118,9 @@ export const postsByCategoryCountQuery = `
     lower($categorySlug) in categories[]->slug.current ||
     $categorySlug in categories[]->_id ||
     lower($categorySlug) in categories[]->title ||
-    $categorySlug in categories[]->title
+    $categorySlug in categories[]->title ||
+    count((categories[]->slug.current)[@ in $categorySlugs]) > 0 ||
+    count((categories[]->title)[lower(@) in $categorySlugs]) > 0
   )])
 `;
 
@@ -151,8 +140,8 @@ export const searchPostsQuery = `
 // 10b. Consulta de posts por conjunto de palavras-chave para Hubs de Conteúdo (Silos)
 export const postsByKeywordsPaginatedQuery = `
   *[_type == "post" && (
-    count((categories[]->slug.current)[@ in $keywords]) > 0 ||
-    count((categories[]->title)[lower(@) in $keywords]) > 0 ||
+    $mainKeyword in categories[]->slug.current ||
+    $mainKeyword in categories[]->title ||
     title match "*" + $mainKeyword + "*" ||
     pt::text(body) match "*" + $mainKeyword + "*"
   )] | order(publishedAt desc) [$start..$end] {
@@ -162,8 +151,8 @@ export const postsByKeywordsPaginatedQuery = `
 
 export const postsByKeywordsCountQuery = `
   count(*[_type == "post" && (
-    count((categories[]->slug.current)[@ in $keywords]) > 0 ||
-    count((categories[]->title)[lower(@) in $keywords]) > 0 ||
+    $mainKeyword in categories[]->slug.current ||
+    $mainKeyword in categories[]->title ||
     title match "*" + $mainKeyword + "*" ||
     pt::text(body) match "*" + $mainKeyword + "*"
   )])

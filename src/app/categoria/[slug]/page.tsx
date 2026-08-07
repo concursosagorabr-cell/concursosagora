@@ -10,7 +10,7 @@ import {
   allCategoriesQuery,
 } from '@/lib/queries';
 import { Category, Post } from '@/types';
-import { deduplicateCategories } from '@/utils/categories';
+import { deduplicateCategories, getCategoryAliases } from '@/utils/categories';
 import PostCard from '@/components/PostCard';
 import Breadcrumb from '@/components/Breadcrumb';
 import Sidebar from '@/components/Sidebar';
@@ -74,9 +74,11 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const start = (currentPage - 1) * itemsPerPage;
   const end = start + itemsPerPage - 1;
 
+  const categorySlugs = getCategoryAliases(slug);
+
   const [posts, totalPosts, recentPosts, categories]: [Post[], number, Post[], Category[]] = await Promise.all([
-    client.fetch(postsByCategoryPaginatedQuery, { categorySlug: slug, start, end }),
-    client.fetch(postsByCategoryCountQuery, { categorySlug: slug }),
+    client.fetch(postsByCategoryPaginatedQuery, { categorySlug: slug, categorySlugs, start, end }),
+    client.fetch(postsByCategoryCountQuery, { categorySlug: slug, categorySlugs }),
     client.fetch(recentPostsQuery),
     client.fetch(allCategoriesQuery),
   ]);

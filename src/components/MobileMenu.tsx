@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { Category } from '@/types';
 import SearchBar from './SearchBar';
 import { CONTENT_HUBS } from '@/utils/hubs';
+import { getPureCategories } from '@/utils/categories';
 import { InstagramIcon, FacebookIcon, XIcon, ThreadsIcon, YouTubeIcon } from './SocialIcons';
 
 interface MobileMenuProps {
@@ -98,6 +99,7 @@ function SectionToggle({
 
 export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileMenuProps) {
   const panelRef = useRef<HTMLDivElement>(null);
+  const pureCategories = getPureCategories(categories);
 
   // Fechar com tecla Escape
   useEffect(() => {
@@ -247,11 +249,11 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
             </div>
           </SectionToggle>
 
-          {/* Categorias do Sanity */}
-          {categories.length > 0 && (
+          {/* Categorias do Sanity (Filtradas sem repetir Estados e Regiões) */}
+          {pureCategories.length > 0 && (
             <SectionToggle title="Categorias">
               <div className="flex flex-wrap gap-1.5 px-4 pt-1 pb-2">
-                {categories.map((cat) => (
+                {pureCategories.map((cat) => (
                   <Link
                     key={cat._id}
                     href={`/categoria/${cat.slug || cat._id}`}
@@ -264,6 +266,7 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
               </div>
             </SectionToggle>
           )}
+
           {/* Redes Sociais Oficiais */}
           <SectionToggle title="📲 Nossas Redes Sociais" defaultOpen={true}>
             <div className="flex flex-col gap-1.5 px-2 pt-1 pb-2 text-xs font-bold">

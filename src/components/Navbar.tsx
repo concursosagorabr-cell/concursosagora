@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Category } from '@/types';
 import { CONTENT_HUBS } from '@/utils/hubs';
+import { getPureCategories } from '@/utils/categories';
 
 interface NavbarProps {
   categories?: Category[];
@@ -111,6 +112,13 @@ export default function Navbar({ categories = [] }: NavbarProps) {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const navRef = useRef<HTMLDivElement>(null);
 
+  const pureCategories = getPureCategories(categories);
+  // Filtrar categorias que já estão explicitamente no menu de Carreiras
+  const mainCareerSlugs = new Set(['seguranca', 'judiciario', 'fiscal', 'saude', 'educacao', 'financas', 'administracao']);
+  const extraCategories = pureCategories.filter(
+    (cat) => !mainCareerSlugs.has((cat.slug || cat._id).toLowerCase())
+  );
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (navRef.current && !navRef.current.contains(event.target as Node)) {
@@ -178,20 +186,38 @@ export default function Navbar({ categories = [] }: NavbarProps) {
         </div>
       </DropdownMenu>
 
-      {/* Dropdown Carreiras */}
+      {/* Dropdown Carreiras (Agrupa carreiras principais + todas as categorias do Sanity) */}
       <DropdownMenu label="Carreiras" id="careers" active={activeDropdown} onActivate={setActiveDropdown}>
-        {CAREERS.map((c) => (
-          <Link key={c.href} href={c.href} className={dropdownItemClass}>
-            {c.label}
-          </Link>
-        ))}
+        <div className="max-h-80 overflow-y-auto min-w-[220px]">
+          {CAREERS.map((c) => (
+            <Link key={c.href} href={c.href} className={dropdownItemClass}>
+              {c.label}
+            </Link>
+          ))}
+          {extraCategories.length > 0 && (
+            <>
+              <div className="px-4 py-1.5 text-[11px] font-black uppercase tracking-wider text-slate-400 border-t border-slate-100 dark:border-slate-800 mt-1 pt-2">
+                Outras Áreas
+              </div>
+              {extraCategories.map((cat) => (
+                <Link
+                  key={cat._id}
+                  href={`/categoria/${cat.slug || cat._id}`}
+                  className={`${dropdownItemClass} text-xs capitalize`}
+                >
+                  📌 {cat.title}
+                </Link>
+              ))}
+            </>
+          )}
+        </div>
       </DropdownMenu>
 
-      {/* Dropdown Hubs de Conteúdo (SEO Silos) */}
-      <DropdownMenu label="Hubs SEO" id="hubs" active={activeDropdown} onActivate={setActiveDropdown}>
+      {/* Dropdown Guias de Concursos (Nome amigável substituindo Hubs SEO) */}
+      <DropdownMenu label="Guias de Concursos" id="hubs" active={activeDropdown} onActivate={setActiveDropdown} alignRight>
         <div className="w-64 max-h-80 overflow-y-auto">
           <Link href="/hub" className={`${dropdownItemClass} font-extrabold text-blue-600 dark:text-blue-400 border-b border-slate-100 dark:border-slate-800`}>
-            🎯 Todos os Hubs de Conteúdo
+            🎯 Todos os Guias & Silos
           </Link>
           {CONTENT_HUBS.map((h) => (
             <Link key={h.slug} href={`/hub/${h.slug}`} className={dropdownItemClass}>
@@ -201,23 +227,6 @@ export default function Navbar({ categories = [] }: NavbarProps) {
           ))}
         </div>
       </DropdownMenu>
-
-      {/* Dropdown Categorias do Sanity */}
-      {categories.length > 0 && (
-        <DropdownMenu label="Categorias" id="categories" active={activeDropdown} onActivate={setActiveDropdown} alignRight>
-          <div className="max-h-72 overflow-y-auto">
-            {categories.map((cat) => (
-              <Link
-                key={cat._id}
-                href={`/categoria/${cat.slug || cat._id}`}
-                className={`${dropdownItemClass} capitalize`}
-              >
-                {cat.title}
-              </Link>
-            ))}
-          </div>
-        </DropdownMenu>
-      )}
     </nav>
   );
 }
