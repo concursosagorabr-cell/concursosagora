@@ -6,6 +6,7 @@ import { client } from '@/lib/sanity';
 import {
   postBySlugQuery,
   relatedPostsQuery,
+  relatedPostsFallbackQuery,
   allPostSlugsQuery,
   recentPostsQuery,
   allCategoriesQuery,
@@ -19,6 +20,7 @@ import Breadcrumb from '@/components/Breadcrumb';
 import AuthorCard from '@/components/AuthorCard';
 import RelatedPosts from '@/components/RelatedPosts';
 import PostHubWidget from '@/components/PostHubWidget';
+import InArticleCTA from '@/components/InArticleCTA';
 import Sidebar from '@/components/Sidebar';
 
 interface PostPageProps {
@@ -56,12 +58,21 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
   }
 
   const imageUrl = getImageUrl(post.mainImage, 1200, 630);
-  const url = `https://concursosagora.com.br/post/${post.slug || post._id}`;
+  const slugStr = typeof post.slug === 'string' ? post.slug : (post.slug as any)?.current || post._id;
+  const url = `https://concursosagora.com.br/post/${slugStr}`;
+
+  // Palavras-chave para Google Discover (news_keywords)
+  const categoryKeywords = (post.categories || [])
+    .map((c: { title: string }) => c.title)
+    .filter(Boolean)
+    .join(', ');
 
   return {
     title: post.title,
     description: post.excerpt || `Confira a matéria completa sobre ${post.title}`,
     alternates: { canonical: url },
+    // news_keywords melhora as chances de aparecer no Google Discover
+    keywords: categoryKeywords || 'concursos públicos, editais, concursos 2026',
     robots: {
       index: true,
       follow: true,
@@ -80,6 +91,8 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
       title: post.title,
       description: post.excerpt || `Confira a matéria completa sobre ${post.title}`,
       publishedTime: post.publishedAt,
+      modifiedTime: post._updatedAt || post.publishedAt,
+      tags: (post.categories || []).map((c: { title: string }) => c.title),
       images: [{ url: imageUrl, width: 1200, height: 630, alt: post.title }],
     },
     twitter: {
@@ -100,18 +113,35 @@ export default async function PostPage({ params }: PostPageProps) {
     notFound();
   }
 
-  const [relatedPosts, recentPosts, categories] = await Promise.all([
-    client.fetch(relatedPostsQuery, { currentId: post._id }),
+  // IDs das categorias do post atual para filtrar posts relacionados
+  const categoryIds = (post.categories || []).map((c: { _id: string }) => c._id).filter(Boolean);
+
+  const [relatedByCategory, recentPosts, categories] = await Promise.all([
+    // Busca relacionados da mesma categoria
+    client.fetch(relatedPostsQuery, { currentId: post._id, categoryIds }),
     client.fetch(recentPostsQuery),
     client.fetch(allCategoriesQuery),
   ]);
+
+  // Fallback: se não há relacionados por categoria, busca os mais recentes
+  let relatedPosts: Post[] = relatedByCategory || [];
+  if (relatedPosts.length < 3) {
+    const existingIds = [post._id, ...relatedPosts.map((p: Post) => p._id)];
+    const fallbackPosts: Post[] = await client.fetch(relatedPostsFallbackQuery, {
+      currentId: post._id,
+      excludeIds: existingIds,
+    });
+    // Mescla relacionados por categoria com fallback até completar 3
+    relatedPosts = [...relatedPosts, ...(fallbackPosts || [])].slice(0, 3);
+  }
 
   const uniqueCategories = deduplicateCategories(categories);
   const uniquePostCategories = deduplicateCategories(post.categories || []);
   const statusInfo = getContestStatusInfo(post);
 
+  const slugStr = typeof post.slug === 'string' ? post.slug : (post.slug as any)?.current || post._id;
   const mainImageUrl = getImageUrl(post.mainImage, 1200, 675);
-  const postUrl = `https://concursosagora.com.br/post/${post.slug || post._id}`;
+  const postUrl = `https://concursosagora.com.br/post/${slugStr}`;
   const formattedDate = post.publishedAt
     ? new Date(post.publishedAt).toLocaleDateString('pt-BR', {
         day: '2-digit',
@@ -119,6 +149,12 @@ export default async function PostPage({ params }: PostPageProps) {
         year: 'numeric',
       })
     : '';
+
+  // Tempo estimado de leitura (aprox. 200 palavras/min)
+  const wordCount = post.body
+    ? JSON.stringify(post.body).split(/\s+/).length
+    : 0;
+  const readingMinutes = Math.max(1, Math.ceil(wordCount / 200));
 
   // Schema.org JSON-LD para Artigo de Notícia
   const articleJsonLd = {
@@ -257,7 +293,7 @@ export default async function PostPage({ params }: PostPageProps) {
                 </div>
               </div>
 
-              {/* Metadados do Autor, Data e Compartilhamento */}
+              {/* Metadados do Autor, Data, Leitura e Compartilhamento */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-y border-slate-200 dark:border-slate-800 py-4 gap-4 text-xs md:text-sm text-slate-500 dark:text-slate-400">
                 <div className="flex items-center gap-3">
                   {post.author?.image && (
@@ -275,27 +311,47 @@ export default async function PostPage({ params }: PostPageProps) {
                       {post.author?.name || 'Redação Concursos Agora'}
                     </span>
                     <span>Publicado em {formattedDate}</span>
+                    {/* Tempo estimado de leitura */}
+                    <span className="flex items-center gap-1 text-[11px] text-slate-400 mt-0.5">
+                      <span>⏱️</span>
+                      <span>Leitura: ~{readingMinutes} min</span>
+                    </span>
                   </div>
                 </div>
 
                 {/* Compartilhamento Social */}
                 <div className="flex items-center space-x-2 bg-slate-100 dark:bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700">
                   <span className="text-xs font-bold text-slate-700 dark:text-slate-300 mr-1">Compartilhar:</span>
+                  {/* WhatsApp */}
                   <a
-                    href={`https://api.whatsapp.com/send?text=${encodeURIComponent(post.title)}%20https://concursosagora.com.br/post/${post.slug || post._id}`}
+                    href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`${post.title} — Concursos Agora ${postUrl}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="p-1.5 rounded-full bg-emerald-500 text-white hover:scale-110 transition-transform"
                     title="Compartilhar no WhatsApp"
+                    aria-label="Compartilhar no WhatsApp"
                   >
                     💬
                   </a>
+                  {/* Facebook */}
                   <a
-                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=https://concursosagora.com.br/post/${post.slug || post._id}`}
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(postUrl)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-1.5 rounded-full bg-blue-600 text-white hover:scale-110 transition-transform"
+                    title="Compartilhar no Facebook"
+                    aria-label="Compartilhar no Facebook"
+                  >
+                    📘
+                  </a>
+                  {/* X/Twitter */}
+                  <a
+                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(postUrl)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="p-1.5 rounded-full bg-sky-500 text-white hover:scale-110 transition-transform"
                     title="Compartilhar no X/Twitter"
+                    aria-label="Compartilhar no X (Twitter)"
                   >
                     🐦
                   </a>
@@ -322,6 +378,22 @@ export default async function PostPage({ params }: PostPageProps) {
               {post.body && <PortableText value={post.body} />}
             </div>
 
+            {/* "Leia Também" Contextual — exibido logo após o conteúdo para reter o leitor */}
+            <InArticleCTA
+              posts={relatedPosts.slice(0, 2)}
+              categoryName={primaryCategory?.title}
+            />
+
+            {/*
+              === BANNER WHATSAPP/TELEGRAM ===
+              Descomente quando criar seus grupos:
+
+              <WhatsAppBanner
+                whatsappUrl="https://chat.whatsapp.com/SEU_LINK_AQUI"
+                telegramUrl="https://t.me/SEU_CANAL_AQUI"
+              />
+            */}
+
             {/* Widget de Linkagem Interna Bidirecional (Hub de Conteúdo SEO) */}
             <PostHubWidget
               postTitle={post.title}
@@ -331,12 +403,17 @@ export default async function PostPage({ params }: PostPageProps) {
             {/* Card do Autor */}
             <AuthorCard author={post.author} />
 
-            {/* Matérias Relacionadas */}
+            {/* Matérias Relacionadas (grid de 3 no rodapé) */}
             <RelatedPosts posts={relatedPosts} />
           </div>
 
-          {/* Barra Lateral */}
-          <Sidebar recentPosts={recentPosts} categories={uniqueCategories} />
+          {/* Barra Lateral — passa posts relacionados por categoria quando disponíveis */}
+          <Sidebar
+            recentPosts={recentPosts}
+            categories={uniqueCategories}
+            categoryPosts={relatedPosts.length > 0 ? relatedPosts : undefined}
+            categoryName={primaryCategory?.title}
+          />
         </div>
       </article>
     </>

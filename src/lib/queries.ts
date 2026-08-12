@@ -51,9 +51,19 @@ export const postBySlugQuery = `
   }
 `;
 
-// 5. Consulta de posts relacionados
+// 5. Consulta de posts relacionados — filtra por categoria primeiro, fallback para recentes
+// Parâmetros: $currentId (string), $categoryIds (array de strings)
 export const relatedPostsQuery = `
-  *[_type == "post" && _id != $currentId] | order(publishedAt desc)[0..2] {
+  *[_type == "post" && _id != $currentId && count((categories[]->_id)[@ in $categoryIds]) > 0]
+  | order(publishedAt desc)[0..2] {
+    ${postFields}
+  }
+`;
+
+// 5b. Fallback — posts recentes quando não há relacionados pela categoria
+export const relatedPostsFallbackQuery = `
+  *[_type == "post" && _id != $currentId && !(_id in $excludeIds)]
+  | order(publishedAt desc)[0..2] {
     ${postFields}
   }
 `;

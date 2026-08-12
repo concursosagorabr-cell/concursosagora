@@ -10,9 +10,13 @@ import { InstagramIcon, FacebookIcon, XIcon, ThreadsIcon, YouTubeIcon } from './
 interface SidebarProps {
   recentPosts?: Post[];
   categories?: Category[];
+  /** Posts da mesma categoria — exibidos na página de post para reter o leitor */
+  categoryPosts?: Post[];
+  /** Nome da categoria atual — usado no título do widget contextual */
+  categoryName?: string;
 }
 
-export default function Sidebar({ recentPosts = [], categories = [] }: SidebarProps) {
+export default function Sidebar({ recentPosts = [], categories = [], categoryPosts, categoryName }: SidebarProps) {
   const uniqueCategories = deduplicateCategories(categories);
 
   return (
@@ -45,8 +49,47 @@ export default function Sidebar({ recentPosts = [], categories = [] }: SidebarPr
         </div>
       )}
 
-      {/* Últimas Notícias */}
-      {recentPosts.length > 0 && (
+      {/* Posts da Mesma Categoria (aparece na página de post) */}
+      {categoryPosts && categoryPosts.length > 0 && (
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+          <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4 pb-2 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+            <span>📌</span>
+            {categoryName ? `Mais sobre ${categoryName}` : 'Mesma Categoria'}
+          </h3>
+          <div className="space-y-4">
+            {categoryPosts.map((post) => {
+              const imgUrl = getImageUrl(post.mainImage, 120, 120);
+              const postLink = `/post/${post.slug || post._id}`;
+              return (
+                <article key={post._id} className="flex gap-3 items-center group">
+                  <Link href={postLink} className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-slate-100 dark:bg-slate-800 block">
+                    <Image
+                      src={imgUrl}
+                      alt={post.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform"
+                      sizes="64px"
+                    />
+                  </Link>
+                  <div className="space-y-1">
+                    <h4 className="text-xs md:text-sm font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                      <Link href={postLink}>
+                        {post.title}
+                      </Link>
+                    </h4>
+                    <span className="text-[10px] text-slate-400 font-medium block">
+                      {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString('pt-BR') : ''}
+                    </span>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Últimas Notícias (exibido quando não há categoryPosts) */}
+      {recentPosts.length > 0 && !categoryPosts && (
         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
           <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4 pb-2 border-b border-slate-100 dark:border-slate-800">
             Últimas Notícias
