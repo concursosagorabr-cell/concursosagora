@@ -360,18 +360,16 @@ export default async function PostPage({ params }: PostPageProps) {
             </header>
 
             {/* Imagem de Capa do Artigo */}
-            {post.mainImage && (
-              <figure className="relative w-full h-[320px] sm:h-[420px] md:h-[500px] rounded-3xl overflow-hidden shadow-xl border border-slate-200 dark:border-slate-800">
-                <Image
-                  src={mainImageUrl}
-                  alt={post.title}
-                  fill
-                  className="object-cover"
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 850px"
-                />
-              </figure>
-            )}
+            <figure className="relative w-full h-[320px] sm:h-[420px] md:h-[500px] rounded-3xl overflow-hidden shadow-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800">
+              <Image
+                src={mainImageUrl}
+                alt={post.title}
+                fill
+                className="object-cover"
+                priority
+                sizes="(max-width: 1024px) 100vw, 850px"
+              />
+            </figure>
 
             {/* Conteúdo Rico (Portable Text) */}
             <div className="bg-white dark:bg-slate-900 p-6 md:p-10 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
