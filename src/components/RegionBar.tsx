@@ -46,7 +46,7 @@ const REGION_ITEMS: RegionItem[] = [
 export default function RegionBar() {
   return (
     <div className="bg-slate-900 text-slate-200 border-b border-slate-800 text-xs py-1 overflow-hidden">
-      <div className="flex items-center justify-between max-w-7xl mx-auto px-2 sm:px-4">
+      <div className="flex items-center justify-between max-w-7xl mx-auto px-1 sm:px-4">
         <div className="flex items-center gap-0 overflow-hidden flex-1">
           {/* Label — oculto em mobile para não ocupar espaço */}
           <span className="hidden md:flex items-center gap-1 font-bold text-blue-400 uppercase text-[10px] shrink-0 tracking-wider pl-2 pr-2 whitespace-nowrap">

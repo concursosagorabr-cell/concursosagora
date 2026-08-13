@@ -99,7 +99,7 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
   return (
     <section className="mb-10 md:mb-12" aria-label="Destaques principais">
       {/* Label de destaque */}
-      <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+      <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-600">
         <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse shrink-0" />
         <span>Destaques Principais</span>
         <span className="ml-auto text-slate-400 font-normal normal-case tracking-normal tabular-nums">
@@ -109,7 +109,7 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
 
       {/* Card carousel com suporte a swipe */}
       <article
-        className="relative bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800 select-none"
+        className="relative bg-white rounded-2xl overflow-hidden shadow-lg border border-slate-200 select-none"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
@@ -164,14 +164,14 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
               aria-label="Matéria anterior"
               className="absolute left-2 top-1/2 -translate-y-1/2 z-20
                          w-8 h-8 md:w-9 md:h-9 rounded-full
-                         bg-white/80 dark:bg-slate-800/80 backdrop-blur
-                         border border-slate-200 dark:border-slate-700 shadow-md
+                         bg-white/90 backdrop-blur
+                         border border-slate-200 shadow-md
                          flex items-center justify-center
-                         text-slate-600 dark:text-slate-300
+                         text-slate-700
                          hover:bg-blue-600 hover:text-white hover:border-blue-600
                          active:scale-95
                          transition-all duration-200
-                         opacity-70 hover:opacity-100
+                         opacity-80 hover:opacity-100
                          focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
@@ -184,14 +184,14 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
               aria-label="Próxima matéria"
               className="absolute right-2 top-1/2 -translate-y-1/2 z-20
                          w-8 h-8 md:w-9 md:h-9 rounded-full
-                         bg-white/80 dark:bg-slate-800/80 backdrop-blur
-                         border border-slate-200 dark:border-slate-700 shadow-md
+                         bg-white/90 backdrop-blur
+                         border border-slate-200 shadow-md
                          flex items-center justify-center
-                         text-slate-600 dark:text-slate-300
+                         text-slate-700
                          hover:bg-blue-600 hover:text-white hover:border-blue-600
                          active:scale-95
                          transition-all duration-200
-                         opacity-70 hover:opacity-100
+                         opacity-80 hover:opacity-100
                          focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
@@ -207,7 +207,7 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
             }`}
           >
             {/* Data + autor */}
-            <div className="flex flex-wrap items-center text-xs text-slate-500 dark:text-slate-400 gap-1.5">
+            <div className="flex flex-wrap items-center text-xs text-slate-500 gap-1.5">
               <span>{formattedDate}</span>
               {post.author && (
                 <>
@@ -218,13 +218,13 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
             </div>
 
             {/* Título */}
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors leading-tight">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 hover:text-blue-600 transition-colors leading-tight">
               <Link href={postLink}>{post.title}</Link>
             </h2>
 
             {/* Excerpt — reduzido para 2 linhas no mobile */}
             {post.excerpt && (
-              <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base line-clamp-2 md:line-clamp-3 leading-relaxed">
+              <p className="text-slate-600 text-sm md:text-base line-clamp-2 md:line-clamp-3 leading-relaxed">
                 {post.excerpt}
               </p>
             )}
@@ -233,7 +233,7 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
             <div className="flex items-center justify-between">
               <Link
                 href={postLink}
-                className="inline-flex items-center gap-1 font-bold text-sm text-blue-600 dark:text-blue-400 hover:translate-x-1 transition-transform"
+                className="inline-flex items-center gap-1 font-bold text-sm text-blue-600 hover:translate-x-1 transition-transform"
               >
                 Ler matéria completa →
               </Link>
@@ -245,7 +245,7 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
             </div>
 
             {/* Dots de navegação — sempre visíveis */}
-            <div className="flex items-center gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+            <div className="flex items-center gap-2 pt-3 border-t border-slate-100">
               {posts.map((_, idx) => (
                 <button
                   key={idx}
@@ -257,7 +257,7 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
                   className={`h-2 rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 touch-manipulation ${
                     idx === current
                       ? 'bg-blue-600 w-6'
-                      : 'bg-slate-300 dark:bg-slate-700 hover:bg-blue-400 dark:hover:bg-blue-600 w-2'
+                      : 'bg-slate-300 hover:bg-blue-400 w-2'
                   }`}
                 />
               ))}

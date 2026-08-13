@@ -235,7 +235,7 @@ export default async function PostPage({ params }: PostPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      <article className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <article className="max-w-7xl mx-auto px-0 py-2 sm:py-6">
         {/* Trilha de Navegação (Breadcrumb) */}
         <Breadcrumb
           items={[
@@ -268,12 +268,12 @@ export default async function PostPage({ params }: PostPageProps) {
                   ))}
               </div>
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.15]">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-[1.15]">
                 {post.title}
               </h1>
 
               {post.excerpt && (
-                <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-normal border-l-2 border-blue-500 pl-4">
+                <p className="text-lg md:text-xl text-slate-600 leading-relaxed font-normal border-l-2 border-blue-500 pl-4">
                   {post.excerpt}
                 </p>
               )}
@@ -281,8 +281,8 @@ export default async function PostPage({ params }: PostPageProps) {
               {/* Banner Informativo de Validade do Concurso */}
               <div className={`p-4 rounded-2xl border flex items-center justify-between gap-4 text-xs sm:text-sm font-semibold ${
                 statusInfo.isExpired
-                  ? 'bg-slate-100 dark:bg-slate-800/80 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300'
-                  : 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300'
+                  ? 'bg-slate-100 border-slate-300 text-slate-700'
+                  : 'bg-emerald-50 border-emerald-200 text-emerald-800'
               }`}>
                 <div className="flex items-center gap-2.5">
                   <span className="text-lg">{statusInfo.isExpired ? '📌' : '🗓️'}</span>
@@ -294,7 +294,7 @@ export default async function PostPage({ params }: PostPageProps) {
               </div>
 
               {/* Metadados do Autor, Data, Leitura e Compartilhamento */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-y border-slate-200 dark:border-slate-800 py-4 gap-4 text-xs md:text-sm text-slate-500 dark:text-slate-400">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-y border-slate-200 py-4 gap-4 text-xs md:text-sm text-slate-500">
                 <div className="flex items-center gap-3">
                   {post.author?.image && (
                     <div className="relative w-11 h-11 rounded-full overflow-hidden shrink-0 border-2 border-blue-500 shadow-xs">
@@ -307,7 +307,7 @@ export default async function PostPage({ params }: PostPageProps) {
                     </div>
                   )}
                   <div>
-                    <span className="font-bold text-slate-900 dark:text-white block text-sm">
+                    <span className="font-bold text-slate-900 block text-sm">
                       {post.author?.name || 'Redação Concursos Agora'}
                     </span>
                     <span>Publicado em {formattedDate}</span>
@@ -320,8 +320,8 @@ export default async function PostPage({ params }: PostPageProps) {
                 </div>
 
                 {/* Compartilhamento Social */}
-                <div className="flex items-center space-x-2 bg-slate-100 dark:bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700">
-                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300 mr-1">Compartilhar:</span>
+                <div className="flex items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
+                  <span className="text-xs font-bold text-slate-700 mr-1">Compartilhar:</span>
                   {/* WhatsApp */}
                   <a
                     href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`${post.title} — Concursos Agora ${postUrl}`)}`}
@@ -360,7 +360,7 @@ export default async function PostPage({ params }: PostPageProps) {
             </header>
 
             {/* Imagem de Capa do Artigo */}
-            <figure className="relative w-full h-[320px] sm:h-[420px] md:h-[500px] rounded-3xl overflow-hidden shadow-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800">
+            <figure className="relative w-full h-[320px] sm:h-[420px] md:h-[500px] rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-slate-100">
               <Image
                 src={mainImageUrl}
                 alt={post.title}
@@ -372,7 +372,7 @@ export default async function PostPage({ params }: PostPageProps) {
             </figure>
 
             {/* Conteúdo Rico (Portable Text) */}
-            <div className="bg-white dark:bg-slate-900 p-6 md:p-10 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
+            <div className="bg-white p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-xs space-y-6">
               {post.body && <PortableText value={post.body} />}
             </div>
 

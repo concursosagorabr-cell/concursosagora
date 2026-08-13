@@ -22,8 +22,8 @@ export default function Sidebar({ recentPosts = [], categories = [], categoryPos
   return (
     <aside className="space-y-8">
       {/* Busca */}
-      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-        <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+        <h3 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
           <span>🔍</span> Pesquisar no Portal
         </h3>
         <SearchBar />
@@ -31,8 +31,8 @@ export default function Sidebar({ recentPosts = [], categories = [], categoryPos
 
       {/* Categorias */}
       {uniqueCategories.length > 0 && (
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-          <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4 pb-2 border-b border-slate-100 dark:border-slate-800">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+          <h3 className="text-base font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">
             Categorias em Destaque
           </h3>
           <div className="flex flex-wrap gap-2">
@@ -40,7 +40,7 @@ export default function Sidebar({ recentPosts = [], categories = [], categoryPos
               <Link
                 key={cat._id}
                 href={`/categoria/${cat.slug || cat._id}`}
-                className="text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 transition-colors"
+                className="text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 hover:bg-blue-600 hover:text-white transition-colors"
               >
                 {cat.title}
               </Link>
@@ -51,8 +51,8 @@ export default function Sidebar({ recentPosts = [], categories = [], categoryPos
 
       {/* Posts da Mesma Categoria (aparece na página de post) */}
       {categoryPosts && categoryPosts.length > 0 && (
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-          <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4 pb-2 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+          <h3 className="text-base font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
             <span>📌</span>
             {categoryName ? `Mais sobre ${categoryName}` : 'Mesma Categoria'}
           </h3>
@@ -62,7 +62,7 @@ export default function Sidebar({ recentPosts = [], categories = [], categoryPos
               const postLink = `/post/${post.slug || post._id}`;
               return (
                 <article key={post._id} className="flex gap-3 items-center group">
-                  <Link href={postLink} className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-slate-100 dark:bg-slate-800 block">
+                  <Link href={postLink} className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-slate-100 block">
                     <Image
                       src={imgUrl}
                       alt={post.title}
@@ -72,7 +72,7 @@ export default function Sidebar({ recentPosts = [], categories = [], categoryPos
                     />
                   </Link>
                   <div className="space-y-1">
-                    <h4 className="text-xs md:text-sm font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                    <h4 className="text-xs md:text-sm font-semibold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2">
                       <Link href={postLink}>
                         {post.title}
                       </Link>
@@ -90,8 +90,8 @@ export default function Sidebar({ recentPosts = [], categories = [], categoryPos
 
       {/* Últimas Notícias (exibido quando não há categoryPosts) */}
       {recentPosts.length > 0 && !categoryPosts && (
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-          <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4 pb-2 border-b border-slate-100 dark:border-slate-800">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+          <h3 className="text-base font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">
             Últimas Notícias
           </h3>
           <div className="space-y-4">
@@ -100,7 +100,7 @@ export default function Sidebar({ recentPosts = [], categories = [], categoryPos
               const postLink = `/post/${post.slug || post._id}`;
               return (
                 <article key={post._id} className="flex gap-3 items-center group">
-                  <Link href={postLink} className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-slate-100 dark:bg-slate-800 block">
+                  <Link href={postLink} className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-slate-100 block">
                     <Image
                       src={imgUrl}
                       alt={post.title}
@@ -110,7 +110,7 @@ export default function Sidebar({ recentPosts = [], categories = [], categoryPos
                     />
                   </Link>
                   <div className="space-y-1">
-                    <h4 className="text-xs md:text-sm font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                    <h4 className="text-xs md:text-sm font-semibold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2">
                       <Link href={postLink}>
                         {post.title}
                       </Link>
@@ -127,11 +127,11 @@ export default function Sidebar({ recentPosts = [], categories = [], categoryPos
       )}
 
       {/* Widget Redes Sociais */}
-      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-        <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+        <h3 className="text-base font-bold text-slate-900 mb-2 flex items-center gap-2">
           <span>📲</span> Siga o Concursos Agora
         </h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+        <p className="text-xs text-slate-500 mb-4">
           Acompanhe editais abertos, notícias urgentes e dicas exclusivas:
         </p>
         <div className="grid grid-cols-1 gap-2.5 text-xs font-bold">
@@ -139,7 +139,7 @@ export default function Sidebar({ recentPosts = [], categories = [], categoryPos
             href="https://www.instagram.com/concursosagorabr/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-amber-500/10 hover:from-pink-500/20 hover:to-amber-500/20 text-pink-600 dark:text-pink-400 transition-all border border-pink-500/20 group"
+            className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-amber-500/10 hover:from-pink-500/20 hover:to-amber-500/20 text-pink-600 transition-all border border-pink-500/20 group"
           >
             <InstagramIcon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
             <span>Instagram (@concursosagorabr)</span>
@@ -148,7 +148,7 @@ export default function Sidebar({ recentPosts = [], categories = [], categoryPos
             href="https://www.facebook.com/profile.php?id=61592443961535"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 p-3 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 transition-all border border-blue-500/20 group"
+            className="flex items-center gap-3 p-3 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 transition-all border border-blue-500/20 group"
           >
             <FacebookIcon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
             <span>Facebook Oficial</span>
@@ -157,7 +157,7 @@ export default function Sidebar({ recentPosts = [], categories = [], categoryPos
             href="https://x.com/home"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 p-3 rounded-xl bg-slate-500/10 hover:bg-slate-500/20 text-slate-800 dark:text-slate-200 transition-all border border-slate-500/20 group"
+            className="flex items-center gap-3 p-3 rounded-xl bg-slate-500/10 hover:bg-slate-500/20 text-slate-800 transition-all border border-slate-500/20 group"
           >
             <XIcon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
             <span>X (Twitter)</span>
@@ -166,7 +166,7 @@ export default function Sidebar({ recentPosts = [], categories = [], categoryPos
             href="https://www.threads.com/@concursosagorabr?hl=pt-br"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 p-3 rounded-xl bg-slate-500/10 hover:bg-slate-500/20 text-slate-800 dark:text-slate-200 transition-all border border-slate-500/20 group"
+            className="flex items-center gap-3 p-3 rounded-xl bg-slate-500/10 hover:bg-slate-500/20 text-slate-800 transition-all border border-slate-500/20 group"
           >
             <ThreadsIcon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
             <span>Threads</span>
@@ -175,7 +175,7 @@ export default function Sidebar({ recentPosts = [], categories = [], categoryPos
             href="https://www.youtube.com/@ConcursosAgora"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 p-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 transition-all border border-red-500/20 group"
+            className="flex items-center gap-3 p-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 transition-all border border-red-500/20 group"
           >
             <YouTubeIcon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
             <span>YouTube (@ConcursosAgora)</span>

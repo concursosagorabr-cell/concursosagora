@@ -14,9 +14,9 @@ interface MobileMenuProps {
 }
 
 const STATUS_LINKS = [
-  { label: '🔥 Inscrições Abertas', href: '/search?q=aberto', color: 'text-emerald-600 dark:text-emerald-400' },
+  { label: '🔥 Inscrições Abertas', href: '/search?q=aberto', color: 'text-emerald-600' },
   { label: '👀 Editais Previstos', href: '/search?q=previsto', color: '' },
-  { label: '📌 Concursos Encerrados', href: '/search?q=encerrado', color: 'text-slate-500 dark:text-slate-400' },
+  { label: '📌 Concursos Encerrados', href: '/search?q=encerrado', color: 'text-slate-500' },
 ];
 
 const CAREER_LINKS = [
@@ -79,10 +79,10 @@ function SectionToggle({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="border-b border-slate-100 dark:border-slate-800 last:border-0">
+    <div className="border-b border-slate-100 last:border-0">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-4 py-3 text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-3 text-xs font-black uppercase tracking-wider text-slate-500 hover:text-slate-700 transition-colors"
       >
         {title}
         <svg
@@ -118,7 +118,7 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
   }, [isOpen, onClose]);
 
   const linkClass =
-    'flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/70 hover:text-blue-600 dark:hover:text-blue-400 transition-colors';
+    'flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors';
 
   return (
     <div
@@ -134,16 +134,16 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
       {/* Drawer deslizante */}
       <div
         ref={panelRef}
-        className={`absolute top-0 left-0 h-full w-[min(320px,90vw)] flex flex-col bg-white dark:bg-slate-900 shadow-2xl transition-transform duration-300 ease-out ${
+        className={`absolute top-0 left-0 h-full w-[min(320px,90vw)] flex flex-col bg-white shadow-2xl transition-transform duration-300 ease-out ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Header do drawer */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-slate-50 shrink-0">
           <Link
             href="/"
             onClick={onClose}
-            className="flex items-center gap-2 font-black text-slate-900 dark:text-white"
+            className="flex items-center gap-2 font-black text-slate-900"
           >
             <div className="relative h-8 w-14 shrink-0">
               <Image
@@ -154,13 +154,13 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
               />
             </div>
             <span className="text-base font-black">
-              Concursos<span className="text-blue-600 dark:text-blue-400">Agora</span>
+              Concursos<span className="text-blue-600">Agora</span>
             </span>
           </Link>
           <button
             onClick={onClose}
             aria-label="Fechar menu"
-            className="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+            className="p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
@@ -169,7 +169,7 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
         </div>
 
         {/* Busca */}
-        <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 shrink-0">
+        <div className="px-4 py-3 border-b border-slate-100 shrink-0">
           <SearchBar placeholder="Pesquisar concurso..." />
         </div>
 
@@ -179,7 +179,7 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
           <Link
             href="/"
             onClick={onClose}
-            className="flex items-center gap-2 px-4 py-3 text-sm font-semibold text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800/70 border-b border-slate-100 dark:border-slate-800 transition-colors"
+            className="flex items-center gap-2 px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 border-b border-slate-100 transition-colors"
           >
             🏠 Início
           </Link>
@@ -212,7 +212,7 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
             <Link
               href="/hub"
               onClick={onClose}
-              className={`${linkClass} font-extrabold text-blue-600 dark:text-blue-400 border-b border-slate-100 dark:border-slate-800`}
+              className={`${linkClass} font-extrabold text-blue-600 border-b border-slate-100`}
             >
               🎯 Ver Todos os Hubs
             </Link>
@@ -258,7 +258,7 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
                     key={cat._id}
                     href={`/categoria/${cat.slug || cat._id}`}
                     onClick={onClose}
-                    className="text-xs px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white transition-colors"
+                    className="text-xs px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 hover:bg-blue-600 hover:text-white transition-colors"
                   >
                     {cat.title}
                   </Link>
@@ -270,23 +270,23 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
           {/* Redes Sociais Oficiais */}
           <SectionToggle title="📲 Nossas Redes Sociais" defaultOpen={true}>
             <div className="flex flex-col gap-1.5 px-2 pt-1 pb-2 text-xs font-bold">
-              <a href="https://www.instagram.com/concursosagorabr/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 p-2.5 rounded-xl bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/20">
+              <a href="https://www.instagram.com/concursosagorabr/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 p-2.5 rounded-xl bg-pink-500/10 text-pink-600 border border-pink-500/20">
                 <InstagramIcon className="w-4 h-4 shrink-0" />
                 <span>Instagram</span>
               </a>
-              <a href="https://www.facebook.com/profile.php?id=61592443961535" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 p-2.5 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+              <a href="https://www.facebook.com/profile.php?id=61592443961535" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 p-2.5 rounded-xl bg-blue-500/10 text-blue-600 border border-blue-500/20">
                 <FacebookIcon className="w-4 h-4 shrink-0" />
                 <span>Facebook</span>
               </a>
-              <a href="https://x.com/home" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-500/10 text-slate-800 dark:text-slate-200 border border-slate-500/20">
+              <a href="https://x.com/home" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-500/10 text-slate-800 border border-slate-500/20">
                 <XIcon className="w-4 h-4 shrink-0" />
                 <span>X (Twitter)</span>
               </a>
-              <a href="https://www.threads.com/@concursosagorabr?hl=pt-br" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-500/10 text-slate-800 dark:text-slate-200 border border-slate-500/20">
+              <a href="https://www.threads.com/@concursosagorabr?hl=pt-br" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-500/10 text-slate-800 border border-slate-500/20">
                 <ThreadsIcon className="w-4 h-4 shrink-0" />
                 <span>Threads</span>
               </a>
-              <a href="https://www.youtube.com/@ConcursosAgora" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 p-2.5 rounded-xl bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
+              <a href="https://www.youtube.com/@ConcursosAgora" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 p-2.5 rounded-xl bg-red-500/10 text-red-600 border border-red-500/20">
                 <YouTubeIcon className="w-4 h-4 shrink-0" />
                 <span>YouTube</span>
               </a>
@@ -295,7 +295,7 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
         </div>
 
         {/* Footer do drawer */}
-        <div className="px-4 py-3 border-t border-slate-200 dark:border-slate-800 text-center text-[11px] text-slate-400 shrink-0">
+        <div className="px-4 py-3 border-t border-slate-200 text-center text-[11px] text-slate-400 shrink-0">
           © {new Date().getFullYear()} Concursos Agora
         </div>
       </div>

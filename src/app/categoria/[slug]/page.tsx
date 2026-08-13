@@ -88,10 +88,10 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const baseUrl = `/categoria/${category.slug || category._id}`;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-0 py-2 sm:py-6">
       <Breadcrumb items={[{ label: 'Categorias' }, { label: category.title }]} />
 
-      <header className="mb-10 bg-gradient-to-r from-blue-900 to-indigo-900 text-white p-8 rounded-3xl shadow-xl">
+      <header className="mb-6 bg-gradient-to-r from-blue-900 to-indigo-900 text-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl shadow-xl">
         <span className="text-xs font-bold uppercase tracking-widest text-blue-300">
           Categoria
         </span>

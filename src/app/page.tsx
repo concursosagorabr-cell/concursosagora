@@ -59,7 +59,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const gridPosts = posts;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-0 py-2 sm:py-6">
       {/* Hero Carousel (Destaques Principais na 1ª página) */}
       {currentPage === 1 && carouselPosts.length > 0 && (
         <HeroCarousel posts={carouselPosts} />
@@ -70,14 +70,14 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <section className="my-12">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <span className="text-xs font-black uppercase tracking-wider text-blue-600 dark:text-blue-400 block">
+              <span className="text-xs font-black uppercase tracking-wider text-blue-600 block">
                 Arquitetura de Conteúdo
               </span>
-              <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+              <h2 className="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
                 <span>🎯</span> Hubs de Conteúdo & Silos Temáticos
               </h2>
             </div>
-            <a href="/hub" className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
+            <a href="/hub" className="text-xs font-bold text-blue-600 hover:underline">
               Ver Todos ({CONTENT_HUBS.length}) →
             </a>
           </div>
@@ -92,7 +92,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       {/* Grid de Categorias Sem Duplicatas */}
       {uniqueCategories.length > 0 && (
         <section className="my-12">
-          <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+          <h2 className="text-2xl font-extrabold text-slate-900 mb-6 flex items-center gap-2">
             <span>🏷️</span> Concursos por Categoria
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -107,8 +107,8 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 my-12">
         {/* Feed de Notícias */}
         <div className="lg:col-span-2 space-y-8">
-          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
-            <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+            <h2 className="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
               <span>📰</span> Últimas Notícias
             </h2>
             <span className="text-xs font-semibold text-slate-500">
@@ -134,8 +134,8 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               />
             </>
           ) : (
-            <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 text-center">
-              <p className="text-slate-600 dark:text-slate-400">
+            <div className="bg-white p-8 rounded-2xl border border-slate-200 text-center">
+              <p className="text-slate-600">
                 Nenhuma notícia encontrada no momento.
               </p>
             </div>

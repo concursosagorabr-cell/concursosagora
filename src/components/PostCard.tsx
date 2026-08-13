@@ -26,9 +26,9 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
 
   if (featured) {
     return (
-      <article className="group relative bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800 grid md:grid-cols-2 gap-6 items-center transition-all hover:shadow-2xl">
+      <article className="group relative bg-white rounded-2xl overflow-hidden shadow-lg border border-slate-200 grid md:grid-cols-2 gap-6 items-center transition-all hover:shadow-2xl">
         <div className="relative w-full h-64 md:h-full min-h-[300px] overflow-hidden">
-          <Link href={postLink} className="block w-full h-full">
+          <Link href={postLink} className="relative block w-full h-full">
             <Image
               src={imageUrl}
               alt={post.title}
@@ -57,7 +57,7 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
         </div>
 
         <div className="p-6 md:p-8 flex flex-col justify-center space-y-4">
-          <div className="flex flex-wrap items-center text-xs text-slate-500 dark:text-slate-400 gap-2">
+          <div className="flex flex-wrap items-center text-xs text-slate-500 gap-2">
             <span>{formattedDate}</span>
             {post.author && (
               <>
@@ -67,14 +67,14 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
             )}
           </div>
 
-          <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
+          <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 group-hover:text-blue-600 transition-colors leading-tight">
             <Link href={postLink}>
               {post.title}
             </Link>
           </h2>
 
           {post.excerpt && (
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base line-clamp-3 leading-relaxed">
+            <p className="text-slate-600 text-sm md:text-base line-clamp-3 leading-relaxed">
               {post.excerpt}
             </p>
           )}
@@ -82,7 +82,7 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
           <div className="pt-2 flex items-center justify-between">
             <Link
               href={postLink}
-              className="inline-flex items-center font-bold text-sm text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform"
+              className="inline-flex items-center font-bold text-sm text-blue-600 group-hover:translate-x-1 transition-transform"
             >
               Ler matéria completa →
             </Link>
@@ -96,9 +96,9 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
   }
 
   return (
-    <article className="group bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-xs hover:shadow-xl border border-slate-200 dark:border-slate-800 transition-all flex flex-col h-full">
-      <div className="relative w-full h-48 overflow-hidden bg-slate-100 dark:bg-slate-800">
-        <Link href={postLink} className="block w-full h-full">
+    <article className="group bg-white rounded-xl overflow-hidden shadow-xs hover:shadow-xl border border-slate-200 transition-all flex flex-col h-full">
+      <div className="relative w-full h-48 overflow-hidden bg-slate-100">
+        <Link href={postLink} className="relative block w-full h-full">
           <Image
             src={imageUrl}
             alt={post.title}
@@ -125,24 +125,24 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
         </div>
       </div>
 
-      <div className="p-5 flex flex-col flex-grow justify-between space-y-3">
+      <div className="p-4 sm:p-5 flex flex-col flex-grow justify-between space-y-3">
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
             <span>{formattedDate}</span>
           </div>
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug">
+          <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
             <Link href={postLink}>
               {post.title}
             </Link>
           </h3>
           {post.excerpt && (
-            <p className="text-slate-600 dark:text-slate-400 text-xs md:text-sm line-clamp-2 leading-relaxed">
+            <p className="text-slate-600 text-xs md:text-sm line-clamp-2 leading-relaxed">
               {post.excerpt}
             </p>
           )}
         </div>
 
-        <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs font-semibold text-blue-600 dark:text-blue-400">
+        <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-blue-600">
           <Link href={postLink} className="flex items-center justify-between w-full">
             <span>Ver matéria completa</span>
             <span className="group-hover:translate-x-1 transition-transform">→</span>
