@@ -18,9 +18,9 @@ export default function InArticleCTA({ posts, categoryName }: InArticleCTAProps)
   return (
     <aside
       aria-label="Leia também"
-      className="my-8 p-5 rounded-2xl border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-400 shadow-sm"
+      className="my-8 p-5 rounded-2xl border-l-4 border-blue-500 bg-blue-50 shadow-sm"
     >
-      <p className="text-xs font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-3 flex items-center gap-1.5">
+      <p className="text-xs font-black uppercase tracking-widest text-blue-600 mb-3 flex items-center gap-1.5">
         <span>📌</span>
         {categoryName ? `Veja também: Mais sobre ${categoryName}` : 'Leia Também'}
       </p>
@@ -41,10 +41,10 @@ export default function InArticleCTA({ posts, categoryName }: InArticleCTAProps)
             <Link
               key={post._id}
               href={postLink}
-              className="group flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-slate-900/60 border border-blue-100 dark:border-blue-900/40 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-md transition-all"
+              className="group flex items-center gap-3 p-3 rounded-xl bg-white border border-blue-100 hover:border-blue-400 hover:shadow-md transition-all"
             >
               {post.mainImage && (
-                <div className="relative w-16 h-12 rounded-lg overflow-hidden shrink-0 bg-slate-200 dark:bg-slate-800">
+                <div className="relative w-16 h-12 rounded-lg overflow-hidden shrink-0 bg-slate-200">
                   <Image
                     src={imgUrl}
                     alt={post.title}
@@ -55,14 +55,14 @@ export default function InArticleCTA({ posts, categoryName }: InArticleCTAProps)
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug">
+                <p className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
                   {post.title}
                 </p>
                 {date && (
                   <span className="text-[10px] text-slate-400 font-medium mt-0.5 block">{date}</span>
                 )}
               </div>
-              <span className="text-blue-500 dark:text-blue-400 text-sm font-bold shrink-0 group-hover:translate-x-1 transition-transform">
+              <span className="text-blue-500 text-sm font-bold shrink-0 group-hover:translate-x-1 transition-transform">
                 →
               </span>
             </Link>

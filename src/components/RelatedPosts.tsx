@@ -9,8 +9,8 @@ export default function RelatedPosts({ posts }: RelatedPostsProps) {
   if (!posts || posts.length === 0) return null;
 
   return (
-    <section className="mt-16 pt-12 border-t border-slate-200 dark:border-slate-800">
-      <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-8 flex items-center gap-2">
+    <section className="mt-16 pt-12 border-t border-slate-200">
+      <h2 className="text-2xl font-extrabold text-slate-900 mb-8 flex items-center gap-2">
         <span>📌</span> Matérias Relacionadas
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
