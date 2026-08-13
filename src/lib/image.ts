@@ -1,7 +1,10 @@
-import imageUrlBuilder, { createImageUrlBuilder } from '@sanity/image-url';
-import { client } from './sanity';
+import { createImageUrlBuilder } from '@sanity/image-url';
+import { projectId, dataset } from './sanity';
 
-const builder = (createImageUrlBuilder || imageUrlBuilder)(client as any);
+const builder = createImageUrlBuilder({
+  projectId: projectId || 'wobukj4j',
+  dataset: dataset || 'production',
+});
 
 export function urlFor(source: any) {
   return builder.image(source);
