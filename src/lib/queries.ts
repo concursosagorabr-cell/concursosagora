@@ -7,7 +7,13 @@ const postFields = `
   title,
   "slug": coalesce(slug.current, _id),
   publishedAt,
-  mainImage,
+  mainImage {
+    ...,
+    asset-> {
+      _id,
+      url
+    }
+  },
   "excerpt": array::join(string::split(pt::text(body), " ")[0..35], " ") + "...",
   "author": author->{
     _id,
