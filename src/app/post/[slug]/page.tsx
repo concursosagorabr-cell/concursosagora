@@ -15,6 +15,7 @@ import { Post } from '@/types';
 import { getImageUrl } from '@/lib/image';
 import { deduplicateCategories } from '@/utils/categories';
 import { getContestStatusInfo } from '@/utils/status';
+import { injectRelatedArticle } from '@/utils/injectRelatedArticle';
 import PortableText from '@/components/PortableText';
 import Breadcrumb from '@/components/Breadcrumb';
 import AuthorCard from '@/components/AuthorCard';
@@ -224,6 +225,11 @@ export default async function PostPage({ params }: PostPageProps) {
     ],
   };
 
+  // Injeta dinamicamente o card de "Leia Também" após o 2º parágrafo no Portable Text
+  const bodyWithRelated = post.body
+    ? injectRelatedArticle(post.body, relatedPosts[0], 2)
+    : [];
+
   return (
     <>
       <script
@@ -371,9 +377,9 @@ export default async function PostPage({ params }: PostPageProps) {
               />
             </figure>
 
-            {/* Conteúdo Rico (Portable Text) */}
+            {/* Conteúdo Rico (Portable Text com injeção dinâmica de Leia Também) */}
             <div className="bg-white p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-xs space-y-6">
-              {post.body && <PortableText value={post.body} />}
+              {bodyWithRelated.length > 0 && <PortableText value={bodyWithRelated} />}
             </div>
 
             {/* "Leia Também" Contextual — exibido logo após o conteúdo para reter o leitor */}

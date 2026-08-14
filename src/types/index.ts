@@ -49,6 +49,27 @@ export interface PortableTextBlock {
   }>;
   listItem?: 'bullet' | 'number';
   level?: number;
+  [key: string]: any;
+}
+
+export interface RelatedPostData {
+  _id: string;
+  title: string;
+  slug: string | Slug;
+  mainImage?: SanityImage;
+  publishedAt?: string;
+  excerpt?: string;
+  categories?: Array<{
+    _id: string;
+    title: string;
+    slug?: string;
+  }>;
+}
+
+export interface DynamicRelatedPostBlock {
+  _key: string;
+  _type: 'dynamicRelatedPost';
+  data: RelatedPostData;
 }
 
 /**

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getImageUrl } from '@/lib/image';
 import { PortableTextBlock } from '@/types';
+import DynamicRelatedPost from './DynamicRelatedPost';
 
 interface PortableTextProps {
   value: PortableTextBlock[];
@@ -128,6 +129,7 @@ const components: PortableTextComponents = {
         <code>{value?.code || value}</code>
       </pre>
     ),
+    dynamicRelatedPost: DynamicRelatedPost,
   },
 };
 
