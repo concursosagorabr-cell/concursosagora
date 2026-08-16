@@ -74,7 +74,7 @@ export default function RegionBar() {
 
         {/* Links de Redes Sociais no Topo */}
         <div className="hidden lg:flex items-center gap-3 pl-3 border-l border-slate-800 shrink-0 text-[11px] font-bold text-slate-400">
-          <a href="https://www.instagram.com/concursosagorabr/" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 transition-colors flex items-center gap-1" title="Instagram">
+          <a href="https://www.instagram.com/concursosagora_/" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 transition-colors flex items-center gap-1" title="Instagram">
             <InstagramIcon className="w-3.5 h-3.5" />
             <span>Instagram</span>
           </a>

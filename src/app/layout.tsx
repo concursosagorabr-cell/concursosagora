@@ -100,7 +100,7 @@ export default async function RootLayout({
     url: 'https://concursosagora.com.br',
     logo: 'https://concursosagora.com.br/logo.png',
     sameAs: [
-      'https://www.instagram.com/concursosagorabr/',
+      'https://www.instagram.com/concursosagora_/',
       'https://www.facebook.com/profile.php?id=61592443961535',
       'https://x.com/home',
       'https://www.threads.com/@concursosagorabr?hl=pt-br',

@@ -270,7 +270,7 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
           {/* Redes Sociais Oficiais */}
           <SectionToggle title="📲 Nossas Redes Sociais" defaultOpen={true}>
             <div className="flex flex-col gap-1.5 px-2 pt-1 pb-2 text-xs font-bold">
-              <a href="https://www.instagram.com/concursosagorabr/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 p-2.5 rounded-xl bg-pink-500/10 text-pink-600 border border-pink-500/20">
+              <a href="https://www.instagram.com/concursosagora_/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 p-2.5 rounded-xl bg-pink-500/10 text-pink-600 border border-pink-500/20">
                 <InstagramIcon className="w-4 h-4 shrink-0" />
                 <span>Instagram</span>
               </a>

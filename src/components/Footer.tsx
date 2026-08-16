@@ -59,7 +59,7 @@ export default function Footer() {
             </ul>
             <h4 className="text-white font-bold text-[11px] tracking-wider uppercase mb-3">Siga o Concursos Agora</h4>
             <div className="flex flex-wrap gap-2 text-xs">
-              <a href="https://www.instagram.com/concursosagorabr/" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-pink-400 hover:text-white hover:border-pink-500 transition-colors flex items-center gap-1.5" title="Instagram">
+              <a href="https://www.instagram.com/concursosagora_/" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-pink-400 hover:text-white hover:border-pink-500 transition-colors flex items-center gap-1.5" title="Instagram">
                 <InstagramIcon className="w-4 h-4" />
                 <span>Instagram</span>
               </a>

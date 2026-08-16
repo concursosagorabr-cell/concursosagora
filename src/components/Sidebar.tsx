@@ -136,13 +136,13 @@ export default function Sidebar({ recentPosts = [], categories = [], categoryPos
         </p>
         <div className="grid grid-cols-1 gap-2.5 text-xs font-bold">
           <a
-            href="https://www.instagram.com/concursosagorabr/"
+            href="https://www.instagram.com/concursosagora_/"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-amber-500/10 hover:from-pink-500/20 hover:to-amber-500/20 text-pink-600 transition-all border border-pink-500/20 group"
           >
             <InstagramIcon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
-            <span>Instagram (@concursosagorabr)</span>
+            <span>Instagram (@concursosagora_)</span>
           </a>
           <a
             href="https://www.facebook.com/profile.php?id=61592443961535"
