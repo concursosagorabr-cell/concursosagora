@@ -22,6 +22,7 @@ import AuthorCard from '@/components/AuthorCard';
 import RelatedPosts from '@/components/RelatedPosts';
 import PostHubWidget from '@/components/PostHubWidget';
 import InArticleCTA from '@/components/InArticleCTA';
+import InstagramFollowBox from '@/components/InstagramFollowBox';
 import Sidebar from '@/components/Sidebar';
 
 interface PostPageProps {
@@ -387,6 +388,9 @@ export default async function PostPage({ params }: PostPageProps) {
               posts={relatedPosts.slice(0, 2)}
               categoryName={primaryCategory?.title}
             />
+
+            {/* Banner de Tráfego Cruzado para o Instagram */}
+            <InstagramFollowBox />
 
             {/*
               === BANNER WHATSAPP/TELEGRAM ===
