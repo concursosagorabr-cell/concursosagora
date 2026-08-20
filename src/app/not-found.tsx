@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function NotFound() {
   return (
-    <main className="min-h-[60vh] flex items-center justify-center px-4 py-16 text-center">
+    <div className="min-h-[60vh] flex items-center justify-center px-4 py-16 text-center">
       <div className="max-w-md space-y-6">
         <span className="text-6xl">🔍</span>
         <h1 className="text-3xl font-black text-slate-900 dark:text-white">
@@ -20,6 +20,6 @@ export default function NotFound() {
           </Link>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

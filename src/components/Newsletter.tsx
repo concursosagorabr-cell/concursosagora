@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 type Status = 'idle' | 'loading' | 'success' | 'already' | 'error';
 
@@ -132,12 +133,12 @@ export default function Newsletter() {
 
             <p className="text-blue-200/70 text-[11px] text-center leading-relaxed">
               Sem spam. Cancele quando quiser.{' '}
-              <a
+              <Link
                 href="/politica-de-privacidade"
                 className="underline underline-offset-2 hover:text-white transition-colors"
               >
                 Política de Privacidade
-              </a>
+              </Link>
             </p>
           </form>
         )}

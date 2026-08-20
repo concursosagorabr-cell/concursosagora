@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import HeroCarousel from '@/components/HeroCarousel';
 import PostCard from '@/components/PostCard';
 import CategoryCard from '@/components/CategoryCard';
@@ -77,9 +78,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 <span>🎯</span> Hubs de Conteúdo & Silos Temáticos
               </h2>
             </div>
-            <a href="/hub" className="text-xs font-bold text-blue-600 hover:underline">
+            <Link href="/hub" className="text-xs font-bold text-blue-600 hover:underline">
               Ver Todos ({CONTENT_HUBS.length}) →
-            </a>
+            </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {CONTENT_HUBS.slice(0, 4).map((hub) => (

@@ -29,14 +29,20 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   let recentPosts: Post[] = [];
   let categories: Category[] = [];
 
-  if (searchTerm) {
-    posts = await client.fetch(searchPostsQuery, { searchTerm });
-  }
+  try {
+    if (searchTerm) {
+      posts = (await client.fetch(searchPostsQuery, { searchTerm })) || [];
+    }
 
-  [recentPosts, categories] = await Promise.all([
-    client.fetch(recentPostsQuery),
-    client.fetch(allCategoriesQuery),
-  ]);
+    const [fetchedRecent, fetchedCategories] = await Promise.all([
+      client.fetch(recentPostsQuery),
+      client.fetch(allCategoriesQuery),
+    ]);
+    recentPosts = fetchedRecent || [];
+    categories = fetchedCategories || [];
+  } catch (error) {
+    console.error('Erro ao processar busca em SearchPage:', error);
+  }
 
   const uniqueCategories = deduplicateCategories(categories);
 

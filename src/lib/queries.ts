@@ -7,6 +7,8 @@ const postFields = `
   title,
   "slug": coalesce(slug.current, _id),
   publishedAt,
+  enrollmentEndDate,
+  examDate,
   mainImage {
     ...,
     asset-> {
@@ -156,6 +158,8 @@ export const searchPostsQuery = `
 // 10b. Consulta de posts por conjunto de palavras-chave para Hubs de Conteúdo (Silos)
 export const postsByKeywordsPaginatedQuery = `
   *[_type == "post" && (
+    count((categories[]->slug.current)[@ in $keywords]) > 0 ||
+    count((categories[]->title)[lower(@) in $keywords]) > 0 ||
     $mainKeyword in categories[]->slug.current ||
     $mainKeyword in categories[]->title ||
     title match "*" + $mainKeyword + "*" ||
@@ -167,6 +171,8 @@ export const postsByKeywordsPaginatedQuery = `
 
 export const postsByKeywordsCountQuery = `
   count(*[_type == "post" && (
+    count((categories[]->slug.current)[@ in $keywords]) > 0 ||
+    count((categories[]->title)[lower(@) in $keywords]) > 0 ||
     $mainKeyword in categories[]->slug.current ||
     $mainKeyword in categories[]->title ||
     title match "*" + $mainKeyword + "*" ||

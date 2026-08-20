@@ -83,10 +83,21 @@ const components: PortableTextComponents = {
       <u className="underline underline-offset-4 decoration-blue-500">{children}</u>
     ),
     link: ({ value, children }) => {
-      const target = (value?.href || '').startsWith('http') ? '_blank' : undefined;
+      const rawHref = String(value?.href || '').trim();
+      // Sanitização de protocolo contra XSS (bloqueia javascript:, data:, vbscript:, etc.)
+      const isSafeProtocol =
+        rawHref.startsWith('/') ||
+        rawHref.startsWith('#') ||
+        /^https?:\/\//i.test(rawHref) ||
+        /^mailto:/i.test(rawHref) ||
+        /^tel:/i.test(rawHref);
+
+      const safeHref = isSafeProtocol ? rawHref : '#';
+      const target = safeHref.startsWith('http') ? '_blank' : undefined;
+
       return (
         <Link
-          href={value?.href || '#'}
+          href={safeHref}
           target={target}
           rel={target === '_blank' ? 'noopener noreferrer' : undefined}
           className="text-blue-600 font-semibold underline underline-offset-4 hover:text-blue-800 transition-colors"

@@ -32,6 +32,11 @@ export default function Pagination({
   const startItem = (currentPage - 1) * itemsPerPage + 1;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems || currentPage * itemsPerPage);
 
+  const getPageUrl = (p: number) => {
+    const separator = baseUrl.includes('?') ? '&' : '?';
+    return `${baseUrl}${separator}page=${p}`;
+  };
+
   return (
     <div className="flex flex-col items-center space-y-4 my-12">
       {totalItems !== undefined && (
@@ -43,7 +48,7 @@ export default function Pagination({
       <nav className="flex items-center justify-center space-x-1.5" aria-label="Paginação">
         {prevPage ? (
           <Link
-            href={`${baseUrl}?page=${prevPage}`}
+            href={getPageUrl(prevPage)}
             className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 transition-colors shadow-2xs"
           >
             ← Anterior
@@ -57,7 +62,7 @@ export default function Pagination({
         {startPage > 1 && (
           <>
             <Link
-              href={`${baseUrl}?page=1`}
+              href={getPageUrl(1)}
               className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-blue-50 transition-colors"
             >
               1
@@ -78,7 +83,7 @@ export default function Pagination({
           ) : (
             <Link
               key={p}
-              href={`${baseUrl}?page=${p}`}
+              href={getPageUrl(p)}
               className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 transition-colors"
             >
               {p}
@@ -90,7 +95,7 @@ export default function Pagination({
           <>
             {endPage < totalPages - 1 && <span className="px-1 text-slate-400">...</span>}
             <Link
-              href={`${baseUrl}?page=${totalPages}`}
+              href={getPageUrl(totalPages)}
               className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-blue-50 transition-colors"
             >
               {totalPages}
@@ -100,7 +105,7 @@ export default function Pagination({
 
         {nextPage ? (
           <Link
-            href={`${baseUrl}?page=${nextPage}`}
+            href={getPageUrl(nextPage)}
             className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 transition-colors shadow-2xs"
           >
             Próxima →

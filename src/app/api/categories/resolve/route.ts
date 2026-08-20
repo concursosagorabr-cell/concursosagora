@@ -197,9 +197,8 @@ export async function POST(request: NextRequest) {
       total_categories_in_sanity: allCategories.length,
     });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Erro desconhecido';
-    console.error('[/api/categories/resolve]', message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error('[/api/categories/resolve]', err);
+    return NextResponse.json({ error: 'Erro interno ao processar categorias.' }, { status: 500 });
   }
 }
 
@@ -209,7 +208,7 @@ export async function GET() {
     const categories: SanityCategory[] = await client.fetch(CATEGORIES_WITH_COUNT_QUERY);
     return NextResponse.json({ categories, total: categories.length });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Erro desconhecido';
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error('[/api/categories/resolve GET]', err);
+    return NextResponse.json({ error: 'Erro interno ao buscar categorias.' }, { status: 500 });
   }
 }

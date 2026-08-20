@@ -24,8 +24,11 @@ export function isContestExpired(post: Partial<Post>): boolean {
   const now = new Date().getTime();
   const rawTargetDate = post.enrollmentEndDate || post.examDate;
   const targetDateStr =
-    rawTargetDate && !rawTargetDate.toLowerCase().startsWith('null')
-      ? rawTargetDate
+    typeof rawTargetDate === 'string' &&
+    rawTargetDate.trim().length > 0 &&
+    !rawTargetDate.trim().toLowerCase().startsWith('null') &&
+    !rawTargetDate.trim().toLowerCase().startsWith('none')
+      ? rawTargetDate.trim()
       : undefined;
 
   if (targetDateStr) {
