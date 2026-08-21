@@ -23,6 +23,9 @@ import RelatedPosts from '@/components/RelatedPosts';
 import PostHubWidget from '@/components/PostHubWidget';
 import InArticleCTA from '@/components/InArticleCTA';
 import InstagramFollowBox from '@/components/InstagramFollowBox';
+import ShareButtons from '@/components/ShareButtons';
+import CommunityBanner from '@/components/CommunityBanner';
+import ContestCountdown from '@/components/ContestCountdown';
 import Sidebar from '@/components/Sidebar';
 
 interface PostPageProps {
@@ -400,8 +403,8 @@ export default async function PostPage({ params }: PostPageProps) {
               {/* Banner Informativo de Validade do Concurso */}
               <div className={`p-4 rounded-2xl border flex items-center justify-between gap-4 text-xs sm:text-sm font-semibold ${
                 statusInfo.isExpired
-                  ? 'bg-slate-100 border-slate-300 text-slate-700'
-                  : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                  ? 'bg-slate-100 dark:bg-slate-800/80 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300'
+                  : 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200'
               }`}>
                 <div className="flex items-center gap-2.5">
                   <span className="text-lg">{statusInfo.isExpired ? '📌' : '🗓️'}</span>
@@ -412,8 +415,14 @@ export default async function PostPage({ params }: PostPageProps) {
                 </div>
               </div>
 
-              {/* Metadados do Autor, Data, Leitura e Compartilhamento */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-y border-slate-200 py-4 gap-4 text-xs md:text-sm text-slate-500">
+              {/* Contador Regressivo Interativo de Inscrições */}
+              <ContestCountdown
+                enrollmentEndDate={post.enrollmentEndDate}
+                examDate={post.examDate}
+              />
+
+              {/* Metadados do Autor, Data e Leitura */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-y border-slate-200 dark:border-slate-800 py-4 gap-4 text-xs md:text-sm text-slate-500 dark:text-slate-400">
                 <div className="flex items-center gap-3">
                   {post.author?.image && (
                     <div className="relative w-11 h-11 rounded-full overflow-hidden shrink-0 border-2 border-blue-500 shadow-xs">
@@ -426,60 +435,30 @@ export default async function PostPage({ params }: PostPageProps) {
                     </div>
                   )}
                   <div>
-                    <span className="font-bold text-slate-900 block text-sm">
+                    <span className="font-bold text-slate-900 dark:text-slate-100 block text-sm">
                       {post.author?.name || 'Redação Concursos Agora'}
                     </span>
                     <span>Publicado em {formattedDate}</span>
                     {/* Tempo estimado de leitura */}
-                    <span className="flex items-center gap-1 text-[11px] text-slate-400 mt-0.5">
+                    <span className="flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
                       <span>⏱️</span>
                       <span>Leitura: ~{readingMinutes} min</span>
                     </span>
                   </div>
                 </div>
 
-                {/* Compartilhamento Social */}
-                <div className="flex items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
-                  <span className="text-xs font-bold text-slate-700 mr-1">Compartilhar:</span>
-                  {/* WhatsApp */}
-                  <a
-                    href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`${post.title} — Concursos Agora ${postUrl}`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-1.5 rounded-full bg-emerald-500 text-white hover:scale-110 transition-transform"
-                    title="Compartilhar no WhatsApp"
-                    aria-label="Compartilhar no WhatsApp"
-                  >
-                    💬
-                  </a>
-                  {/* Facebook */}
-                  <a
-                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(postUrl)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-1.5 rounded-full bg-blue-600 text-white hover:scale-110 transition-transform"
-                    title="Compartilhar no Facebook"
-                    aria-label="Compartilhar no Facebook"
-                  >
-                    📘
-                  </a>
-                  {/* X/Twitter */}
-                  <a
-                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(postUrl)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-1.5 rounded-full bg-sky-500 text-white hover:scale-110 transition-transform"
-                    title="Compartilhar no X/Twitter"
-                    aria-label="Compartilhar no X (Twitter)"
-                  >
-                    🐦
-                  </a>
-                </div>
+                {/* Compartilhamento Social Superior */}
+                <ShareButtons
+                  title={post.title}
+                  url={postUrl}
+                  excerpt={post.excerpt}
+                  compact
+                />
               </div>
             </header>
 
             {/* Imagem de Capa do Artigo */}
-            <figure className="relative w-full h-[320px] sm:h-[420px] md:h-[500px] rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-slate-100">
+            <figure className="relative w-full h-[320px] sm:h-[420px] md:h-[500px] rounded-3xl overflow-hidden shadow-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900">
               <Image
                 src={mainImageUrl}
                 alt={post.title}
@@ -491,8 +470,23 @@ export default async function PostPage({ params }: PostPageProps) {
             </figure>
 
             {/* Conteúdo Rico (Portable Text com injeção dinâmica de Leia Também) */}
-            <div className="bg-white p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-xs space-y-6">
+            <div className="bg-white dark:bg-slate-900/90 p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
               {bodyWithRelated.length > 0 && <PortableText value={bodyWithRelated} />}
+            </div>
+
+            {/* Compartilhamento no final do conteúdo */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 shadow-xs">
+              <p className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-2">
+                📢 Gostou desta notícia sobre o {post.title}?
+              </p>
+              <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+                Ajude outros concurseiros e compartilhe com seus amigos e grupos de estudo:
+              </p>
+              <ShareButtons
+                title={post.title}
+                url={postUrl}
+                excerpt={post.excerpt}
+              />
             </div>
 
             {/* "Leia Também" Contextual — exibido logo após o conteúdo para reter o leitor */}
@@ -501,18 +495,13 @@ export default async function PostPage({ params }: PostPageProps) {
               categoryName={primaryCategory?.title}
             />
 
+            {/* Banner de Canais WhatsApp e Telegram VIP */}
+            <CommunityBanner
+              categoryName={primaryCategory?.title}
+            />
+
             {/* Banner de Tráfego Cruzado para o Instagram */}
             <InstagramFollowBox />
-
-            {/*
-              === BANNER WHATSAPP/TELEGRAM ===
-              Descomente quando criar seus grupos:
-
-              <WhatsAppBanner
-                whatsappUrl="https://chat.whatsapp.com/SEU_LINK_AQUI"
-                telegramUrl="https://t.me/SEU_CANAL_AQUI"
-              />
-            */}
 
             {/* Widget de Linkagem Interna Bidirecional (Hub de Conteúdo SEO) */}
             <PostHubWidget

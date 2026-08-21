@@ -27,3 +27,4 @@ coverage/
 *.pem
 .vscode/
 .idea/
+*.tsbuildinfo

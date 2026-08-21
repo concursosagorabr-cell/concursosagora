@@ -39,6 +39,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
+  const stateUfs = [
+    'ac', 'al', 'ap', 'am', 'ba', 'ce', 'df', 'es', 'go', 'ma',
+    'mt', 'ms', 'mg', 'pa', 'pb', 'pr', 'pe', 'pi', 'rj', 'rn',
+    'rs', 'ro', 'rr', 'sc', 'sp', 'se', 'to',
+  ];
+
+  const stateUrls: MetadataRoute.Sitemap = stateUfs.map((uf) => ({
+    url: `${baseUrl}/concursos-abertos/${uf}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily',
+    priority: 0.85,
+  }));
+
   return [
     {
       url: baseUrl,
@@ -59,6 +72,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.3,
     },
     ...hubUrls,
+    ...stateUrls,
     ...postUrls,
     ...categoryUrls,
   ];

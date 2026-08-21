@@ -133,7 +133,7 @@ Crie o arquivo `frontend/.env.local` (ou configure no painel da Vercel):
 
 ```env
 # Sanity CMS
-NEXT_PUBLIC_SANITY_PROJECT_ID=mcc3s7d1
+NEXT_PUBLIC_SANITY_PROJECT_ID=mcc3s7d2
 NEXT_PUBLIC_SANITY_DATASET=production
 NEXT_PUBLIC_SANITY_API_VERSION=2026-07-25
 SANITY_API_TOKEN=skESugwi5EBz6Wh...
