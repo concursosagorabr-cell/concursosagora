@@ -90,7 +90,7 @@ export function getContestStatusInfo(post: Partial<Post>): ContestStatusInfo {
     return {
       isExpired: true,
       label: 'Concurso Encerrado',
-      badgeBg: 'bg-slate-700/90 text-slate-100 dark:bg-slate-800 dark:text-slate-200 border border-slate-600',
+      badgeBg: 'bg-slate-700/90 text-slate-100 border border-slate-600',
       badgeText: 'text-slate-100',
       dotColor: 'bg-red-500',
       formattedTargetDate,
@@ -102,7 +102,7 @@ export function getContestStatusInfo(post: Partial<Post>): ContestStatusInfo {
   return {
     isExpired: false,
     label: 'Concurso Aberto',
-    badgeBg: 'bg-emerald-600/95 text-white dark:bg-emerald-700 border border-emerald-400/30',
+    badgeBg: 'bg-emerald-600/95 text-white border border-emerald-400/30',
     badgeText: 'text-white',
     dotColor: 'bg-emerald-300 animate-pulse',
     formattedTargetDate,

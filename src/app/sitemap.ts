@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { client } from '@/lib/sanity';
+import { sanityFetch } from '@/lib/sanity';
 import { allPostSlugsQuery, allCategorySlugsQuery } from '@/lib/queries';
 import { CONTENT_HUBS } from '@/utils/hubs';
 
@@ -11,8 +11,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     [postSlugs, categorySlugs] = await Promise.all([
-      client.fetch(allPostSlugsQuery),
-      client.fetch(allCategorySlugsQuery),
+      sanityFetch(allPostSlugsQuery),
+      sanityFetch(allCategorySlugsQuery),
     ]);
   } catch (error) {
     console.error('Erro ao buscar slugs para sitemap:', error);

@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { client } from '@/lib/sanity';
+import { sanityFetch } from '@/lib/sanity';
 import {
   categoryBySlugQuery,
   postsByCategoryPaginatedQuery,
@@ -29,7 +29,7 @@ export const revalidate = 60;
 
 export async function generateStaticParams() {
   try {
-    const rawSlugs: any[] = await client.fetch(allCategorySlugsQuery);
+    const rawSlugs: any[] = await sanityFetch(allCategorySlugsQuery);
     const slugs = (rawSlugs || [])
       .map((item) => {
         if (typeof item === 'string') return item;
@@ -47,7 +47,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const category: Category | null = await client.fetch(categoryBySlugQuery, { slug });
+  const category: Category | null = await sanityFetch(categoryBySlugQuery, { slug });
 
   if (!category) {
     return { title: 'Categoria não encontrada' };
@@ -63,7 +63,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const { slug } = await params;
   const { page } = await searchParams;
 
-  const category: Category | null = await client.fetch(categoryBySlugQuery, { slug });
+  const category: Category | null = await sanityFetch(categoryBySlugQuery, { slug });
 
   if (!category) {
     notFound();
@@ -77,10 +77,10 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const categorySlugs = getCategoryAliases(slug);
 
   const [posts, totalPosts, recentPosts, categories]: [Post[], number, Post[], Category[]] = await Promise.all([
-    client.fetch(postsByCategoryPaginatedQuery, { categorySlug: slug, categorySlugs, start, end }),
-    client.fetch(postsByCategoryCountQuery, { categorySlug: slug, categorySlugs }),
-    client.fetch(recentPostsQuery),
-    client.fetch(allCategoriesQuery),
+    sanityFetch(postsByCategoryPaginatedQuery, { categorySlug: slug, categorySlugs, start, end }),
+    sanityFetch(postsByCategoryCountQuery, { categorySlug: slug, categorySlugs }),
+    sanityFetch(recentPostsQuery),
+    sanityFetch(allCategoriesQuery),
   ]);
 
   const uniqueCategories = deduplicateCategories(categories);

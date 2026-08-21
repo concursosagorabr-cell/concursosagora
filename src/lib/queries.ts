@@ -16,7 +16,7 @@ const postFields = `
       url
     }
   },
-  "excerpt": array::join(string::split(pt::text(body), " ")[0..35], " ") + "...",
+  "excerpt": coalesce(excerpt, array::join(string::split(pt::text(body), " ")[0..35], " ") + "..."),
   "author": author->{
     _id,
     name,
@@ -114,32 +114,27 @@ export const postsByCategoryQuery = `
   }
 `;
 
+// Filtro reutilizável para busca flexível de posts por categoria com sinônimos
+const categoryFilter = `
+  $categorySlug in categories[]->slug.current ||
+  lower($categorySlug) in categories[]->slug.current ||
+  $categorySlug in categories[]->_id ||
+  lower($categorySlug) in categories[]->title ||
+  $categorySlug in categories[]->title ||
+  count((categories[]->slug.current)[@ in $categorySlugs]) > 0 ||
+  count((categories[]->title)[lower(@) in $categorySlugs]) > 0
+`;
+
 // 9b. Consulta de posts por categoria paginados (10 por 10) com busca flexível e unificação de sinônimos
 export const postsByCategoryPaginatedQuery = `
-  *[_type == "post" && (
-    $categorySlug in categories[]->slug.current ||
-    lower($categorySlug) in categories[]->slug.current ||
-    $categorySlug in categories[]->_id ||
-    lower($categorySlug) in categories[]->title ||
-    $categorySlug in categories[]->title ||
-    count((categories[]->slug.current)[@ in $categorySlugs]) > 0 ||
-    count((categories[]->title)[lower(@) in $categorySlugs]) > 0
-  )] | order(publishedAt desc) [$start..$end] {
+  *[_type == "post" && (${categoryFilter})] | order(publishedAt desc) [$start..$end] {
     ${postFields}
   }
 `;
 
 // 9c. Contagem total de posts por categoria
 export const postsByCategoryCountQuery = `
-  count(*[_type == "post" && (
-    $categorySlug in categories[]->slug.current ||
-    lower($categorySlug) in categories[]->slug.current ||
-    $categorySlug in categories[]->_id ||
-    lower($categorySlug) in categories[]->title ||
-    $categorySlug in categories[]->title ||
-    count((categories[]->slug.current)[@ in $categorySlugs]) > 0 ||
-    count((categories[]->title)[lower(@) in $categorySlugs]) > 0
-  )])
+  count(*[_type == "post" && (${categoryFilter})])
 `;
 
 // 10. Consulta de pesquisa global flexível e abrangente
@@ -155,29 +150,25 @@ export const searchPostsQuery = `
   }
 `;
 
+// Filtro reutilizável para busca por keywords de Hubs de Conteúdo
+const keywordsFilter = `
+  count((categories[]->slug.current)[@ in $keywords]) > 0 ||
+  count((categories[]->title)[lower(@) in $keywords]) > 0 ||
+  $mainKeyword in categories[]->slug.current ||
+  $mainKeyword in categories[]->title ||
+  title match "*" + $mainKeyword + "*" ||
+  pt::text(body) match "*" + $mainKeyword + "*"
+`;
+
 // 10b. Consulta de posts por conjunto de palavras-chave para Hubs de Conteúdo (Silos)
 export const postsByKeywordsPaginatedQuery = `
-  *[_type == "post" && (
-    count((categories[]->slug.current)[@ in $keywords]) > 0 ||
-    count((categories[]->title)[lower(@) in $keywords]) > 0 ||
-    $mainKeyword in categories[]->slug.current ||
-    $mainKeyword in categories[]->title ||
-    title match "*" + $mainKeyword + "*" ||
-    pt::text(body) match "*" + $mainKeyword + "*"
-  )] | order(publishedAt desc) [$start..$end] {
+  *[_type == "post" && (${keywordsFilter})] | order(publishedAt desc) [$start..$end] {
     ${postFields}
   }
 `;
 
 export const postsByKeywordsCountQuery = `
-  count(*[_type == "post" && (
-    count((categories[]->slug.current)[@ in $keywords]) > 0 ||
-    count((categories[]->title)[lower(@) in $keywords]) > 0 ||
-    $mainKeyword in categories[]->slug.current ||
-    $mainKeyword in categories[]->title ||
-    title match "*" + $mainKeyword + "*" ||
-    pt::text(body) match "*" + $mainKeyword + "*"
-  )])
+  count(*[_type == "post" && (${keywordsFilter})])
 `;
 
 // 11. Consulta de todos os Slugs como strings planas (para generateStaticParams e Sitemap)

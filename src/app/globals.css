@@ -12,24 +12,14 @@
   --font-sans: var(--font-inter);
 }
 
-/* Força tema claro em todos os dispositivos (mobile e desktop), ignorando o modo escuro do SO */
-@media (prefers-color-scheme: dark) {
-  :root, html, body {
-    color-scheme: light !important;
-    background-color: #f8fafc !important;
-    color: #0f172a !important;
-  }
-}
-
-html {
+/* Força tema claro em todos os dispositivos, ignorando modo escuro do SO */
+html, body {
   color-scheme: light !important;
-  background-color: #f8fafc !important;
-  color: #0f172a !important;
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
 }
 
 body {
-  background-color: #f8fafc !important;
-  color: #0f172a !important;
   font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
 }
 

@@ -3,7 +3,7 @@ import Breadcrumb from '@/components/Breadcrumb';
 import HubCard from '@/components/HubCard';
 import Sidebar from '@/components/Sidebar';
 import { CONTENT_HUBS } from '@/utils/hubs';
-import { client } from '@/lib/sanity';
+import { sanityFetch } from '@/lib/sanity';
 import { recentPostsQuery, allCategoriesQuery } from '@/lib/queries';
 import { deduplicateCategories } from '@/utils/categories';
 
@@ -18,8 +18,8 @@ export const revalidate = 60;
 
 export default async function HubsIndexPage() {
   const [recentPosts, categories] = await Promise.all([
-    client.fetch(recentPostsQuery),
-    client.fetch(allCategoriesQuery),
+    sanityFetch(recentPostsQuery),
+    sanityFetch(allCategoriesQuery),
   ]);
 
   const uniqueCategories = deduplicateCategories(categories);

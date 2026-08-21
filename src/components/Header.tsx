@@ -30,6 +30,8 @@ export default function Header({ categories = [] }: HeaderProps) {
               onClick={() => setIsMobileMenuOpen(true)}
               className="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg text-slate-700 hover:bg-slate-100 transition-colors shrink-0"
               aria-label="Abrir menu de navegação"
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M4 6h16M4 12h16M4 18h16" />

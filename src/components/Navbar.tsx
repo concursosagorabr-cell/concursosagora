@@ -80,8 +80,8 @@ function DropdownMenu({ label, id, active, onActivate, alignRight = false, child
         onClick={() => onActivate(isOpen ? null : id)}
         className={`flex items-center gap-1 px-2.5 py-2 rounded-lg text-sm font-semibold transition-colors whitespace-nowrap
           ${isOpen
-            ? 'bg-slate-100 dark:bg-slate-800 text-blue-600 dark:text-blue-400'
-            : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-blue-600 dark:hover:text-blue-400'
+            ? 'bg-slate-100 text-blue-600'
+            : 'text-slate-700 hover:bg-slate-100 hover:text-blue-600'
           }`}
         aria-haspopup="true"
         aria-expanded={isOpen}
@@ -99,7 +99,7 @@ function DropdownMenu({ label, id, active, onActivate, alignRight = false, child
         <div
           className={`absolute top-full mt-1 pt-1 z-[60] min-w-[220px] ${alignRight ? 'right-0' : 'left-0'}`}
         >
-          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-1 overflow-hidden">
+          <div className="bg-white rounded-xl shadow-xl border border-slate-200 py-1 overflow-hidden">
             {children}
           </div>
         </div>
@@ -137,14 +137,14 @@ export default function Navbar({ categories = [] }: NavbarProps) {
   }, []);
 
   const dropdownItemClass =
-    'block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/50 hover:text-blue-600 dark:hover:text-blue-400 transition-colors';
+    'block px-4 py-2 text-sm text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors';
 
   return (
     <nav ref={navRef} className="hidden lg:flex items-center gap-0.5 text-sm font-semibold">
       {/* Início */}
       <Link
         href="/"
-        className="px-2.5 py-2 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors whitespace-nowrap"
+        className="px-2.5 py-2 rounded-lg text-slate-700 hover:bg-slate-100 hover:text-blue-600 transition-colors whitespace-nowrap"
       >
         Início
       </Link>
@@ -152,7 +152,7 @@ export default function Navbar({ categories = [] }: NavbarProps) {
       {/* Inscrições Abertas — destaque verde */}
       <Link
         href="/search?q=aberto"
-        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors whitespace-nowrap"
+        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition-colors whitespace-nowrap"
       >
         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
         Abertas
@@ -161,7 +161,7 @@ export default function Navbar({ categories = [] }: NavbarProps) {
       {/* Previstos */}
       <Link
         href="/search?q=previsto"
-        className="px-2.5 py-2 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors whitespace-nowrap"
+        className="px-2.5 py-2 rounded-lg text-slate-700 hover:bg-slate-100 hover:text-blue-600 transition-colors whitespace-nowrap"
       >
         Previstos
       </Link>
@@ -196,7 +196,7 @@ export default function Navbar({ categories = [] }: NavbarProps) {
           ))}
           {extraCategories.length > 0 && (
             <>
-              <div className="px-4 py-1.5 text-[11px] font-black uppercase tracking-wider text-slate-400 border-t border-slate-100 dark:border-slate-800 mt-1 pt-2">
+              <div className="px-4 py-1.5 text-[11px] font-black uppercase tracking-wider text-slate-400 border-t border-slate-100 mt-1 pt-2">
                 Outras Áreas
               </div>
               {extraCategories.map((cat) => (
@@ -216,7 +216,7 @@ export default function Navbar({ categories = [] }: NavbarProps) {
       {/* Dropdown Guias de Concursos (Nome amigável substituindo Hubs SEO) */}
       <DropdownMenu label="Guias de Concursos" id="hubs" active={activeDropdown} onActivate={setActiveDropdown} alignRight>
         <div className="w-64 max-h-80 overflow-y-auto">
-          <Link href="/hub" className={`${dropdownItemClass} font-extrabold text-blue-600 dark:text-blue-400 border-b border-slate-100 dark:border-slate-800`}>
+          <Link href="/hub" className={`${dropdownItemClass} font-extrabold text-blue-600 border-b border-slate-100`}>
             🎯 Todos os Guias & Silos
           </Link>
           {CONTENT_HUBS.map((h) => (

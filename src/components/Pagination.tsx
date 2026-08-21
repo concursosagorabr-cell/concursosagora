@@ -49,12 +49,12 @@ export default function Pagination({
         {prevPage ? (
           <Link
             href={getPageUrl(prevPage)}
-            className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 transition-colors shadow-2xs"
+            className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-white border border-slate-300 text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors shadow-2xs"
           >
             ← Anterior
           </Link>
         ) : (
-          <span className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-400 cursor-not-allowed border border-transparent">
+          <span className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-slate-100 text-slate-400 cursor-not-allowed border border-transparent">
             ← Anterior
           </span>
         )}
@@ -63,7 +63,7 @@ export default function Pagination({
           <>
             <Link
               href={getPageUrl(1)}
-              className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-blue-50 transition-colors"
+              className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-white border border-slate-300 text-slate-700 hover:bg-blue-50 transition-colors"
             >
               1
             </Link>
@@ -84,7 +84,7 @@ export default function Pagination({
             <Link
               key={p}
               href={getPageUrl(p)}
-              className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 transition-colors"
+              className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-white border border-slate-300 text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
             >
               {p}
             </Link>
@@ -96,7 +96,7 @@ export default function Pagination({
             {endPage < totalPages - 1 && <span className="px-1 text-slate-400">...</span>}
             <Link
               href={getPageUrl(totalPages)}
-              className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-blue-50 transition-colors"
+              className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-white border border-slate-300 text-slate-700 hover:bg-blue-50 transition-colors"
             >
               {totalPages}
             </Link>
@@ -106,12 +106,12 @@ export default function Pagination({
         {nextPage ? (
           <Link
             href={getPageUrl(nextPage)}
-            className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 transition-colors shadow-2xs"
+            className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-white border border-slate-300 text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors shadow-2xs"
           >
             Próxima →
           </Link>
         ) : (
-          <span className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-400 cursor-not-allowed border border-transparent">
+          <span className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-slate-100 text-slate-400 cursor-not-allowed border border-transparent">
             Próxima →
           </span>
         )}

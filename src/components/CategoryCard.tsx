@@ -26,7 +26,7 @@ export default function CategoryCard({ category }: CategoryCardProps) {
 
       <div className="mt-4 flex items-center text-xs font-semibold text-blue-600">
         <span>Explorar concursos</span>
-        <span className="ml-1 group-hover:translate-x-1 transition-transform">→</span>
+        <span className="ml-1 group-hover:translate-x-1 transition-transform" aria-hidden="true">→</span>
       </div>
     </Link>
   );

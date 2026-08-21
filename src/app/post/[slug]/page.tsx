@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { client } from '@/lib/sanity';
+import { sanityFetch } from '@/lib/sanity';
 import {
   postBySlugQuery,
   relatedPostsQuery,
@@ -35,7 +35,7 @@ export const revalidate = 60; // ISR
 
 export async function generateStaticParams() {
   try {
-    const rawSlugs: any[] = await client.fetch(allPostSlugsQuery);
+    const rawSlugs: any[] = await sanityFetch(allPostSlugsQuery);
     const slugs = (rawSlugs || [])
       .map((item) => {
         if (typeof item === 'string') return item;
@@ -53,7 +53,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post: Post | null = await client.fetch(postBySlugQuery, { slug });
+  const post: Post | null = await sanityFetch(postBySlugQuery, { slug });
 
   if (!post) {
     return { title: 'Post não encontrado' };
@@ -106,10 +106,113 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
   };
 }
 
+/**
+ * Extrai automaticamente perguntas (h3) e respostas do Portable Text
+ * para gerar o schema estruturado Schema.org/FAQPage para o Google Rich Snippets.
+ */
+function extractFaqJsonLd(body?: any[]): any | null {
+  if (!body || !Array.isArray(body)) return null;
+
+  const faqItems: Array<{ question: string; answer: string }> = [];
+  let currentQuestion: string | null = null;
+  let currentAnswerParts: string[] = [];
+  let inFaqSection = false;
+
+  for (const block of body) {
+    if (block._type !== 'block') continue;
+
+    const blockText = (block.children || [])
+      .map((c: any) => c.text || '')
+      .join('')
+      .trim();
+
+    if (!blockText) continue;
+
+    const textLower = blockText.toLowerCase();
+
+    // Identifica o início da seção de Perguntas Frequentes / FAQ
+    if (
+      (block.style === 'h2' || block.style === 'h3') &&
+      (textLower.includes('perguntas frequentes') || textLower.includes('faq') || textLower.includes('dúvidas frequentes'))
+    ) {
+      inFaqSection = true;
+      if (currentQuestion && currentAnswerParts.length > 0) {
+        faqItems.push({
+          question: currentQuestion,
+          answer: currentAnswerParts.join(' '),
+        });
+      }
+      currentQuestion = null;
+      currentAnswerParts = [];
+      continue;
+    }
+
+    // Se encontrou outro H2 fora do FAQ, encerra a captura de FAQ
+    if (block.style === 'h2' && inFaqSection) {
+      if (currentQuestion && currentAnswerParts.length > 0) {
+        faqItems.push({
+          question: currentQuestion,
+          answer: currentAnswerParts.join(' '),
+        });
+      }
+      currentQuestion = null;
+      currentAnswerParts = [];
+      inFaqSection = false;
+      continue;
+    }
+
+    // Identifica uma pergunta (H3 interrogativo ou dentro da seção FAQ)
+    const isQuestion =
+      block.style === 'h3' &&
+      (inFaqSection ||
+        blockText.endsWith('?') ||
+        textLower.startsWith('como ') ||
+        textLower.startsWith('quando ') ||
+        textLower.startsWith('qual ') ||
+        textLower.startsWith('quem ') ||
+        textLower.startsWith('o que '));
+
+    if (isQuestion) {
+      if (currentQuestion && currentAnswerParts.length > 0) {
+        faqItems.push({
+          question: currentQuestion,
+          answer: currentAnswerParts.join(' '),
+        });
+      }
+      currentQuestion = blockText;
+      currentAnswerParts = [];
+    } else if (currentQuestion && (block.style === 'normal' || !block.style)) {
+      currentAnswerParts.push(blockText);
+    }
+  }
+
+  if (currentQuestion && currentAnswerParts.length > 0) {
+    faqItems.push({
+      question: currentQuestion,
+      answer: currentAnswerParts.join(' '),
+    });
+  }
+
+  if (faqItems.length === 0) return null;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqItems.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  };
+}
+
 export default async function PostPage({ params }: PostPageProps) {
   const { slug } = await params;
 
-  const post: Post | null = await client.fetch(postBySlugQuery, { slug });
+  const post: Post | null = await sanityFetch(postBySlugQuery, { slug });
 
   if (!post) {
     notFound();
@@ -120,16 +223,16 @@ export default async function PostPage({ params }: PostPageProps) {
 
   const [relatedByCategory, recentPosts, categories] = await Promise.all([
     // Busca relacionados da mesma categoria
-    client.fetch(relatedPostsQuery, { currentId: post._id, categoryIds }),
-    client.fetch(recentPostsQuery),
-    client.fetch(allCategoriesQuery),
+    sanityFetch(relatedPostsQuery, { currentId: post._id, categoryIds }),
+    sanityFetch(recentPostsQuery),
+    sanityFetch(allCategoriesQuery),
   ]);
 
   // Fallback: se não há relacionados por categoria, busca os mais recentes
   let relatedPosts: Post[] = relatedByCategory || [];
   if (relatedPosts.length < 3) {
     const existingIds = [post._id, ...relatedPosts.map((p: Post) => p._id)];
-    const fallbackPosts: Post[] = await client.fetch(relatedPostsFallbackQuery, {
+    const fallbackPosts: Post[] = await sanityFetch(relatedPostsFallbackQuery, {
       currentId: post._id,
       excludeIds: existingIds,
     });
@@ -226,6 +329,9 @@ export default async function PostPage({ params }: PostPageProps) {
     ],
   };
 
+  // Extração automática de FAQ para Google Rich Snippets (Schema.org/FAQPage)
+  const faqJsonLd = extractFaqJsonLd(post.body);
+
   // Injeta dinamicamente o card de "Leia Também" após o 2º parágrafo no Portable Text
   const bodyWithRelated = post.body
     ? injectRelatedArticle(post.body, relatedPosts[0], 2)
@@ -241,6 +347,12 @@ export default async function PostPage({ params }: PostPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
 
       <article className="max-w-7xl mx-auto px-0 py-2 sm:py-6">
         {/* Trilha de Navegação (Breadcrumb) */}

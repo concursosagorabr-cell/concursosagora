@@ -6,7 +6,7 @@ import PostCard from '@/components/PostCard';
 import Sidebar from '@/components/Sidebar';
 import Pagination from '@/components/Pagination';
 import { getHubBySlug, CONTENT_HUBS } from '@/utils/hubs';
-import { client } from '@/lib/sanity';
+import { sanityFetch } from '@/lib/sanity';
 import {
   postsByKeywordsPaginatedQuery,
   postsByKeywordsCountQuery,
@@ -72,18 +72,18 @@ export default async function HubDetailPage({ params, searchParams }: HubPagePro
   const mainKeyword = hub.keywords[0] || slug;
 
   const [posts, totalPosts, recentPosts, categories]: [Post[], number, Post[], Category[]] = await Promise.all([
-    client.fetch(postsByKeywordsPaginatedQuery, {
+    sanityFetch(postsByKeywordsPaginatedQuery, {
       keywords: hub.categoryMatch,
       mainKeyword,
       start,
       end,
     }),
-    client.fetch(postsByKeywordsCountQuery, {
+    sanityFetch(postsByKeywordsCountQuery, {
       keywords: hub.categoryMatch,
       mainKeyword,
     }),
-    client.fetch(recentPostsQuery),
-    client.fetch(allCategoriesQuery),
+    sanityFetch(recentPostsQuery),
+    sanityFetch(allCategoriesQuery),
   ]);
 
   const uniqueCategories = deduplicateCategories(categories);

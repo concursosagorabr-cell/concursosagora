@@ -1,6 +1,23 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { InstagramIcon, FacebookIcon, XIcon, ThreadsIcon, YouTubeIcon } from './SocialIcons';
+import { SOCIAL_LINKS } from '@/lib/constants';
+
+const SOCIAL_ICON_MAP: Record<string, React.ElementType> = {
+  instagram: InstagramIcon,
+  facebook: FacebookIcon,
+  x: XIcon,
+  threads: ThreadsIcon,
+  youtube: YouTubeIcon,
+};
+
+const SOCIAL_COLORS: Record<string, string> = {
+  instagram: 'text-pink-400 hover:border-pink-500',
+  facebook: 'text-blue-400 hover:border-blue-500',
+  x: 'text-slate-200 hover:border-slate-500',
+  threads: 'text-slate-300 hover:border-slate-500',
+  youtube: 'text-red-400 hover:border-red-500',
+};
 
 export default function Footer() {
   return (
@@ -49,36 +66,29 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Coluna 4: Institucional & Links Legais */}
+          {/* Coluna 4: Institucional & Redes */}
           <div>
             <h3 className="text-white font-bold text-xs tracking-wider uppercase mb-4">Institucional & Redes</h3>
-            <ul className="space-y-2 text-xs md:text-sm mb-4">
-              <li><Link href="/sobre-nos" className="hover:text-white transition-colors font-medium">👥 Sobre Nós</Link></li>
-              <li><Link href="/politica-de-privacidade" className="hover:text-white transition-colors font-medium">🔒 Política de Privacidade</Link></li>
-              <li><Link href="/aviso-legal" className="hover:text-white transition-colors font-medium">⚖️ Aviso Legal e Termos</Link></li>
-            </ul>
             <h4 className="text-white font-bold text-[11px] tracking-wider uppercase mb-3">Siga o Concursos Agora</h4>
             <div className="flex flex-wrap gap-2 text-xs">
-              <a href="https://www.instagram.com/concursosagora_/" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-pink-400 hover:text-white hover:border-pink-500 transition-colors flex items-center gap-1.5" title="Instagram">
-                <InstagramIcon className="w-4 h-4" />
-                <span>Instagram</span>
-              </a>
-              <a href="https://www.facebook.com/profile.php?id=61592443961535" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-blue-400 hover:text-white hover:border-blue-500 transition-colors flex items-center gap-1.5" title="Facebook">
-                <FacebookIcon className="w-4 h-4" />
-                <span>Facebook</span>
-              </a>
-              <a href="https://x.com/home" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:text-white hover:border-slate-500 transition-colors flex items-center gap-1.5" title="X (Twitter)">
-                <XIcon className="w-4 h-4" />
-                <span>X</span>
-              </a>
-              <a href="https://www.threads.com/@concursosagorabr?hl=pt-br" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-500 transition-colors flex items-center gap-1.5" title="Threads">
-                <ThreadsIcon className="w-4 h-4" />
-                <span>Threads</span>
-              </a>
-              <a href="https://www.youtube.com/@ConcursosAgora" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-red-400 hover:text-white hover:border-red-500 transition-colors flex items-center gap-1.5" title="YouTube">
-                <YouTubeIcon className="w-4 h-4" />
-                <span>YouTube</span>
-              </a>
+              {SOCIAL_LINKS.map((link) => {
+                const Icon = SOCIAL_ICON_MAP[link.icon];
+                const colorClass = SOCIAL_COLORS[link.icon] || 'text-slate-300 hover:border-slate-500';
+                
+                return (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`p-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:text-white transition-colors flex items-center gap-1.5 ${colorClass}`}
+                    title={link.name}
+                  >
+                    {Icon && <Icon className="w-4 h-4" />}
+                    <span>{link.name}</span>
+                  </a>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -87,9 +97,9 @@ export default function Footer() {
           <p>© {new Date().getFullYear()} Concursos Agora. Todos os direitos reservados.</p>
           <div className="flex items-center gap-4 text-xs">
             <Link href="/sobre-nos" className="hover:underline">Sobre Nós</Link>
-            <span>•</span>
+            <span aria-hidden="true">•</span>
             <Link href="/politica-de-privacidade" className="hover:underline">Privacidade</Link>
-            <span>•</span>
+            <span aria-hidden="true">•</span>
             <Link href="/aviso-legal" className="hover:underline">Aviso Legal</Link>
           </div>
         </div>

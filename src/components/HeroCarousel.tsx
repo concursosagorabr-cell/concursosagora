@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Post } from '@/types';
 import { getImageUrl } from '@/lib/image';
+import { getPostUrl, getCategoryUrl, formatDate } from '@/lib/helpers';
 import { deduplicateCategories } from '@/utils/categories';
 import { getContestStatusInfo } from '@/utils/status';
 
@@ -85,16 +86,10 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
 
   const post = posts[current];
   const imageUrl = getImageUrl(post.mainImage, 1200, 600);
-  const postLink = `/post/${post.slug || post._id}`;
+  const postLink = getPostUrl(post);
   const uniqueCategories = deduplicateCategories(post.categories || []).slice(0, 2);
   const statusInfo = getContestStatusInfo(post);
-  const formattedDate = post.publishedAt
-    ? new Date(post.publishedAt).toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      })
-    : '';
+  const formattedDate = formatDate(post.publishedAt);
 
   return (
     <section className="mb-10 md:mb-12" aria-label="Destaques principais">
@@ -150,7 +145,7 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
               {uniqueCategories.map((cat) => (
                 <Link
                   key={cat._id}
-                  href={`/categoria/${cat.slug || cat._id}`}
+                  href={getCategoryUrl(cat)}
                   className="bg-blue-600/90 hover:bg-blue-700 backdrop-blur text-white text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md transition-colors"
                 >
                   {cat.title}

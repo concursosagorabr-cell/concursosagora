@@ -6,8 +6,9 @@ import { Analytics } from '@vercel/analytics/next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CookieBanner from '@/components/CookieBanner';
-import { client } from '@/lib/sanity';
+import { sanityFetch } from '@/lib/sanity';
 import { allCategoriesQuery } from '@/lib/queries';
+import { SITE_CONFIG, SOCIAL_LINKS } from '@/lib/constants';
 import { Category } from '@/types';
 import './globals.css';
 
@@ -79,7 +80,7 @@ export default async function RootLayout({
 }>) {
   let categories: Category[] = [];
   try {
-    categories = await client.fetch(allCategoriesQuery);
+    categories = await sanityFetch<Category[]>(allCategoriesQuery);
   } catch (error) {
     console.error('Erro ao buscar categorias no RootLayout:', error);
   }
@@ -87,11 +88,11 @@ export default async function RootLayout({
   const websiteJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'Concursos Agora',
-    url: 'https://concursosagora.com.br',
+    name: SITE_CONFIG.name,
+    url: SITE_CONFIG.url,
     potentialAction: {
       '@type': 'SearchAction',
-      target: 'https://concursosagora.com.br/search?q={search_term_string}',
+      target: `${SITE_CONFIG.url}/search?q={search_term_string}`,
       'query-input': 'required name=search_term_string',
     },
   };
@@ -99,16 +100,10 @@ export default async function RootLayout({
   const organizationJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Concursos Agora',
-    url: 'https://concursosagora.com.br',
-    logo: 'https://concursosagora.com.br/logo.png',
-    sameAs: [
-      'https://www.instagram.com/concursosagora_/',
-      'https://www.facebook.com/profile.php?id=61592443961535',
-      'https://x.com/home',
-      'https://www.threads.com/@concursosagorabr?hl=pt-br',
-      'https://www.youtube.com/@ConcursosAgora',
-    ],
+    name: SITE_CONFIG.name,
+    url: SITE_CONFIG.url,
+    logo: SITE_CONFIG.logo,
+    sameAs: SOCIAL_LINKS.map((s) => s.href),
   };
 
   return (

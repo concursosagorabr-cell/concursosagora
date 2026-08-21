@@ -17,7 +17,7 @@ export async function GET() {
         publishedAt,
         _createdAt,
         mainImage,
-        "excerpt": array::join(string::split(pt::text(body), " ")[0..40], " ") + "...",
+        "excerpt": coalesce(excerpt, array::join(string::split(pt::text(body), " ")[0..40], " ") + "..."),
         "authorName": coalesce(author->name, "Redação Concursos Agora")
       }`
     );
@@ -73,7 +73,7 @@ ${itemsXml}
   return new NextResponse(rssXml, {
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
-      'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60',
+      'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
     },
   });
 }

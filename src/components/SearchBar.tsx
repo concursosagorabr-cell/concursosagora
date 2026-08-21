@@ -27,7 +27,7 @@ function SearchBarForm({ placeholder = 'Buscar concursos, editais, matérias...'
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={placeholder}
-          className="w-full pl-11 pr-24 py-3 bg-white/90 dark:bg-slate-800/90 backdrop-blur border border-slate-300 dark:border-slate-700 rounded-full text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all text-sm md:text-base shadow-xs"
+          className="w-full pl-11 pr-24 py-3 bg-white/90 backdrop-blur border border-slate-300 rounded-full text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all text-sm md:text-base shadow-xs"
         />
         <div className="absolute left-4 text-slate-400 pointer-events-none">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,7 +53,7 @@ export default function SearchBar(props: SearchBarProps) {
           type="text"
           disabled
           placeholder={props.placeholder || 'Carregando busca...'}
-          className="w-full pl-11 pr-24 py-3 bg-white/90 dark:bg-slate-800/90 border border-slate-300 dark:border-slate-700 rounded-full text-sm shadow-xs opacity-60"
+          className="w-full pl-11 pr-24 py-3 bg-white/90 border border-slate-300 rounded-full text-sm shadow-xs opacity-60"
         />
       </div>
     }>

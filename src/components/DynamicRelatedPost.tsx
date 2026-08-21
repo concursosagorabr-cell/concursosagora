@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getImageUrl } from '@/lib/image';
+import { getPostUrl } from '@/lib/helpers';
 import { DynamicRelatedPostBlock, RelatedPostData } from '@/types';
 
 interface DynamicRelatedPostProps {
@@ -15,13 +16,7 @@ export default function DynamicRelatedPost({ value }: DynamicRelatedPostProps) {
     return null;
   }
 
-  // Tratamento resiliente de slug
-  const slugStr =
-    typeof postData.slug === 'string'
-      ? postData.slug
-      : postData.slug?.current || postData._id;
-
-  const href = `/post/${slugStr}`;
+  const href = getPostUrl(postData);
   const imageUrl = postData.mainImage ? getImageUrl(postData.mainImage, 240, 160) : null;
   const primaryCategory = postData.categories && postData.categories.length > 0 ? postData.categories[0] : null;
 
@@ -31,7 +26,7 @@ export default function DynamicRelatedPost({ value }: DynamicRelatedPostProps) {
       <div className="flex items-center justify-between gap-2 mb-2.5">
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md shadow-xs">
-            <span>🔥</span>
+            <span aria-hidden="true">🔥</span>
             <span>LEIA TAMBÉM</span>
           </span>
 
@@ -44,7 +39,7 @@ export default function DynamicRelatedPost({ value }: DynamicRelatedPostProps) {
 
         <span className="text-xs font-semibold text-blue-600 group-hover:translate-x-1 transition-transform flex items-center gap-1 shrink-0">
           <span>Ver matéria</span>
-          <span className="text-sm font-bold">→</span>
+          <span className="text-sm font-bold" aria-hidden="true">→</span>
         </span>
       </div>
 

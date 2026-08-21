@@ -15,26 +15,21 @@ export default function AuthorCard({ author }: AuthorCardProps) {
   const renderBio = () => {
     if (!author.bio) return null;
 
+    const bioClass = "text-xs md:text-sm text-slate-600 leading-relaxed";
+
     if (typeof author.bio === 'string') {
       return (
-        <p className="text-xs md:text-sm text-slate-600 leading-relaxed">
+        <p className={bioClass}>
           {author.bio}
         </p>
       );
     }
 
-    if (Array.isArray(author.bio)) {
+    if (Array.isArray(author.bio) || typeof author.bio === 'object') {
+      const bioValue = Array.isArray(author.bio) ? author.bio : [author.bio as any];
       return (
-        <div className="text-xs md:text-sm text-slate-600 leading-relaxed">
-          <PortableText value={author.bio} />
-        </div>
-      );
-    }
-
-    if (typeof author.bio === 'object') {
-      return (
-        <div className="text-xs md:text-sm text-slate-600 leading-relaxed">
-          <PortableText value={[author.bio as any]} />
+        <div className={bioClass}>
+          <PortableText value={bioValue} />
         </div>
       );
     }

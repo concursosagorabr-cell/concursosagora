@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { client } from '@/lib/sanity';
+import { sanityFetch } from '@/lib/sanity';
 import { searchPostsQuery, recentPostsQuery, allCategoriesQuery } from '@/lib/queries';
 import { Post, Category } from '@/types';
 import { deduplicateCategories } from '@/utils/categories';
@@ -31,12 +31,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   try {
     if (searchTerm) {
-      posts = (await client.fetch(searchPostsQuery, { searchTerm })) || [];
+      posts = (await sanityFetch(searchPostsQuery, { searchTerm })) || [];
     }
 
     const [fetchedRecent, fetchedCategories] = await Promise.all([
-      client.fetch(recentPostsQuery),
-      client.fetch(allCategoriesQuery),
+      sanityFetch(recentPostsQuery),
+      sanityFetch(allCategoriesQuery),
     ]);
     recentPosts = fetchedRecent || [];
     categories = fetchedCategories || [];

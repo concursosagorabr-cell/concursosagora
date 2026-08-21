@@ -8,6 +8,14 @@ import {
   updateGtagConsent,
   type ConsentChoices,
 } from '@/lib/consent';
+import { Z_INDEX } from '@/lib/constants';
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Componente auxiliar: Faixa Gradiente
+───────────────────────────────────────────────────────────────────────────── */
+function GradientBar() {
+  return <div className="h-1 w-full bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-500" />;
+}
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Componente auxiliar: Toggle Switch
@@ -17,21 +25,25 @@ function Toggle({
   checked,
   onChange,
   disabled = false,
+  ariaLabel,
 }: {
   id: string;
   checked: boolean;
   onChange?: (v: boolean) => void;
   disabled?: boolean;
+  ariaLabel?: string;
 }) {
   return (
     <button
       id={id}
+      type="button"
       role="switch"
       aria-checked={checked}
+      aria-label={ariaLabel}
       disabled={disabled}
       onClick={() => onChange?.(!checked)}
       className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
-        checked ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-600'
+        checked ? 'bg-blue-600' : 'bg-slate-300'
       } ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
     >
       <span
@@ -40,6 +52,50 @@ function Toggle({
         }`}
       />
     </button>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Componente auxiliar: Card de Categoria de Cookies
+───────────────────────────────────────────────────────────────────────────── */
+function CookieCategoryCard({
+  title,
+  badge,
+  description,
+  toggleId,
+  checked,
+  disabled = false,
+  onChange,
+}: {
+  title: string;
+  badge?: string;
+  description: React.ReactNode;
+  toggleId: string;
+  checked: boolean;
+  disabled?: boolean;
+  onChange?: (v: boolean) => void;
+}) {
+  return (
+    <div className="flex items-start gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100">
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-sm font-bold text-slate-900">{title}</span>
+          {badge && (
+            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-emerald-100 text-emerald-700">
+              {badge}
+            </span>
+          )}
+        </div>
+        <p className="text-xs text-slate-500 leading-relaxed">{description}</p>
+      </div>
+      <Toggle
+        id={toggleId}
+        checked={checked}
+        disabled={disabled}
+        onChange={onChange}
+        ariaLabel={title}
+      />
+    </div>
   );
 }
 
@@ -60,23 +116,21 @@ export default function CookieBanner() {
     setMounted(true);
     const saved = getConsentCookie();
     if (saved) {
-      // Restauração imediata — deve ocorrer bem antes do wait_for_update expirar
       updateGtagConsent(saved);
       setChoices(saved);
       setFloatingVisible(true);
     } else {
-      // Mostra o banner rapidamente, mas após o primeiro paint
       const t = setTimeout(() => setBannerVisible(true), 200);
       return () => clearTimeout(t);
     }
   }, []);
 
-  const save = (c: ConsentChoices, closeModal = false) => {
+  const save = (c: ConsentChoices, closeModalAfter = false) => {
     setConsentCookie(c);
     updateGtagConsent(c);
     setChoices(c);
     setBannerVisible(false);
-    if (closeModal) setModalOpen(false);
+    if (closeModalAfter) setModalOpen(false);
     setFloatingVisible(true);
   };
 
@@ -89,6 +143,11 @@ export default function CookieBanner() {
     setModalOpen(true);
   };
 
+  const closeModal = () => {
+    setModalOpen(false);
+    if (!getConsentCookie()) setBannerVisible(true);
+  };
+
   if (!mounted) return null;
 
   return (
@@ -98,16 +157,16 @@ export default function CookieBanner() {
         role="dialog"
         aria-modal="true"
         aria-label="Configurações de privacidade e cookies"
-        className={`fixed bottom-0 left-0 right-0 z-[200] transition-transform duration-500 ease-out ${
+        style={{ zIndex: Z_INDEX.cookieBanner }}
+        className={`fixed bottom-0 left-0 right-0 transition-transform duration-500 ease-out ${
           bannerVisible && !modalOpen
             ? 'translate-y-0'
             : 'translate-y-full pointer-events-none'
         }`}
       >
         <div className="p-3 md:p-5">
-          <div className="max-w-5xl mx-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
-            {/* Faixa colorida topo */}
-            <div className="h-1 w-full bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-500" />
+          <div className="max-w-5xl mx-auto bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden">
+            <GradientBar />
 
             <div className="p-5 md:p-6">
               <div className="flex flex-col md:flex-row md:items-start gap-5">
@@ -115,17 +174,17 @@ export default function CookieBanner() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-2xl" aria-hidden="true">🍪</span>
-                    <h2 className="text-base font-extrabold text-slate-900 dark:text-white">
+                    <h2 className="text-base font-extrabold text-slate-900">
                       Privacidade e Cookies
                     </h2>
-                    <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700 ml-1">
+                    <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 border border-blue-200 ml-1">
                       LGPD
                     </span>
                   </div>
 
-                  <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     Usamos cookies conforme a{' '}
-                    <strong className="text-slate-800 dark:text-slate-100 font-semibold">
+                    <strong className="text-slate-800 font-semibold">
                       Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018)
                     </strong>
                     . Cookies essenciais garantem o funcionamento do site e não podem ser desativados.
@@ -133,7 +192,7 @@ export default function CookieBanner() {
                     com o seu consentimento.{' '}
                     <Link
                       href="/politica-de-privacidade"
-                      className="text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:no-underline font-medium"
+                      className="text-blue-600 underline underline-offset-2 hover:no-underline font-medium"
                     >
                       Política de Privacidade
                     </Link>
@@ -143,20 +202,23 @@ export default function CookieBanner() {
                 {/* Botões */}
                 <div className="flex flex-row md:flex-col gap-2 md:min-w-[190px] shrink-0">
                   <button
+                    type="button"
                     onClick={acceptAll}
                     className="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-sm font-bold transition-all duration-150 shadow-md shadow-blue-500/20"
                   >
                     Aceitar todos
                   </button>
                   <button
+                    type="button"
                     onClick={rejectAll}
-                    className="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 text-slate-700 dark:text-slate-200 text-sm font-bold transition-all duration-150"
+                    className="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 text-sm font-bold transition-all duration-150"
                   >
                     Apenas essenciais
                   </button>
                   <button
+                    type="button"
                     onClick={openModal}
-                    className="flex-1 md:flex-none px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 active:scale-95 text-slate-600 dark:text-slate-300 text-sm font-medium transition-all duration-150"
+                    className="flex-1 md:flex-none px-4 py-2.5 rounded-xl border border-slate-200 hover:border-blue-400 hover:text-blue-600 active:scale-95 text-slate-600 text-sm font-medium transition-all duration-150"
                   >
                     Personalizar
                   </button>
@@ -169,14 +231,14 @@ export default function CookieBanner() {
 
       {/* ── Modal de preferências ── */}
       {modalOpen && (
-        <div className="fixed inset-0 z-[300] flex items-end sm:items-center justify-center p-3 sm:p-4">
+        <div
+          style={{ zIndex: Z_INDEX.cookieModal }}
+          className="fixed inset-0 flex items-end sm:items-center justify-center p-3 sm:p-4"
+        >
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => {
-              setModalOpen(false);
-              if (!getConsentCookie()) setBannerVisible(true);
-            }}
+            onClick={closeModal}
             aria-hidden="true"
           />
 
@@ -185,24 +247,21 @@ export default function CookieBanner() {
             role="dialog"
             aria-modal="true"
             aria-label="Preferências de cookies"
-            className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden"
+            className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden"
           >
-            {/* Header */}
-            <div className="h-1 w-full bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-500" />
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+            <GradientBar />
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <span className="text-xl" aria-hidden="true">🍪</span>
-                <h2 className="font-extrabold text-slate-900 dark:text-white text-base">
+                <h2 className="font-extrabold text-slate-900 text-base">
                   Preferências de Cookies
                 </h2>
               </div>
               <button
-                onClick={() => {
-                  setModalOpen(false);
-                  if (!getConsentCookie()) setBannerVisible(true);
-                }}
+                type="button"
+                onClick={closeModal}
                 aria-label="Fechar"
-                className="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
               >
                 <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
                   <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
@@ -212,12 +271,12 @@ export default function CookieBanner() {
 
             {/* Corpo */}
             <div className="px-6 py-4 space-y-4 max-h-[60vh] overflow-y-auto">
-              <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+              <p className="text-sm text-slate-500 leading-relaxed">
                 Selecione quais categorias de cookies deseja permitir. Você pode alterar suas
                 preferências a qualquer momento. Para mais informações, consulte nossa{' '}
                 <Link
                   href="/politica-de-privacidade"
-                  className="text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:no-underline"
+                  className="text-blue-600 underline underline-offset-2 hover:no-underline"
                   onClick={() => setModalOpen(false)}
                 >
                   Política de Privacidade
@@ -226,82 +285,65 @@ export default function CookieBanner() {
               </p>
 
               {/* Categoria: Essenciais */}
-              <div className="flex items-start gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm font-bold text-slate-900 dark:text-white">
-                      Cookies Essenciais
-                    </span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-400">
-                      Sempre ativo
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                    Necessários para o funcionamento básico do site (navegação, segurança). Não coletam dados pessoais identificáveis e não podem ser desativados conforme a LGPD.
-                  </p>
-                </div>
-                <Toggle id="toggle-essential" checked={true} disabled />
-              </div>
+              <CookieCategoryCard
+                title="Cookies Essenciais"
+                badge="Sempre ativo"
+                description="Necessários para o funcionamento básico do site (navegação, segurança). Não coletam dados pessoais identificáveis e não podem ser desativados conforme a LGPD."
+                toggleId="toggle-essential"
+                checked={true}
+                disabled={true}
+              />
 
               {/* Categoria: Análise */}
-              <div className="flex items-start gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-slate-900 dark:text-white mb-1">
-                    Cookies de Análise e Desempenho
-                  </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                    Usados pelo <strong className="font-medium text-slate-600 dark:text-slate-300">Google Analytics (GA4)</strong> e{' '}
-                    <strong className="font-medium text-slate-600 dark:text-slate-300">Vercel Speed Insights</strong> para medir visitas, páginas mais acessadas e desempenho.
+              <CookieCategoryCard
+                title="Cookies de Análise e Desempenho"
+                description={
+                  <>
+                    Usados pelo <strong className="font-medium text-slate-600">Google Analytics (GA4)</strong> e{' '}
+                    <strong className="font-medium text-slate-600">Vercel Speed Insights</strong> para medir visitas, páginas mais acessadas e desempenho.
                     Os dados são anonimizados e não identificam você pessoalmente.
-                  </p>
-                </div>
-                <Toggle
-                  id="toggle-analytics"
-                  checked={choices.analytics}
-                  onChange={(v) => setChoices((c) => ({ ...c, analytics: v }))}
-                />
-              </div>
+                  </>
+                }
+                toggleId="toggle-analytics"
+                checked={choices.analytics}
+                onChange={(v) => setChoices((c) => ({ ...c, analytics: v }))}
+              />
 
               {/* Categoria: Marketing */}
-              <div className="flex items-start gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-slate-900 dark:text-white mb-1">
-                    Cookies de Marketing
-                  </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                    Permitem exibir anúncios personalizados com base nos seus interesses. Atualmente não utilizamos cookies de marketing, mas esta opção estará disponível no futuro.
-                  </p>
-                </div>
-                <Toggle
-                  id="toggle-marketing"
-                  checked={choices.marketing}
-                  onChange={(v) => setChoices((c) => ({ ...c, marketing: v }))}
-                />
-              </div>
+              <CookieCategoryCard
+                title="Cookies de Marketing"
+                description="Permitem exibir anúncios personalizados com base nos seus interesses. Atualmente não utilizamos cookies de marketing, mas esta opção estará disponível no futuro."
+                toggleId="toggle-marketing"
+                checked={choices.marketing}
+                onChange={(v) => setChoices((c) => ({ ...c, marketing: v }))}
+              />
 
               {/* Base legal */}
-              <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/60">
-                <p className="text-[11px] text-blue-700 dark:text-blue-300 leading-relaxed">
+              <div className="p-3 rounded-lg bg-blue-50 border border-blue-100">
+                <p className="text-[11px] text-blue-700 leading-relaxed">
                   <strong>Base legal (LGPD — Art. 7º, I):</strong> o tratamento de dados de análise é realizado mediante o seu consentimento expresso, que pode ser retirado a qualquer momento clicando no ícone 🍪 na parte inferior da tela.
                 </p>
               </div>
             </div>
 
             {/* Rodapé */}
-            <div className="flex flex-col sm:flex-row gap-2 px-6 py-4 border-t border-slate-100 dark:border-slate-800">
+            <div className="flex flex-col sm:flex-row gap-2 px-6 py-4 border-t border-slate-100">
               <button
+                type="button"
                 onClick={rejectAll}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 text-slate-700 dark:text-slate-200 text-sm font-bold transition-all duration-150"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 text-sm font-bold transition-all duration-150"
               >
                 Apenas essenciais
               </button>
               <button
+                type="button"
                 onClick={saveCustom}
-                className="flex-1 px-4 py-2.5 rounded-xl border border-blue-300 dark:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40 active:scale-95 text-blue-700 dark:text-blue-400 text-sm font-bold transition-all duration-150"
+                className="flex-1 px-4 py-2.5 rounded-xl border border-blue-300 hover:bg-blue-50 active:scale-95 text-blue-700 text-sm font-bold transition-all duration-150"
               >
                 Salvar preferências
               </button>
               <button
+                type="button"
                 onClick={acceptAll}
                 className="flex-1 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-sm font-bold transition-all duration-150 shadow-md shadow-blue-500/20"
               >
@@ -314,6 +356,7 @@ export default function CookieBanner() {
 
       {/* ── Botão flutuante para rever preferências ── */}
       <button
+        type="button"
         onClick={() => {
           const saved = getConsentCookie();
           if (saved) setChoices(saved);
@@ -321,13 +364,14 @@ export default function CookieBanner() {
         }}
         aria-label="Configurações de cookies"
         title="Configurações de cookies"
-        className={`fixed bottom-4 left-4 z-[150] w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg text-lg hover:scale-110 active:scale-95 transition-all duration-200 ${
+        style={{ zIndex: Z_INDEX.cookieBannerFloat }}
+        className={`fixed bottom-4 left-4 w-10 h-10 flex items-center justify-center rounded-full bg-white border border-slate-200 shadow-lg text-lg hover:scale-110 active:scale-95 transition-all duration-200 ${
           floatingVisible && !bannerVisible && !modalOpen
             ? 'opacity-100'
             : 'opacity-0 pointer-events-none'
         }`}
       >
-        🍪
+        <span aria-hidden="true">🍪</span>
       </button>
     </>
   );

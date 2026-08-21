@@ -4,8 +4,10 @@ export interface Slug {
 }
 
 export interface SanityImageAsset {
-  _ref: string;
-  _type: 'reference';
+  _ref?: string;
+  _id?: string;
+  _type?: string;
+  url?: string;
 }
 
 export interface SanityImage {
@@ -49,53 +51,22 @@ export interface PortableTextBlock {
   }>;
   listItem?: 'bullet' | 'number';
   level?: number;
-  [key: string]: any;
 }
 
 export interface RelatedPostData {
   _id: string;
   title: string;
-  slug: string | Slug;
+  slug: string;
   mainImage?: SanityImage;
   publishedAt?: string;
   excerpt?: string;
-  categories?: Array<{
-    _id: string;
-    title: string;
-    slug?: string;
-  }>;
+  categories?: Category[];
 }
 
 export interface DynamicRelatedPostBlock {
   _key: string;
   _type: 'dynamicRelatedPost';
   data: RelatedPostData;
-}
-
-/**
- * Interface que espelha exatamente a estrutura nativa do schema 'post' no Sanity
- */
-export interface RawSanityPost {
-  _createdAt: string;
-  _id: string;
-  _rev: string;
-  _type: 'post';
-  _updatedAt: string;
-  author?: {
-    _ref: string;
-    _type: 'reference';
-  };
-  body?: PortableTextBlock[];
-  categories?: Array<{
-    _ref: string;
-    _type: 'reference';
-  }>;
-  mainImage?: SanityImage;
-  publishedAt: string;
-  enrollmentEndDate?: string;
-  examDate?: string;
-  slug: Slug;
-  title: string;
 }
 
 /**
