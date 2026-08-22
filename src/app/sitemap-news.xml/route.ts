@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { client } from '@/lib/sanity';
+import { getCachedNewsSitemapPosts } from '@/lib/sanity';
 
 export const revalidate = 300; // Revalida a cada 5 minutos
 
@@ -11,35 +11,9 @@ export async function GET() {
 
   let posts: any[] = [];
   try {
-    posts = await client.fetch(
-      `*[_type == "post" && (publishedAt >= $twoDaysAgo || _createdAt >= $twoDaysAgo)] | order(publishedAt desc)[0..1000] {
-        _id,
-        title,
-        "slug": coalesce(slug.current, _id),
-        publishedAt,
-        _createdAt
-      }`,
-      { twoDaysAgo }
-    );
+    posts = await getCachedNewsSitemapPosts(twoDaysAgo);
   } catch (error) {
     console.error('Erro ao buscar posts para o sitemap-news:', error);
-  }
-
-  // Fallback: se não houver posts nas últimas 48h, pega os 10 mais recentes
-  if (!posts || posts.length === 0) {
-    try {
-      posts = await client.fetch(
-        `*[_type == "post"] | order(publishedAt desc)[0..10] {
-          _id,
-          title,
-          "slug": coalesce(slug.current, _id),
-          publishedAt,
-          _createdAt
-        }`
-      );
-    } catch (e) {
-      console.error('Erro no fallback do sitemap-news:', e);
-    }
   }
 
   const escapeXml = (unsafe: string) =>

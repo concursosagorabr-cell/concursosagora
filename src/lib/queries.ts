@@ -1,5 +1,5 @@
-// Projeção base reutilizável para listagens de posts no Sanity com tratamento de resiliência
-const postFields = `
+// Projeção compacta otimizada para listagens, cards, carrossel e sidebars
+export const compactPostFields = `
   _id,
   _createdAt,
   _updatedAt,
@@ -16,7 +16,39 @@ const postFields = `
       url
     }
   },
-  "excerpt": coalesce(excerpt, array::join(string::split(pt::text(body), " ")[0..35], " ") + "..."),
+  "excerpt": coalesce(excerpt, ""),
+  "author": author->{
+    _id,
+    name,
+    "slug": coalesce(slug.current, _id),
+    image
+  },
+  "categories": coalesce(categories[]->{
+    _id,
+    title,
+    "slug": coalesce(slug.current, _id)
+  }, [])
+`;
+
+// Projeção completa para a página do post individual
+export const fullPostFields = `
+  _id,
+  _createdAt,
+  _updatedAt,
+  _type,
+  title,
+  "slug": coalesce(slug.current, _id),
+  publishedAt,
+  enrollmentEndDate,
+  examDate,
+  mainImage {
+    ...,
+    asset-> {
+      _id,
+      url
+    }
+  },
+  "excerpt": coalesce(excerpt, ""),
   "author": author->{
     _id,
     name,
@@ -29,20 +61,21 @@ const postFields = `
     title,
     "slug": coalesce(slug.current, _id),
     description
-  }, [])
+  }, []),
+  body
 `;
 
 // 1. Consulta para todos os posts
 export const allPostsQuery = `
   *[_type == "post"] | order(publishedAt desc) {
-    ${postFields}
+    ${compactPostFields}
   }
 `;
 
 // 2. Consulta para posts paginados (10 em 10)
 export const postsPaginatedQuery = `
   *[_type == "post"] | order(publishedAt desc) [$start..$end] {
-    ${postFields}
+    ${compactPostFields}
   }
 `;
 
@@ -51,20 +84,18 @@ export const postsCountQuery = `
   count(*[_type == "post"])
 `;
 
-// 4. Consulta de um post único por Slug ou ID
+// 4. Consulta de um post único por Slug ou ID (com corpo completo)
 export const postBySlugQuery = `
   *[_type == "post" && (slug.current == $slug || _id == $slug)][0] {
-    ${postFields},
-    body
+    ${fullPostFields}
   }
 `;
 
-// 5. Consulta de posts relacionados — filtra por categoria primeiro, fallback para recentes
-// Parâmetros: $currentId (string), $categoryIds (array de strings)
+// 5. Consulta de posts relacionados — filtra por categoria primeiro
 export const relatedPostsQuery = `
   *[_type == "post" && _id != $currentId && count((categories[]->_id)[@ in $categoryIds]) > 0]
   | order(publishedAt desc)[0..2] {
-    ${postFields}
+    ${compactPostFields}
   }
 `;
 
@@ -72,18 +103,18 @@ export const relatedPostsQuery = `
 export const relatedPostsFallbackQuery = `
   *[_type == "post" && _id != $currentId && !(_id in $excludeIds)]
   | order(publishedAt desc)[0..2] {
-    ${postFields}
+    ${compactPostFields}
   }
 `;
 
-// 6. Consulta de posts recentes para Sidebar e Home
+// 6. Consulta de posts recentes para Sidebar, Home e Carrossel
 export const recentPostsQuery = `
   *[_type == "post"] | order(publishedAt desc)[0..4] {
-    ${postFields}
+    ${compactPostFields}
   }
 `;
 
-// 7. Consulta de todas as categorias do Sanity (com fallback de slug e título)
+// 7. Consulta de todas as categorias do Sanity
 export const allCategoriesQuery = `
   *[_type == "category"] | order(title asc) {
     _id,
@@ -110,7 +141,7 @@ export const postsByCategoryQuery = `
     $categorySlug in categories[]->_id ||
     $categorySlug in categories[]->title
   )] | order(publishedAt desc) {
-    ${postFields}
+    ${compactPostFields}
   }
 `;
 
@@ -125,10 +156,10 @@ const categoryFilter = `
   count((categories[]->title)[lower(@) in $categorySlugs]) > 0
 `;
 
-// 9b. Consulta de posts por categoria paginados (10 por 10) com busca flexível e unificação de sinônimos
+// 9b. Consulta de posts por categoria paginados (10 por 10)
 export const postsByCategoryPaginatedQuery = `
   *[_type == "post" && (${categoryFilter})] | order(publishedAt desc) [$start..$end] {
-    ${postFields}
+    ${compactPostFields}
   }
 `;
 
@@ -137,16 +168,33 @@ export const postsByCategoryCountQuery = `
   count(*[_type == "post" && (${categoryFilter})])
 `;
 
-// 10. Consulta de pesquisa global flexível e abrangente
+// 10. Consulta de posts por estado (UF)
+export const statePostsQuery = `
+  *[_type == "post" && (
+    location match $ufUpper ||
+    location match $stateName ||
+    $ufLower in categories[]->slug.current ||
+    $ufUpper in categories[]->title ||
+    $stateName in categories[]->title ||
+    title match " " + $ufUpper + " " ||
+    title match "-" + $ufUpper ||
+    title match "/" + $ufUpper ||
+    title match $stateName
+  )] | order(publishedAt desc)[0..30] {
+    ${compactPostFields}
+  }
+`;
+
+// 11. Consulta de pesquisa global flexível
 export const searchPostsQuery = `
   *[_type == "post" && (
     title match "*" + $searchTerm + "*" ||
-    pt::text(body) match "*" + $searchTerm + "*" ||
+    excerpt match "*" + $searchTerm + "*" ||
     $searchTerm in categories[]->title ||
     $searchTerm in categories[]->slug.current ||
     categories[]->title match "*" + $searchTerm + "*"
   )] | order(publishedAt desc) {
-    ${postFields}
+    ${compactPostFields}
   }
 `;
 
@@ -157,13 +205,13 @@ const keywordsFilter = `
   $mainKeyword in categories[]->slug.current ||
   $mainKeyword in categories[]->title ||
   title match "*" + $mainKeyword + "*" ||
-  pt::text(body) match "*" + $mainKeyword + "*"
+  excerpt match "*" + $mainKeyword + "*"
 `;
 
-// 10b. Consulta de posts por conjunto de palavras-chave para Hubs de Conteúdo (Silos)
+// 12. Consulta de posts por conjunto de palavras-chave para Hubs de Conteúdo (Silos)
 export const postsByKeywordsPaginatedQuery = `
   *[_type == "post" && (${keywordsFilter})] | order(publishedAt desc) [$start..$end] {
-    ${postFields}
+    ${compactPostFields}
   }
 `;
 
@@ -171,7 +219,7 @@ export const postsByKeywordsCountQuery = `
   count(*[_type == "post" && (${keywordsFilter})])
 `;
 
-// 11. Consulta de todos os Slugs como strings planas (para generateStaticParams e Sitemap)
+// 13. Consulta de todos os Slugs como strings planas (para generateStaticParams e Sitemap)
 export const allPostSlugsQuery = `
   *[_type == "post" && defined(title)] {
     "slug": coalesce(slug.current, _id)

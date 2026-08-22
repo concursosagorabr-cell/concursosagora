@@ -2,15 +2,14 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { sanityFetch } from '@/lib/sanity';
 import {
-  postBySlugQuery,
-  relatedPostsQuery,
-  relatedPostsFallbackQuery,
-  allPostSlugsQuery,
-  recentPostsQuery,
-  allCategoriesQuery,
-} from '@/lib/queries';
+  getCachedPostBySlug,
+  getCachedRelatedPosts,
+  getCachedRelatedPostsFallback,
+  getCachedRecentPosts,
+  getCachedCategories,
+  getCachedAllPostSlugs,
+} from '@/lib/sanity';
 import { Post } from '@/types';
 import { getImageUrl } from '@/lib/image';
 import { deduplicateCategories } from '@/utils/categories';
@@ -38,9 +37,9 @@ export const revalidate = 60; // ISR
 
 export async function generateStaticParams() {
   try {
-    const rawSlugs: any[] = await sanityFetch(allPostSlugsQuery);
+    const rawSlugs = await getCachedAllPostSlugs();
     const slugs = (rawSlugs || [])
-      .map((item) => {
+      .map((item: any) => {
         if (typeof item === 'string') return item;
         if (item && typeof item === 'object') return item.slug || item.current || item._id;
         return null;
@@ -56,7 +55,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post: Post | null = await sanityFetch(postBySlugQuery, { slug });
+  const post = await getCachedPostBySlug(slug);
 
   if (!post) {
     return { title: 'Post não encontrado' };
@@ -215,7 +214,7 @@ function extractFaqJsonLd(body?: any[]): any | null {
 export default async function PostPage({ params }: PostPageProps) {
   const { slug } = await params;
 
-  const post: Post | null = await sanityFetch(postBySlugQuery, { slug });
+  const post: Post | null = await getCachedPostBySlug(slug);
 
   if (!post) {
     notFound();
@@ -225,20 +224,17 @@ export default async function PostPage({ params }: PostPageProps) {
   const categoryIds = (post.categories || []).map((c: { _id: string }) => c._id).filter(Boolean);
 
   const [relatedByCategory, recentPosts, categories] = await Promise.all([
-    // Busca relacionados da mesma categoria
-    sanityFetch(relatedPostsQuery, { currentId: post._id, categoryIds }),
-    sanityFetch(recentPostsQuery),
-    sanityFetch(allCategoriesQuery),
+    // Busca relacionados da mesma categoria (cacheado)
+    categoryIds.length > 0 ? getCachedRelatedPosts(post._id, categoryIds) : Promise.resolve([]),
+    getCachedRecentPosts(),
+    getCachedCategories(),
   ]);
 
   // Fallback: se não há relacionados por categoria, busca os mais recentes
   let relatedPosts: Post[] = relatedByCategory || [];
   if (relatedPosts.length < 3) {
     const existingIds = [post._id, ...relatedPosts.map((p: Post) => p._id)];
-    const fallbackPosts: Post[] = await sanityFetch(relatedPostsFallbackQuery, {
-      currentId: post._id,
-      excludeIds: existingIds,
-    });
+    const fallbackPosts: Post[] = await getCachedRelatedPostsFallback(post._id, existingIds);
     // Mescla relacionados por categoria com fallback até completar 3
     relatedPosts = [...relatedPosts, ...(fallbackPosts || [])].slice(0, 3);
   }

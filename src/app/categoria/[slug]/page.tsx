@@ -1,14 +1,13 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { sanityFetch } from '@/lib/sanity';
 import {
-  categoryBySlugQuery,
-  postsByCategoryPaginatedQuery,
-  postsByCategoryCountQuery,
-  allCategorySlugsQuery,
-  recentPostsQuery,
-  allCategoriesQuery,
-} from '@/lib/queries';
+  getCachedCategoryBySlug,
+  getCachedPostsByCategory,
+  getCachedPostsByCategoryCount,
+  getCachedRecentPosts,
+  getCachedCategories,
+  getCachedAllCategorySlugs,
+} from '@/lib/sanity';
 import { Category, Post } from '@/types';
 import { deduplicateCategories, getCategoryAliases } from '@/utils/categories';
 import PostCard from '@/components/PostCard';
@@ -29,9 +28,9 @@ export const revalidate = 60;
 
 export async function generateStaticParams() {
   try {
-    const rawSlugs: any[] = await sanityFetch(allCategorySlugsQuery);
+    const rawSlugs = await getCachedAllCategorySlugs();
     const slugs = (rawSlugs || [])
-      .map((item) => {
+      .map((item: any) => {
         if (typeof item === 'string') return item;
         if (item && typeof item === 'object') return item.slug || item.current || item._id;
         return null;
@@ -47,7 +46,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const category: Category | null = await sanityFetch(categoryBySlugQuery, { slug });
+  const category: Category | null = await getCachedCategoryBySlug(slug);
 
   if (!category) {
     return { title: 'Categoria não encontrada' };
@@ -63,7 +62,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const { slug } = await params;
   const { page } = await searchParams;
 
-  const category: Category | null = await sanityFetch(categoryBySlugQuery, { slug });
+  const category: Category | null = await getCachedCategoryBySlug(slug);
 
   if (!category) {
     notFound();
@@ -77,10 +76,10 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const categorySlugs = getCategoryAliases(slug);
 
   const [posts, totalPosts, recentPosts, categories]: [Post[], number, Post[], Category[]] = await Promise.all([
-    sanityFetch(postsByCategoryPaginatedQuery, { categorySlug: slug, categorySlugs, start, end }),
-    sanityFetch(postsByCategoryCountQuery, { categorySlug: slug, categorySlugs }),
-    sanityFetch(recentPostsQuery),
-    sanityFetch(allCategoriesQuery),
+    getCachedPostsByCategory(slug, categorySlugs, start, end),
+    getCachedPostsByCategoryCount(slug, categorySlugs),
+    getCachedRecentPosts(),
+    getCachedCategories(),
   ]);
 
   const uniqueCategories = deduplicateCategories(categories);

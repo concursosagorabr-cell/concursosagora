@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { sanityFetch } from '@/lib/sanity';
-import { Post } from '@/types';
+import { getCachedStatePosts, getCachedRecentPosts, getCachedCategories } from '@/lib/sanity';
+import { Post, Category } from '@/types';
 import PostCard from '@/components/PostCard';
 import Breadcrumb from '@/components/Breadcrumb';
 import Sidebar from '@/components/Sidebar';
@@ -10,13 +10,13 @@ import ShareButtons from '@/components/ShareButtons';
 import CommunityBanner from '@/components/CommunityBanner';
 import { BRAZIL_STATES } from '@/utils/states';
 
-export const revalidate = 300; // 5 minutos ISR
-
 interface StatePageProps {
   params: Promise<{
     uf: string;
   }>;
 }
+
+export const revalidate = 300; // 5 minutos ISR
 
 export async function generateStaticParams() {
   return Object.keys(BRAZIL_STATES).map((uf) => ({ uf }));
@@ -65,47 +65,6 @@ export async function generateMetadata({ params }: StatePageProps): Promise<Meta
   };
 }
 
-const statePostsQuery = `
-  *[_type == "post" && (
-    location match $ufUpper ||
-    location match $stateName ||
-    $ufLower in categories[]->slug.current ||
-    $ufUpper in categories[]->title ||
-    $stateName in categories[]->title ||
-    title match " " + $ufUpper + " " ||
-    title match "-" + $ufUpper ||
-    title match "/" + $ufUpper ||
-    title match $stateName
-  )] | order(publishedAt desc)[0..30] {
-    _id,
-    _createdAt,
-    _updatedAt,
-    title,
-    "slug": coalesce(slug.current, _id),
-    publishedAt,
-    enrollmentEndDate,
-    examDate,
-    mainImage {
-      ...,
-      asset-> {
-        _id,
-        url
-      }
-    },
-    "excerpt": coalesce(excerpt, array::join(string::split(pt::text(body), " ")[0..35], " ") + "..."),
-    "author": author->{
-      _id,
-      name,
-      image
-    },
-    "categories": coalesce(categories[]->{
-      _id,
-      title,
-      "slug": coalesce(slug.current, _id)
-    }, [])
-  }
-`;
-
 export default async function StateContestsPage({ params }: StatePageProps) {
   const { uf } = await params;
   const ufLower = uf.toLowerCase();
@@ -119,12 +78,18 @@ export default async function StateContestsPage({ params }: StatePageProps) {
   const stateName = state.name;
 
   let posts: Post[] = [];
+  let recentPosts: Post[] = [];
+  let categories: Category[] = [];
+
   try {
-    posts = await sanityFetch(statePostsQuery, {
-      ufLower,
-      ufUpper,
-      stateName,
-    });
+    const [fetchedPosts, fetchedRecent, fetchedCategories] = await Promise.all([
+      getCachedStatePosts(ufLower, ufUpper, stateName),
+      getCachedRecentPosts(),
+      getCachedCategories(),
+    ]);
+    posts = fetchedPosts || [];
+    recentPosts = fetchedRecent || [];
+    categories = fetchedCategories || [];
   } catch (error) {
     console.error(`Erro ao buscar concursos de ${stateName}:`, error);
   }
@@ -282,7 +247,7 @@ export default async function StateContestsPage({ params }: StatePageProps) {
 
             {/* Sidebar */}
             <aside className="lg:col-span-4 space-y-6">
-              <Sidebar />
+              <Sidebar recentPosts={recentPosts} categories={categories} />
             </aside>
           </div>
         </div>

@@ -6,13 +6,12 @@ import Sidebar from '@/components/Sidebar';
 import Pagination from '@/components/Pagination';
 import HubCard from '@/components/HubCard';
 import { CONTENT_HUBS } from '@/utils/hubs';
-import { sanityFetch } from '@/lib/sanity';
 import {
-  postsPaginatedQuery,
-  postsCountQuery,
-  recentPostsQuery,
-  allCategoriesQuery,
-} from '@/lib/queries';
+  getCachedPostsPaginated,
+  getCachedPostsCount,
+  getCachedRecentPosts,
+  getCachedCategories,
+} from '@/lib/sanity';
 import { Post, Category } from '@/types';
 import { deduplicateCategories } from '@/utils/categories';
 
@@ -39,10 +38,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
   try {
     const [fetchedPosts, fetchedCount, fetchedRecent, fetchedCategories] = await Promise.all([
-      sanityFetch(postsPaginatedQuery, { start, end }),
-      sanityFetch(postsCountQuery),
-      sanityFetch(recentPostsQuery),
-      sanityFetch(allCategoriesQuery),
+      getCachedPostsPaginated(start, end),
+      getCachedPostsCount(),
+      getCachedRecentPosts(),
+      getCachedCategories(),
     ]);
 
     posts = fetchedPosts || [];

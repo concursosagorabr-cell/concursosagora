@@ -1,50 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@sanity/client';
-
-/**
- * API Route: POST /api/categories/resolve
- *
- * Usada pela IA ou agentes externos na hora de criar um artigo.
- * Recebe o título e o conteúdo do artigo e devolve:
- *  - Lista de categorias existentes no Sanity que se encaixam no artigo
- *  - Sugestões de novas categorias a criar caso nenhuma existente seja adequada
- *
- * Body esperado (JSON):
- * {
- *   "title":   "Concurso SEFAZ-RJ 2025 abre inscrições para Auditor Fiscal",
- *   "content": "... texto completo ou resumo do artigo ...",
- *   "maxSuggestions": 3   // opcional, padrão = 3
- * }
- *
- * Resposta de sucesso:
- * {
- *   "matched": [
- *     { "_id": "abc", "title": "Fiscal & Contábil", "slug": "fiscal-contabil", "score": 0.9 }
- *   ],
- *   "suggested": [
- *     { "title": "Rio de Janeiro", "slug": "rio-de-janeiro", "reason": "Concurso estadual RJ" }
- *   ]
- * }
- */
+import { unstable_cache } from 'next/cache';
 
 const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
-  dataset:   process.env.NEXT_PUBLIC_SANITY_DATASET!,
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'wobukj4j',
+  dataset:   process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2026-07-25',
-  token:     process.env.SANITY_API_TOKEN,
-  useCdn:    false,
+  useCdn:    true,
 });
 
-/** Busca todas as categorias existentes no Sanity (com contagem de posts) */
-const CATEGORIES_WITH_COUNT_QUERY = `
+/** Busca todas as categorias existentes no Sanity com cache de 1 hora */
+const CATEGORIES_QUERY = `
   *[_type == "category"] {
     _id,
     title,
     "slug": coalesce(slug.current, _id),
-    description,
-    "postCount": count(*[_type == "post" && references(^._id)])
-  } | order(postCount desc)
+    description
+  } | order(title asc)
 `;
+
+const getCachedResolveCategories = unstable_cache(
+  async () => {
+    const cats = await client.fetch<SanityCategory[]>(CATEGORIES_QUERY, {}, { next: { tags: ['categories'] } });
+    return (cats || []).map((c) => ({ ...c, postCount: 0 }));
+  },
+  ['sanity', 'resolve-categories'],
+  { revalidate: 3600, tags: ['categories'] }
+);
 
 /** Normaliza uma string para comparação */
 function normalize(str: string) {
@@ -175,8 +157,8 @@ export async function POST(request: NextRequest) {
 
     const searchText = `${title} ${content}`;
 
-    // 1. Busca todas as categorias existentes no Sanity
-    const allCategories: SanityCategory[] = await client.fetch(CATEGORIES_WITH_COUNT_QUERY);
+    // 1. Busca todas as categorias existentes no Sanity (cacheado por 1h)
+    const allCategories: SanityCategory[] = await getCachedResolveCategories();
 
     // 2. Calcula score de afinidade para cada categoria
     const scored = allCategories
@@ -205,7 +187,7 @@ export async function POST(request: NextRequest) {
 /** Opcional: GET /api/categories/resolve — lista todas as categorias com contagem de posts */
 export async function GET() {
   try {
-    const categories: SanityCategory[] = await client.fetch(CATEGORIES_WITH_COUNT_QUERY);
+    const categories: SanityCategory[] = await getCachedResolveCategories();
     return NextResponse.json({ categories, total: categories.length });
   } catch (err) {
     console.error('[/api/categories/resolve GET]', err);

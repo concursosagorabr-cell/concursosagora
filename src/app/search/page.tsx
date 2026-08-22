@@ -1,6 +1,9 @@
 import { Metadata } from 'next';
-import { sanityFetch } from '@/lib/sanity';
-import { searchPostsQuery, recentPostsQuery, allCategoriesQuery } from '@/lib/queries';
+import {
+  getCachedSearchPosts,
+  getCachedRecentPosts,
+  getCachedCategories,
+} from '@/lib/sanity';
 import { Post, Category } from '@/types';
 import { deduplicateCategories } from '@/utils/categories';
 import PostCard from '@/components/PostCard';
@@ -31,12 +34,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   try {
     if (searchTerm) {
-      posts = (await sanityFetch(searchPostsQuery, { searchTerm })) || [];
+      posts = (await getCachedSearchPosts(searchTerm)) || [];
     }
 
     const [fetchedRecent, fetchedCategories] = await Promise.all([
-      sanityFetch(recentPostsQuery),
-      sanityFetch(allCategoriesQuery),
+      getCachedRecentPosts(),
+      getCachedCategories(),
     ]);
     recentPosts = fetchedRecent || [];
     categories = fetchedCategories || [];

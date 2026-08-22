@@ -6,8 +6,7 @@ import { Analytics } from '@vercel/analytics/next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CookieBanner from '@/components/CookieBanner';
-import { sanityFetch } from '@/lib/sanity';
-import { allCategoriesQuery } from '@/lib/queries';
+import { getCachedCategories } from '@/lib/sanity';
 import { SITE_CONFIG, SOCIAL_LINKS } from '@/lib/constants';
 import { Category } from '@/types';
 import './globals.css';
@@ -80,7 +79,7 @@ export default async function RootLayout({
 }>) {
   let categories: Category[] = [];
   try {
-    categories = await sanityFetch<Category[]>(allCategoriesQuery);
+    categories = await getCachedCategories();
   } catch (error) {
     console.error('Erro ao buscar categorias no RootLayout:', error);
   }

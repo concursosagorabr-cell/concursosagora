@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { client } from '@/lib/sanity';
+import { getCachedRssFeedPosts } from '@/lib/sanity';
 import { getImageUrl } from '@/lib/image';
 
 export const revalidate = 300; // Revalida a cada 5 minutos
@@ -9,18 +9,7 @@ export async function GET() {
 
   let posts: any[] = [];
   try {
-    posts = await client.fetch(
-      `*[_type == "post"] | order(publishedAt desc)[0..30] {
-        _id,
-        title,
-        "slug": coalesce(slug.current, _id),
-        publishedAt,
-        _createdAt,
-        mainImage,
-        "excerpt": coalesce(excerpt, array::join(string::split(pt::text(body), " ")[0..40], " ") + "..."),
-        "authorName": coalesce(author->name, "Redação Concursos Agora")
-      }`
-    );
+    posts = await getCachedRssFeedPosts();
   } catch (error) {
     console.error('Erro ao buscar posts para o RSS Feed:', error);
   }
