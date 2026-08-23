@@ -11,7 +11,7 @@ interface PostCardProps {
 }
 
 export default function PostCard({ post, featured = false }: PostCardProps) {
-  const imageUrl = getImageUrl(post.mainImage, featured ? 800 : 500, featured ? 500 : 320);
+  const imageUrl = getImageUrl(post.mainImage, featured ? 800 : 600, featured ? 450 : 340);
   const formattedDate = post.publishedAt
     ? new Date(post.publishedAt).toLocaleDateString('pt-BR', {
         day: '2-digit',
@@ -24,81 +24,11 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
   const uniquePostCategories = deduplicateCategories(post.categories || []).slice(0, 2);
   const statusInfo = getContestStatusInfo(post);
 
-  if (featured) {
-    return (
-      <article className="group relative bg-white rounded-2xl overflow-hidden shadow-lg border border-slate-200 grid md:grid-cols-2 gap-6 items-center transition-all hover:shadow-2xl">
-        <div className="relative w-full h-64 md:h-full min-h-[300px] overflow-hidden">
-          <Link href={postLink} className="relative block w-full h-full">
-            <Image
-              src={imageUrl}
-              alt={post.title}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority
-            />
-          </Link>
-          <div className="absolute top-4 left-4 flex flex-wrap gap-1.5 z-10 items-center">
-            <span className={`inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-full shadow-md backdrop-blur ${statusInfo.badgeBg}`}>
-              <span className={`w-2 h-2 rounded-full ${statusInfo.dotColor}`} />
-              {statusInfo.label}
-            </span>
-            {uniquePostCategories.length > 0 &&
-              uniquePostCategories.map((cat) => (
-                <Link
-                  key={cat._id}
-                  href={`/categoria/${cat.slug || cat._id}`}
-                  className="bg-blue-600/90 hover:bg-blue-700 backdrop-blur text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-md transition-colors"
-                >
-                  {cat.title}
-                </Link>
-              ))}
-          </div>
-        </div>
-
-        <div className="p-6 md:p-8 flex flex-col justify-center space-y-4">
-          <div className="flex flex-wrap items-center text-xs text-slate-500 gap-2">
-            <span>{formattedDate}</span>
-            {post.author && (
-              <>
-                <span>•</span>
-                <span>Por {post.author.name}</span>
-              </>
-            )}
-          </div>
-
-          <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 group-hover:text-blue-600 transition-colors leading-tight">
-            <Link href={postLink}>
-              {post.title}
-            </Link>
-          </h2>
-
-          {post.excerpt && (
-            <p className="text-slate-600 text-sm md:text-base line-clamp-3 leading-relaxed">
-              {post.excerpt}
-            </p>
-          )}
-
-          <div className="pt-2 flex items-center justify-between">
-            <Link
-              href={postLink}
-              className="inline-flex items-center font-bold text-sm text-blue-600 group-hover:translate-x-1 transition-transform"
-            >
-              Ler matéria completa →
-            </Link>
-            <span className="text-xs text-slate-400 font-medium">
-              {statusInfo.expirationNote}
-            </span>
-          </div>
-        </div>
-      </article>
-    );
-  }
-
   return (
-    <article className="group bg-white rounded-xl overflow-hidden shadow-xs hover:shadow-xl border border-slate-200 transition-all flex flex-col h-full">
-      <div className="relative w-full h-48 overflow-hidden bg-slate-100">
-        <Link href={postLink} className="relative block w-full h-full">
+    <article className="group bg-white rounded-2xl overflow-hidden shadow-xs hover:shadow-xl border border-slate-200/90 hover:border-blue-200 transition-all duration-300 flex flex-col h-full">
+      {/* ── Imagem com Badge de Status Flutuante ── */}
+      <div className="relative w-full aspect-[16/9] overflow-hidden bg-slate-100 shrink-0">
+        <Link href={postLink} className="relative block w-full h-full" tabIndex={-1}>
           <Image
             src={imageUrl}
             alt={post.title}
@@ -106,49 +36,67 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
             className="object-cover group-hover:scale-105 transition-transform duration-500"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         </Link>
-        <div className="absolute top-3 left-3 flex flex-wrap gap-1 z-10 items-center">
-          <span className={`inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-xs backdrop-blur ${statusInfo.badgeBg}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${statusInfo.dotColor}`} />
-            {statusInfo.label}
-          </span>
-          {uniquePostCategories.length > 0 &&
-            uniquePostCategories.map((cat) => (
-              <Link
-                key={cat._id}
-                href={`/categoria/${cat.slug || cat._id}`}
-                className="bg-blue-600/90 hover:bg-blue-600 backdrop-blur text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-xs transition-colors"
-              >
-                {cat.title}
-              </Link>
-            ))}
+
+        {/* Badges sobre a imagem */}
+        <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10 pointer-events-none">
+          <div className="flex flex-wrap gap-1.5 pointer-events-auto">
+            <span className={`inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md backdrop-blur-md ${statusInfo.badgeBg}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${statusInfo.dotColor}`} />
+              {statusInfo.label}
+            </span>
+          </div>
+
+          {uniquePostCategories.length > 0 && (
+            <Link
+              key={uniquePostCategories[0]._id}
+              href={`/categoria/${uniquePostCategories[0].slug || uniquePostCategories[0]._id}`}
+              className="pointer-events-auto bg-slate-900/80 hover:bg-blue-600 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-xs transition-colors"
+            >
+              {uniquePostCategories[0].title}
+            </Link>
+          )}
         </div>
       </div>
 
+      {/* ── Corpo do Card ── */}
       <div className="p-4 sm:p-5 flex flex-col flex-grow justify-between space-y-3">
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
+          <div className="flex items-center justify-between text-[11px] text-slate-400 font-medium">
             <span>{formattedDate}</span>
+            {post.author && (
+              <span className="truncate max-w-[120px]">Por {post.author.name}</span>
+            )}
           </div>
-          <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
+
+          <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
             <Link href={postLink}>
               {post.title}
             </Link>
           </h3>
+
           {post.excerpt && (
-            <p className="text-slate-600 text-xs md:text-sm line-clamp-2 leading-relaxed">
+            <p className="text-slate-600 text-xs sm:text-sm line-clamp-2 leading-relaxed">
               {post.excerpt}
             </p>
           )}
         </div>
 
-        <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-blue-600">
-          <Link href={postLink} className="flex items-center justify-between w-full">
-            <span>Ver matéria completa</span>
-            <span className="group-hover:translate-x-1 transition-transform">→</span>
+        {/* ── Rodapé do Card ── */}
+        <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-blue-600">
+          <Link href={postLink} className="flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+            <span>Ler matéria</span>
+            <span>→</span>
           </Link>
+          {statusInfo.expirationNote && (
+            <span className="text-[10px] text-slate-400 font-normal">
+              {statusInfo.expirationNote}
+            </span>
+          )}
         </div>
       </div>
     </article>
   );
 }
+

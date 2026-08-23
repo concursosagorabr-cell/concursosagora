@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import HeroCarousel from '@/components/HeroCarousel';
 import PostCard from '@/components/PostCard';
-import CategoryCard from '@/components/CategoryCard';
+import RegionalExplorer from '@/components/RegionalExplorer';
 import Sidebar from '@/components/Sidebar';
 import Pagination from '@/components/Pagination';
 import HubCard from '@/components/HubCard';
@@ -54,34 +54,39 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
   const uniqueCategories = deduplicateCategories(categories);
   const totalPages = Math.ceil((totalPosts || 0) / itemsPerPage);
-  // Carousel uses the 4 most recent posts from recentPostsQuery
-  const carouselPosts = currentPage === 1 ? recentPosts.slice(0, 4) : [];
+  // O Hero utiliza as 6 matérias mais recentes para alimentar a Manchete + Plantão Lateral
+  const heroPosts = currentPage === 1 ? recentPosts.slice(0, 6) : [];
   const gridPosts = posts;
 
   return (
-    <div className="max-w-7xl mx-auto px-0 py-2 sm:py-6">
-      {/* Hero Carousel (Destaques Principais na 1ª página) */}
-      {currentPage === 1 && carouselPosts.length > 0 && (
-        <HeroCarousel posts={carouselPosts} />
+    <div className="max-w-7xl mx-auto px-0 py-2 sm:py-4">
+      {/* ── 1. Grade Editorial de Manchetes & Plantão de Notícias ── */}
+      {currentPage === 1 && heroPosts.length > 0 && (
+        <HeroCarousel posts={heroPosts} />
       )}
 
-      {/* Grid de Hubs de Conteúdo (Silos de SEO) */}
+      {/* ── 2. Navegador Regional Interativo por Estados e Regiões ── */}
       {currentPage === 1 && (
-        <section className="my-12">
-          <div className="flex items-center justify-between mb-6">
+        <RegionalExplorer />
+      )}
+
+      {/* ── 3. Carreiras em Foco (Silos e Guias Especializados) ── */}
+      {currentPage === 1 && (
+        <section className="my-10">
+          <div className="flex items-center justify-between mb-5">
             <div>
-              <span className="text-xs font-black uppercase tracking-wider text-blue-600 block">
-                Arquitetura de Conteúdo
+              <span className="text-[11px] font-black uppercase tracking-wider text-blue-600 block">
+                Especialidades
               </span>
-              <h2 className="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
-                <span>🎯</span> Hubs de Conteúdo & Silos Temáticos
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
+                <span>🎯</span> Guias de Carreiras & Editais por Área
               </h2>
             </div>
             <Link href="/hub" className="text-xs font-bold text-blue-600 hover:underline">
               Ver Todos ({CONTENT_HUBS.length}) →
             </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {CONTENT_HUBS.slice(0, 4).map((hub) => (
               <HubCard key={hub.slug} hub={hub} />
             ))}
@@ -89,42 +94,29 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         </section>
       )}
 
-      {/* Grid de Categorias Sem Duplicatas */}
-      {uniqueCategories.length > 0 && (
-        <section className="my-12">
-          <h2 className="text-2xl font-extrabold text-slate-900 mb-6 flex items-center gap-2">
-            <span>🏷️</span> Concursos por Categoria
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {uniqueCategories.map((category) => (
-              <CategoryCard key={category._id} category={category} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Conteúdo Principal com Sidebar */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 my-12">
-        {/* Feed de Notícias */}
-        <div className="lg:col-span-2 space-y-8">
-          <div className="flex items-center justify-between border-b border-slate-200 pb-4">
-            <h2 className="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
-              <span>📰</span> Últimas Notícias
+      {/* ── 4. Feed de Últimas Notícias com Sidebar Editorial ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-10 my-10">
+        
+        {/* Feed de Matérias */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
+              <span>📰</span> Últimas Notícias & Editais
             </h2>
-            <span className="text-xs font-semibold text-slate-500">
-              {totalPosts} {totalPosts === 1 ? 'matéria' : 'matérias'} no total
+            <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200/60">
+              {totalPosts} matérias publicadas
             </span>
           </div>
 
           {gridPosts.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
                 {gridPosts.map((post) => (
                   <PostCard key={post._id} post={post} />
                 ))}
               </div>
 
-              {/* Paginação de 10 em 10 */}
+              {/* Paginação */}
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
@@ -134,9 +126,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               />
             </>
           ) : (
-            <div className="bg-white p-8 rounded-2xl border border-slate-200 text-center">
-              <p className="text-slate-600">
+            <div className="bg-white p-10 rounded-2xl border border-slate-200 text-center space-y-2">
+              <p className="text-base font-bold text-slate-800">
                 Nenhuma notícia encontrada no momento.
+              </p>
+              <p className="text-xs text-slate-500">
+                Novos editais e atualizações são publicados automaticamente a cada rodada de monitoramento.
               </p>
             </div>
           )}
@@ -148,3 +143,4 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     </div>
   );
 }
+

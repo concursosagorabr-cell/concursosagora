@@ -16,39 +16,36 @@ interface HeroCarouselProps {
 export default function HeroCarousel({ posts }: HeroCarouselProps) {
   const [current, setCurrent] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [direction, setDirection] = useState<'left' | 'right'>('right');
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Touch/swipe support
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
 
   const total = posts.length;
 
   const goTo = useCallback(
-    (index: number, dir: 'left' | 'right' = 'right') => {
+    (index: number) => {
       if (isAnimating || index === current) return;
-      setDirection(dir);
       setIsAnimating(true);
       setTimeout(() => {
         setCurrent(index);
         setIsAnimating(false);
-      }, 350);
+      }, 250);
     },
     [isAnimating, current],
   );
 
   const next = useCallback(() => {
-    goTo((current + 1) % total, 'right');
+    goTo((current + 1) % total);
   }, [current, total, goTo]);
 
   const prev = useCallback(() => {
-    goTo((current - 1 + total) % total, 'left');
+    goTo((current - 1 + total) % total);
   }, [current, total, goTo]);
 
   const resetInterval = useCallback(() => {
     if (intervalRef.current) clearInterval(intervalRef.current);
-    intervalRef.current = setInterval(next, 5000);
+    intervalRef.current = setInterval(next, 6000);
   }, [next]);
 
   useEffect(() => {
@@ -58,7 +55,6 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
     };
   }, [resetInterval]);
 
-  // Touch handlers para swipe no mobile
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;
@@ -69,7 +65,6 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
     const deltaX = e.changedTouches[0].clientX - touchStartX.current;
     const deltaY = Math.abs(e.changedTouches[0].clientY - touchStartY.current);
 
-    // Só dispara se o movimento horizontal for dominante (swipe real)
     if (Math.abs(deltaX) > 40 && deltaY < 60) {
       if (deltaX < 0) {
         next();
@@ -84,182 +79,207 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
 
   if (!posts || posts.length === 0) return null;
 
-  const post = posts[current];
-  const imageUrl = getImageUrl(post.mainImage, 1200, 600);
-  const postLink = getPostUrl(post);
-  const uniqueCategories = deduplicateCategories(post.categories || []).slice(0, 2);
-  const statusInfo = getContestStatusInfo(post);
-  const formattedDate = formatDate(post.publishedAt);
+  const leadPost = posts[current];
+  const leadImageUrl = getImageUrl(leadPost.mainImage, 1200, 700);
+  const leadPostLink = getPostUrl(leadPost);
+  const leadCategories = deduplicateCategories(leadPost.categories || []).slice(0, 2);
+  const leadStatus = getContestStatusInfo(leadPost);
+  const leadDate = formatDate(leadPost.publishedAt);
+
+  // Side highlights: pega outros posts da lista de destaques
+  const sidePosts = posts.filter((_, idx) => idx !== current).slice(0, 3);
 
   return (
-    <section className="mb-10 md:mb-12" aria-label="Destaques principais">
-      {/* Label de destaque */}
-      <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-600">
-        <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse shrink-0" />
-        <span>Destaques Principais</span>
-        <span className="ml-auto text-slate-400 font-normal normal-case tracking-normal tabular-nums">
-          {current + 1} / {total}
-        </span>
+    <section className="mb-10 md:mb-12" aria-label="Destaques e Manchetes do Dia">
+      {/* Cabeçalho de Destaque Editorial */}
+      <div className="mb-3.5 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="flex h-2.5 w-2.5 relative">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-600"></span>
+          </span>
+          <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+            <span>Manchetes & Destaques de Hoje</span>
+          </h2>
+        </div>
+        <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+          <span>{current + 1} de {total}</span>
+        </div>
       </div>
 
-      {/* Card carousel com suporte a swipe */}
-      <article
-        className="relative bg-white rounded-2xl overflow-hidden shadow-lg border border-slate-200 select-none"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        {/*
-          Layout mobile:  imagem topo (altura fixa) + conteúdo abaixo
-          Layout desktop: side-by-side em grid de 2 colunas
-        */}
-        <div className="flex flex-col md:grid md:grid-cols-2 md:items-stretch">
+      {/* Grade Editorial: Manchete Principal (Esq) + Plantão Lateral (Dir) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+        
+        {/* ── COLUNA 1: Manchete Principal (Hero Lead) ── */}
+        <div
+          className="lg:col-span-8 relative bg-slate-900 rounded-2xl overflow-hidden shadow-md group select-none min-h-[380px] sm:min-h-[440px] flex flex-col justify-end border border-slate-800"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          {/* Imagem de Fundo com Transição Suave */}
+          <Link href={leadPostLink} className="absolute inset-0 block w-full h-full" tabIndex={-1}>
+            <Image
+              key={leadPost._id}
+              src={leadImageUrl}
+              alt={leadPost.title}
+              fill
+              className={`object-cover transition-all duration-500 group-hover:scale-105 ${
+                isAnimating ? 'opacity-40 scale-102' : 'opacity-85 scale-100'
+              }`}
+              sizes="(max-width: 1024px) 100vw, 66vw"
+              priority
+            />
+            {/* Gradiente Escuro Jornalístico para Legibilidade Perfeita */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent" />
+          </Link>
 
-          {/* ── Imagem ── */}
-          <div className="relative w-full h-52 sm:h-64 md:h-auto md:min-h-[340px] overflow-hidden shrink-0">
-            <Link href={postLink} className="block w-full h-full" tabIndex={-1} aria-hidden="true">
-              <Image
-                key={post._id}
-                src={imageUrl}
-                alt={post.title}
-                fill
-                className={`object-cover transition-all duration-350 ${
-                  isAnimating
-                    ? direction === 'right'
-                      ? 'opacity-0 scale-[1.02] translate-x-3'
-                      : 'opacity-0 scale-[1.02] -translate-x-3'
-                    : 'opacity-100 scale-100 translate-x-0'
-                }`}
-                sizes="(max-width: 768px) 100vw, 50vw"
-                priority
-              />
-            </Link>
-
-            {/* Badges sobre a imagem */}
-            <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
+          {/* Badges Superiores */}
+          <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20 pointer-events-none">
+            <div className="flex flex-wrap gap-1.5 pointer-events-auto">
               <span
-                className={`inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md backdrop-blur ${statusInfo.badgeBg}`}
+                className={`inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md backdrop-blur-md ${leadStatus.badgeBg}`}
               >
-                <span className={`w-1.5 h-1.5 rounded-full ${statusInfo.dotColor}`} />
-                {statusInfo.label}
+                <span className={`w-1.5 h-1.5 rounded-full ${leadStatus.dotColor}`} />
+                {leadStatus.label}
               </span>
-              {uniqueCategories.map((cat) => (
+              {leadCategories.map((cat) => (
                 <Link
                   key={cat._id}
                   href={getCategoryUrl(cat)}
-                  className="bg-blue-600/90 hover:bg-blue-700 backdrop-blur text-white text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md transition-colors"
+                  className="bg-slate-900/80 hover:bg-blue-600 text-white text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-slate-700/60 shadow-md backdrop-blur-md transition-colors"
                 >
                   {cat.title}
                 </Link>
               ))}
             </div>
 
-            {/* Botões ← → sobre a imagem — sempre visíveis no mobile, hover no desktop */}
-            <button
-              onClick={() => { prev(); resetInterval(); }}
-              aria-label="Matéria anterior"
-              className="absolute left-2 top-1/2 -translate-y-1/2 z-20
-                         w-8 h-8 md:w-9 md:h-9 rounded-full
-                         bg-white/90 backdrop-blur
-                         border border-slate-200 shadow-md
-                         flex items-center justify-center
-                         text-slate-700
-                         hover:bg-blue-600 hover:text-white hover:border-blue-600
-                         active:scale-95
-                         transition-all duration-200
-                         opacity-80 hover:opacity-100
-                         focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
-              </svg>
-            </button>
-
-            <button
-              onClick={() => { next(); resetInterval(); }}
-              aria-label="Próxima matéria"
-              className="absolute right-2 top-1/2 -translate-y-1/2 z-20
-                         w-8 h-8 md:w-9 md:h-9 rounded-full
-                         bg-white/90 backdrop-blur
-                         border border-slate-200 shadow-md
-                         flex items-center justify-center
-                         text-slate-700
-                         hover:bg-blue-600 hover:text-white hover:border-blue-600
-                         active:scale-95
-                         transition-all duration-200
-                         opacity-80 hover:opacity-100
-                         focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
-              </svg>
-            </button>
+            {/* Setas Anterior / Próxima integradas */}
+            <div className="hidden sm:flex items-center gap-1 pointer-events-auto bg-slate-950/80 p-1 rounded-full border border-slate-800 backdrop-blur-md">
+              <button
+                onClick={() => { prev(); resetInterval(); }}
+                aria-label="Manchete anterior"
+                className="w-7 h-7 rounded-full flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+              >
+                ‹
+              </button>
+              <button
+                onClick={() => { next(); resetInterval(); }}
+                aria-label="Próxima manchete"
+                className="w-7 h-7 rounded-full flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+              >
+                ›
+              </button>
+            </div>
           </div>
 
-          {/* ── Conteúdo textual ── */}
-          <div
-            className={`p-5 sm:p-6 md:p-8 flex flex-col justify-center gap-3 transition-all duration-350 ${
-              isAnimating ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'
-            }`}
-          >
-            {/* Data + autor */}
-            <div className="flex flex-wrap items-center text-xs text-slate-500 gap-1.5">
-              <span>{formattedDate}</span>
-              {post.author && (
+          {/* Conteúdo da Manchete */}
+          <div className="relative z-20 p-5 sm:p-7 md:p-8 space-y-3 pointer-events-auto">
+            <div className="flex items-center gap-2 text-xs text-slate-300 font-medium">
+              <span>{leadDate}</span>
+              {leadPost.author && (
                 <>
-                  <span>•</span>
-                  <span>Por {post.author.name}</span>
+                  <span className="text-slate-500">•</span>
+                  <span>Por {leadPost.author.name}</span>
                 </>
               )}
             </div>
 
-            {/* Título */}
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 hover:text-blue-600 transition-colors leading-tight">
-              <Link href={postLink}>{post.title}</Link>
-            </h2>
+            <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-3xl font-black text-white hover:text-blue-300 transition-colors leading-tight">
+              <Link href={leadPostLink}>{leadPost.title}</Link>
+            </h3>
 
-            {/* Excerpt — reduzido para 2 linhas no mobile */}
-            {post.excerpt && (
-              <p className="text-slate-600 text-sm md:text-base line-clamp-2 md:line-clamp-3 leading-relaxed">
-                {post.excerpt}
+            {leadPost.excerpt && (
+              <p className="text-slate-300 text-xs sm:text-sm line-clamp-2 leading-relaxed max-w-3xl">
+                {leadPost.excerpt}
               </p>
             )}
 
-            {/* CTA */}
-            <div className="flex items-center justify-between">
+            {/* Rodapé da Manchete com CTA e Indicadores de Slide */}
+            <div className="pt-2 flex items-center justify-between border-t border-slate-800/80">
               <Link
-                href={postLink}
-                className="inline-flex items-center gap-1 font-bold text-sm text-blue-600 hover:translate-x-1 transition-transform"
+                href={leadPostLink}
+                className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-extrabold text-blue-400 hover:text-blue-300 transition-colors"
               >
-                Ler matéria completa →
+                <span>Ler cobertura completa</span>
+                <span className="text-base leading-none">→</span>
               </Link>
-              {statusInfo.expirationNote && (
-                <span className="text-xs text-slate-400 font-medium hidden sm:block">
-                  {statusInfo.expirationNote}
-                </span>
-              )}
-            </div>
 
-            {/* Dots de navegação — sempre visíveis */}
-            <div className="flex items-center gap-2 pt-3 border-t border-slate-100">
-              {posts.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    goTo(idx, idx > current ? 'right' : 'left');
-                    resetInterval();
-                  }}
-                  aria-label={`Ir para destaque ${idx + 1}`}
-                  className={`h-2 rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 touch-manipulation ${
-                    idx === current
-                      ? 'bg-blue-600 w-6'
-                      : 'bg-slate-300 hover:bg-blue-400 w-2'
-                  }`}
-                />
-              ))}
+              {/* Dots clicáveis */}
+              <div className="flex items-center gap-1.5">
+                {posts.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => { goTo(idx); resetInterval(); }}
+                    aria-label={`Destaque ${idx + 1}`}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      idx === current ? 'bg-blue-500 w-5' : 'bg-slate-700 hover:bg-slate-500 w-2'
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </article>
+
+        {/* ── COLUNA 2: Plantão Lateral (Secondary Breaking News) ── */}
+        <div className="lg:col-span-4 flex flex-col justify-between gap-3 bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-xs">
+          <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
+            <span className="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+              <span>⚡</span> Plantão de Notícias
+            </span>
+            <span className="text-[11px] font-bold text-blue-600 hover:underline">
+              Atualizado
+            </span>
+          </div>
+
+          <div className="flex flex-col divide-y divide-slate-100 flex-1 justify-around">
+            {sidePosts.map((post) => {
+              const img = getImageUrl(post.mainImage, 160, 160);
+              const link = getPostUrl(post);
+              const cats = deduplicateCategories(post.categories || []).slice(0, 1);
+              const status = getContestStatusInfo(post);
+
+              return (
+                <article key={post._id} className="py-3 first:pt-1 last:pb-1 group">
+                  <Link href={link} className="flex gap-3 items-start">
+                    <div className="relative w-20 h-20 sm:w-22 sm:h-22 rounded-xl overflow-hidden shrink-0 bg-slate-100 border border-slate-200/60">
+                      <Image
+                        src={img}
+                        alt={post.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        sizes="88px"
+                      />
+                    </div>
+                    <div className="space-y-1 flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {cats[0] && (
+                          <span className="text-[10px] font-extrabold uppercase tracking-wider text-blue-600">
+                            {cats[0].title}
+                          </span>
+                        )}
+                        <span className="text-[10px] text-slate-400">•</span>
+                        <span className="text-[10px] text-slate-400 font-medium">
+                          {formatDate(post.publishedAt)}
+                        </span>
+                      </div>
+                      <h4 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
+                        {post.title}
+                      </h4>
+                      <span className={`inline-flex items-center gap-1 text-[9px] font-black uppercase px-1.5 py-0.5 rounded ${status.badgeBg}`}>
+                        <span className={`w-1 h-1 rounded-full ${status.dotColor}`} />
+                        {status.label}
+                      </span>
+                    </div>
+                  </Link>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+
+      </div>
     </section>
   );
 }
+

@@ -41,9 +41,9 @@ export default function Header({ categories = [] }: HeaderProps) {
             {/* Logo */}
             <Link
               href="/"
-              className="flex items-center gap-2 font-black tracking-tight text-slate-900 shrink-0 py-1"
+              className="flex items-center gap-2.5 font-black tracking-tight text-slate-900 shrink-0 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg group"
             >
-              <div className="relative h-9 w-16 md:h-10 md:w-20 shrink-0">
+              <div className="relative h-9 w-12 md:h-10 md:w-14 shrink-0 transition-transform group-hover:scale-105">
                 <Image
                   src="/logo.png"
                   alt="Concursos Agora Logo"
@@ -52,9 +52,14 @@ export default function Header({ categories = [] }: HeaderProps) {
                   priority
                 />
               </div>
-              <span className="text-lg md:text-xl font-black">
-                Concursos<span className="text-blue-600">Agora</span>
-              </span>
+              <div className="flex flex-col">
+                <span className="text-lg md:text-xl font-black leading-none">
+                  Concursos<span className="text-blue-600">Agora</span>
+                </span>
+                <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400 leading-tight">
+                  Portal de Notícias
+                </span>
+              </div>
             </Link>
 
             {/* Navegação desktop — cresce para ocupar o espaço disponível */}
@@ -63,9 +68,10 @@ export default function Header({ categories = [] }: HeaderProps) {
             </div>
 
             {/* Busca — desktop: campo visível; mobile: ícone de lupa que abre menu */}
-            <div className="hidden lg:block w-52 xl:w-64 shrink-0">
-              <SearchBar placeholder="Pesquisar..." />
+            <div className="hidden lg:block w-48 xl:w-60 shrink-0">
+              <SearchBar placeholder="Buscar editais..." isHeader={true} />
             </div>
+
 
             {/* Ícone de busca no mobile — abre o drawer com o campo de busca em destaque */}
             <button
