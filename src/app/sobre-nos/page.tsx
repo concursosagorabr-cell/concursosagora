@@ -11,29 +11,29 @@ export const metadata: Metadata = {
 
 export default function SobreNosPage() {
   return (
-    <article className="max-w-4xl mx-auto px-4 py-10 text-slate-800 dark:text-slate-200">
-      <header className="border-b border-slate-200 dark:border-slate-800 pb-6 mb-8 text-center sm:text-left">
-        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+    <article className="max-w-4xl mx-auto px-4 py-10 text-slate-800">
+      <header className="border-b border-slate-200 pb-6 mb-8 text-center sm:text-left">
+        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
           Sobre o Concursos Agora
         </h1>
-        <p className="text-slate-600 dark:text-slate-400 text-lg mt-2 font-medium">
+        <p className="text-slate-600 text-lg mt-2 font-medium">
           Informação ágil, precisa e acessível para quem busca a aprovação no serviço público brasileiro.
         </p>
       </header>
 
-      <div className="prose prose-slate dark:prose-invert max-w-none space-y-6 text-base leading-relaxed">
+      <div className="prose prose-slate max-w-none space-y-6 text-base leading-relaxed">
         <p>
           O <strong>Concursos Agora</strong> nasceu com uma missão clara: descomplicar o acesso à informação sobre concursos públicos em todo o Brasil. Sabendo que o tempo do concurseiro é precioso e deve ser dedicado prioritariamente aos estudos, estruturamos uma plataforma inteligente que reúne, organiza e transmite em tempo real as novidades mais relevantes do universo dos certames públicos.
         </p>
 
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4 border-l-4 border-blue-600 pl-3">
+        <h2 className="text-xl font-bold text-slate-900 mt-8 mb-4 border-l-4 border-blue-600 pl-3">
           🎯 Nossa Missão
         </h2>
         <p>
           Levar notícias verificadas, resumos de editais claros, alertas de inscrição e informações sobre vagas e salários para todos os cidadãos que almejam conquistar a estabilidade e uma carreira de sucesso no setor público municipal, estadual ou federal.
         </p>
 
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4 border-l-4 border-blue-600 pl-3">
+        <h2 className="text-xl font-bold text-slate-900 mt-8 mb-4 border-l-4 border-blue-600 pl-3">
           💡 Como Trabalhamos
         </h2>
         <p>
@@ -46,7 +46,7 @@ export default function SobreNosPage() {
           <li><strong>Filtros por Carreiras:</strong> Notícias segmentadas para Saúde, Segurança Pública, Fiscal, Administração, Educação, Tecnologia e Judiciário.</li>
         </ul>
 
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4 border-l-4 border-blue-600 pl-3">
+        <h2 className="text-xl font-bold text-slate-900 mt-8 mb-4 border-l-4 border-blue-600 pl-3">
           👥 Nossa Equipe Editorial
         </h2>
         <p className="mb-6">
@@ -54,35 +54,35 @@ export default function SobreNosPage() {
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 not-prose my-8">
-          <div className="bg-slate-100 dark:bg-slate-900 rounded-xl p-5 text-center border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div className="bg-slate-100 rounded-xl p-5 text-center border border-slate-200 shadow-sm">
             <div className="w-20 h-20 mx-auto rounded-full overflow-hidden mb-3 relative border-2 border-blue-600">
               <Image src="/logo.png" alt="Marco Antonio" fill className="object-cover" />
             </div>
-            <h3 className="font-bold text-slate-900 dark:text-white text-base">Marco Antonio</h3>
-            <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold mt-0.5">Editor Chefe & Analista de Editais</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Especialista em legislação de concursos e análise de certames federais e estaduais.</p>
+            <h3 className="font-bold text-slate-900 text-base">Marco Antonio</h3>
+            <p className="text-xs text-blue-600 font-semibold mt-0.5">Editor Chefe & Analista de Editais</p>
+            <p className="text-xs text-slate-500 mt-2">Especialista em legislação de concursos e análise de certames federais e estaduais.</p>
           </div>
 
-          <div className="bg-slate-100 dark:bg-slate-900 rounded-xl p-5 text-center border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div className="bg-slate-100 rounded-xl p-5 text-center border border-slate-200 shadow-sm">
             <div className="w-20 h-20 mx-auto rounded-full overflow-hidden mb-3 relative border-2 border-blue-600">
               <Image src="/logo.png" alt="Amanda Nunes" fill className="object-cover" />
             </div>
-            <h3 className="font-bold text-slate-900 dark:text-white text-base">Amanda Nunes</h3>
-            <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold mt-0.5">Jornalista & Redatora Sênior</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Cobertura diária de editais municipais, processos seletivos e carreiras jurídicas.</p>
+            <h3 className="font-bold text-slate-900 text-base">Amanda Nunes</h3>
+            <p className="text-xs text-blue-600 font-semibold mt-0.5">Jornalista & Redatora Sênior</p>
+            <p className="text-xs text-slate-500 mt-2">Cobertura diária de editais municipais, processos seletivos e carreiras jurídicas.</p>
           </div>
 
-          <div className="bg-slate-100 dark:bg-slate-900 rounded-xl p-5 text-center border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div className="bg-slate-100 rounded-xl p-5 text-center border border-slate-200 shadow-sm">
             <div className="w-20 h-20 mx-auto rounded-full overflow-hidden mb-3 relative border-2 border-blue-600">
               <Image src="/logo.png" alt="Gleice Melo" fill className="object-cover" />
             </div>
-            <h3 className="font-bold text-slate-900 dark:text-white text-base">Gleice Melo</h3>
-            <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold mt-0.5">Pesquisadora & Curadora de Conteúdo</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Foco nas carreiras de Segurança Pública, Saúde e Educação em âmbito nacional.</p>
+            <h3 className="font-bold text-slate-900 text-base">Gleice Melo</h3>
+            <p className="text-xs text-blue-600 font-semibold mt-0.5">Pesquisadora & Curadora de Conteúdo</p>
+            <p className="text-xs text-slate-500 mt-2">Foco nas carreiras de Segurança Pública, Saúde e Educação em âmbito nacional.</p>
           </div>
         </div>
 
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4 border-l-4 border-blue-600 pl-3">
+        <h2 className="text-xl font-bold text-slate-900 mt-8 mb-4 border-l-4 border-blue-600 pl-3">
           🤝 Compromisso com a Transparência
         </h2>
         <p>

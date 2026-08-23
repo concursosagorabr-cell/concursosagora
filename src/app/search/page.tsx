@@ -54,7 +54,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       <Breadcrumb items={[{ label: 'Pesquisa' }]} />
 
       <div className="mb-10 max-w-2xl mx-auto text-center space-y-4">
-        <h1 className="text-3xl font-black text-slate-900 dark:text-white">
+        <h1 className="text-3xl font-black text-slate-900">
           Pesquisar no Concursos Agora
         </h1>
         <SearchBar placeholder="Digite um termo, cargo, edital ou órgão..." />
@@ -63,8 +63,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         <div className="lg:col-span-2 space-y-6">
           {searchTerm ? (
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-3">
-              Resultados para &quot;<span className="text-blue-600 dark:text-blue-400">{searchTerm}</span>&quot; ({posts.length})
+            <h2 className="text-xl font-bold text-slate-900 border-b border-slate-200 pb-3">
+              Resultados para &quot;<span className="text-blue-600">{searchTerm}</span>&quot; ({posts.length})
             </h2>
           ) : (
             <p className="text-slate-500 text-center py-4">Digite uma palavra-chave acima para buscar notícias.</p>
@@ -77,8 +77,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               ))}
             </div>
           ) : searchTerm ? (
-            <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 text-center">
-              <p className="text-slate-600 dark:text-slate-400">
+            <div className="bg-white p-8 rounded-2xl border border-slate-200 text-center">
+              <p className="text-slate-600">
                 Nenhum resultado encontrado para &quot;{searchTerm}&quot;. Tente buscar com outros termos.
               </p>
             </div>

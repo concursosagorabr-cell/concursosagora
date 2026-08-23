@@ -47,8 +47,8 @@ export default async function HubsIndexPage() {
       {/* Conteúdo com Sidebar */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         <div className="lg:col-span-2 space-y-8">
-          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-            <h2 className="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+            <h2 className="text-xl font-extrabold text-slate-900 flex items-center gap-2">
               <span>📚</span> Todos os Hubs de Conteúdo
             </h2>
             <span className="text-xs font-semibold text-slate-500">

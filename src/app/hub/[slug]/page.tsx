@@ -166,8 +166,8 @@ export default async function HubDetailPage({ params, searchParams }: HubPagePro
 
         {/* Seção de Sub-Silos / Links Internos Estruturados (Silo Interlinking) */}
         {hub.subSilos.length > 0 && (
-          <section className="mb-12 bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <h2 className="text-base font-extrabold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+          <section className="mb-12 bg-white p-6 md:p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <h2 className="text-base font-extrabold text-slate-900 mb-4 flex items-center gap-2">
               <span>📍</span> Sub-Silos & Categorias Relacionadas
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
@@ -180,7 +180,7 @@ export default async function HubDetailPage({ params, searchParams }: HubPagePro
                   <Link
                     key={idx}
                     href={targetUrl}
-                    className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 border border-slate-200 dark:border-slate-700/80 text-xs font-bold text-slate-700 dark:text-slate-200 text-center transition-all duration-200 flex flex-col items-center justify-center gap-1 group shadow-2xs"
+                    className="p-3 rounded-xl bg-slate-50 hover:bg-blue-600 hover:text-white border border-slate-200 text-xs font-bold text-slate-700 text-center transition-all duration-200 flex flex-col items-center justify-center gap-1 group shadow-2xs"
                   >
                     <span className="group-hover:scale-110 transition-transform">
                       {sub.type === 'uf' ? '🗺️' : '📌'}
@@ -196,8 +196,8 @@ export default async function HubDetailPage({ params, searchParams }: HubPagePro
         {/* Conteúdo Principal com Feed de Matérias */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           <div className="lg:col-span-2 space-y-6">
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-              <h2 className="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+              <h2 className="text-xl font-extrabold text-slate-900 flex items-center gap-2">
                 <span>📰</span> Últimas Notícias do Hub
               </h2>
               <span className="text-xs font-semibold text-slate-500">
@@ -222,8 +222,8 @@ export default async function HubDetailPage({ params, searchParams }: HubPagePro
                 />
               </>
             ) : (
-              <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 text-center">
-                <p className="text-slate-600 dark:text-slate-400">
+              <div className="bg-white p-8 rounded-2xl border border-slate-200 text-center">
+                <p className="text-slate-600">
                   Nenhuma notícia associada a este Hub encontrada no momento.
                 </p>
               </div>

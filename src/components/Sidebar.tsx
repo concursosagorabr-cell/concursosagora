@@ -148,15 +148,15 @@ export default function Sidebar({ recentPosts = [], categories = [], categoryPos
       </div>
 
       {/* Widget 3: Comunidade Oficial Concursos Agora */}
-      <div className="bg-gradient-to-br from-slate-900 to-slate-950 text-white p-5 sm:p-6 rounded-2xl border border-slate-800 shadow-md">
-        <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-blue-400 mb-1">
+      <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-xs">
+        <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-blue-600 mb-1">
           <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
           <span>Canal de Notificações</span>
         </div>
-        <h3 className="text-base font-black mb-1.5 leading-snug">
+        <h3 className="text-base font-black text-slate-900 mb-1.5 leading-snug">
           Alertas de Editais Imediatos
         </h3>
-        <p className="text-xs text-slate-300 mb-4 leading-relaxed">
+        <p className="text-xs text-slate-600 mb-4 leading-relaxed">
           Receba furos de editais, prazos de inscrição e suspensões em primeira mão nas nossas redes oficiais.
         </p>
 
@@ -169,13 +169,13 @@ export default function Sidebar({ recentPosts = [], categories = [], categoryPos
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/60 text-slate-200 hover:text-white transition-all group"
+                className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200/80 text-slate-700 hover:text-blue-600 transition-all group"
               >
                 <div className="flex items-center gap-2.5">
-                  {Icon && <Icon className="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform" />}
+                  {Icon && <Icon className="w-4 h-4 text-blue-600 group-hover:scale-110 transition-transform" />}
                   <span className="text-xs">{link.label}</span>
                 </div>
-                <span className="text-slate-400 group-hover:text-white text-xs">Acessar →</span>
+                <span className="text-slate-400 group-hover:text-blue-600 text-xs">Acessar →</span>
               </a>
             );
           })}

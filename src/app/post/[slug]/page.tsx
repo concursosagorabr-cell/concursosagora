@@ -399,8 +399,8 @@ export default async function PostPage({ params }: PostPageProps) {
               {/* Banner Informativo de Validade do Concurso */}
               <div className={`p-4 rounded-2xl border flex items-center justify-between gap-4 text-xs sm:text-sm font-semibold ${
                 statusInfo.isExpired
-                  ? 'bg-slate-100 dark:bg-slate-800/80 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300'
-                  : 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200'
+                  ? 'bg-slate-100 border-slate-300 text-slate-700'
+                  : 'bg-emerald-50 border-emerald-200 text-emerald-800'
               }`}>
                 <div className="flex items-center gap-2.5">
                   <span className="text-lg">{statusInfo.isExpired ? '📌' : '🗓️'}</span>
@@ -418,7 +418,7 @@ export default async function PostPage({ params }: PostPageProps) {
               />
 
               {/* Metadados do Autor, Data e Leitura */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-y border-slate-200 dark:border-slate-800 py-4 gap-4 text-xs md:text-sm text-slate-500 dark:text-slate-400">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-y border-slate-200 py-4 gap-4 text-xs md:text-sm text-slate-500">
                 <div className="flex items-center gap-3">
                   {post.author?.image && (
                     <div className="relative w-11 h-11 rounded-full overflow-hidden shrink-0 border-2 border-blue-500 shadow-xs">
@@ -431,12 +431,12 @@ export default async function PostPage({ params }: PostPageProps) {
                     </div>
                   )}
                   <div>
-                    <span className="font-bold text-slate-900 dark:text-slate-100 block text-sm">
+                    <span className="font-bold text-slate-900 block text-sm">
                       {post.author?.name || 'Redação Concursos Agora'}
                     </span>
                     <span>Publicado em {formattedDate}</span>
                     {/* Tempo estimado de leitura */}
-                    <span className="flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
+                    <span className="flex items-center gap-1 text-[11px] text-slate-400 mt-0.5">
                       <span>⏱️</span>
                       <span>Leitura: ~{readingMinutes} min</span>
                     </span>
@@ -454,7 +454,7 @@ export default async function PostPage({ params }: PostPageProps) {
             </header>
 
             {/* Imagem de Capa do Artigo */}
-            <figure className="relative w-full h-[320px] sm:h-[420px] md:h-[500px] rounded-3xl overflow-hidden shadow-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900">
+            <figure className="relative w-full h-[320px] sm:h-[420px] md:h-[500px] rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-slate-100">
               <Image
                 src={mainImageUrl}
                 alt={post.title}
@@ -466,16 +466,16 @@ export default async function PostPage({ params }: PostPageProps) {
             </figure>
 
             {/* Conteúdo Rico (Portable Text com injeção dinâmica de Leia Também) */}
-            <div className="bg-white dark:bg-slate-900/90 p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
+            <div className="bg-white p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-xs space-y-6">
               {bodyWithRelated.length > 0 && <PortableText value={bodyWithRelated} />}
             </div>
 
             {/* Compartilhamento no final do conteúdo */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 shadow-xs">
-              <p className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-2">
+            <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 shadow-xs">
+              <p className="text-sm font-bold text-slate-900 mb-2">
                 📢 Gostou desta notícia sobre o {post.title}?
               </p>
-              <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+              <p className="text-xs text-slate-600 mb-3">
                 Ajude outros concurseiros e compartilhe com seus amigos e grupos de estudo:
               </p>
               <ShareButtons

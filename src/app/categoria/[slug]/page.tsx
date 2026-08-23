@@ -106,8 +106,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         <div className="lg:col-span-2 space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-            <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+            <h2 className="text-xl font-extrabold text-slate-900">
               Matérias em {category.title}
             </h2>
             <span className="text-xs font-semibold text-slate-500">
@@ -133,8 +133,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
               />
             </>
           ) : (
-            <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 text-center">
-              <p className="text-slate-600 dark:text-slate-400">
+            <div className="bg-white p-8 rounded-2xl border border-slate-200 text-center">
+              <p className="text-slate-600">
                 Nenhum concurso publicado nesta categoria ainda.
               </p>
             </div>

@@ -112,93 +112,95 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
         
         {/* ── COLUNA 1: Manchete Principal (Hero Lead) ── */}
         <div
-          className="lg:col-span-8 relative bg-slate-900 rounded-2xl overflow-hidden shadow-md group select-none min-h-[380px] sm:min-h-[440px] flex flex-col justify-end border border-slate-800"
+          className="lg:col-span-8 bg-white rounded-2xl overflow-hidden shadow-xs border border-slate-200 flex flex-col justify-between group select-none"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
-          {/* Imagem de Fundo com Transição Suave */}
-          <Link href={leadPostLink} className="absolute inset-0 block w-full h-full" tabIndex={-1}>
-            <Image
-              key={leadPost._id}
-              src={leadImageUrl}
-              alt={leadPost.title}
-              fill
-              className={`object-cover transition-all duration-500 group-hover:scale-105 ${
-                isAnimating ? 'opacity-40 scale-102' : 'opacity-85 scale-100'
-              }`}
-              sizes="(max-width: 1024px) 100vw, 66vw"
-              priority
-            />
-            {/* Gradiente Escuro Jornalístico para Legibilidade Perfeita */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent" />
-          </Link>
+          {/* Container da Imagem com Badges e Controles */}
+          <div className="relative w-full h-56 sm:h-72 md:h-80 bg-slate-100 overflow-hidden">
+            <Link href={leadPostLink} className="block w-full h-full" tabIndex={-1}>
+              <Image
+                key={leadPost._id}
+                src={leadImageUrl}
+                alt={leadPost.title}
+                fill
+                className={`object-cover transition-all duration-500 group-hover:scale-105 ${
+                  isAnimating ? 'opacity-50 scale-102' : 'opacity-100 scale-100'
+                }`}
+                sizes="(max-width: 1024px) 100vw, 66vw"
+                priority
+              />
+            </Link>
 
-          {/* Badges Superiores */}
-          <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20 pointer-events-none">
-            <div className="flex flex-wrap gap-1.5 pointer-events-auto">
-              <span
-                className={`inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md backdrop-blur-md ${leadStatus.badgeBg}`}
-              >
-                <span className={`w-1.5 h-1.5 rounded-full ${leadStatus.dotColor}`} />
-                {leadStatus.label}
-              </span>
-              {leadCategories.map((cat) => (
-                <Link
-                  key={cat._id}
-                  href={getCategoryUrl(cat)}
-                  className="bg-slate-900/80 hover:bg-blue-600 text-white text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-slate-700/60 shadow-md backdrop-blur-md transition-colors"
+            {/* Badges Superiores */}
+            <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-10">
+              <div className="flex flex-wrap gap-1.5 pointer-events-auto">
+                <span
+                  className={`inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm backdrop-blur-md ${leadStatus.badgeBg}`}
                 >
-                  {cat.title}
-                </Link>
-              ))}
-            </div>
+                  <span className={`w-1.5 h-1.5 rounded-full ${leadStatus.dotColor}`} />
+                  {leadStatus.label}
+                </span>
+                {leadCategories.map((cat) => (
+                  <Link
+                    key={cat._id}
+                    href={getCategoryUrl(cat)}
+                    className="bg-slate-900/80 hover:bg-blue-600 text-white text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm backdrop-blur-md transition-colors"
+                  >
+                    {cat.title}
+                  </Link>
+                ))}
+              </div>
 
-            {/* Setas Anterior / Próxima integradas */}
-            <div className="hidden sm:flex items-center gap-1 pointer-events-auto bg-slate-950/80 p-1 rounded-full border border-slate-800 backdrop-blur-md">
-              <button
-                onClick={() => { prev(); resetInterval(); }}
-                aria-label="Manchete anterior"
-                className="w-7 h-7 rounded-full flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
-              >
-                ‹
-              </button>
-              <button
-                onClick={() => { next(); resetInterval(); }}
-                aria-label="Próxima manchete"
-                className="w-7 h-7 rounded-full flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
-              >
-                ›
-              </button>
+              {/* Setas Anterior / Próxima */}
+              <div className="hidden sm:flex items-center gap-1 pointer-events-auto bg-white/90 p-1 rounded-full border border-slate-200 shadow-sm backdrop-blur-md">
+                <button
+                  onClick={() => { prev(); resetInterval(); }}
+                  aria-label="Manchete anterior"
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-slate-700 hover:text-blue-600 hover:bg-slate-100 transition-colors text-base font-bold"
+                >
+                  ‹
+                </button>
+                <button
+                  onClick={() => { next(); resetInterval(); }}
+                  aria-label="Próxima manchete"
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-slate-700 hover:text-blue-600 hover:bg-slate-100 transition-colors text-base font-bold"
+                >
+                  ›
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Conteúdo da Manchete */}
-          <div className="relative z-20 p-5 sm:p-7 md:p-8 space-y-3 pointer-events-auto">
-            <div className="flex items-center gap-2 text-xs text-slate-300 font-medium">
-              <span>{leadDate}</span>
-              {leadPost.author && (
-                <>
-                  <span className="text-slate-500">•</span>
-                  <span>Por {leadPost.author.name}</span>
-                </>
+          {/* Conteúdo da Manchete (Fundo Branco Limpo com Tipografia Nítida) */}
+          <div className="p-4 sm:p-6 space-y-2.5 flex-1 flex flex-col justify-between">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+                <span>{leadDate}</span>
+                {leadPost.author && (
+                  <>
+                    <span className="text-slate-300">•</span>
+                    <span>Por {leadPost.author.name}</span>
+                  </>
+                )}
+              </div>
+
+              <h3 className="text-lg sm:text-2xl lg:text-2xl font-black text-slate-900 group-hover:text-blue-600 transition-colors leading-tight">
+                <Link href={leadPostLink}>{leadPost.title}</Link>
+              </h3>
+
+              {leadPost.excerpt && (
+                <p className="text-slate-600 text-xs sm:text-sm line-clamp-2 leading-relaxed">
+                  {leadPost.excerpt}
+                </p>
               )}
             </div>
 
-            <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-3xl font-black text-white hover:text-blue-300 transition-colors leading-tight">
-              <Link href={leadPostLink}>{leadPost.title}</Link>
-            </h3>
-
-            {leadPost.excerpt && (
-              <p className="text-slate-300 text-xs sm:text-sm line-clamp-2 leading-relaxed max-w-3xl">
-                {leadPost.excerpt}
-              </p>
-            )}
-
             {/* Rodapé da Manchete com CTA e Indicadores de Slide */}
-            <div className="pt-2 flex items-center justify-between border-t border-slate-800/80">
+            <div className="pt-3 mt-3 flex items-center justify-between border-t border-slate-100">
               <Link
                 href={leadPostLink}
-                className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-extrabold text-blue-400 hover:text-blue-300 transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-extrabold text-blue-600 hover:text-blue-800 transition-colors"
               >
                 <span>Ler cobertura completa</span>
                 <span className="text-base leading-none">→</span>
@@ -211,8 +213,8 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
                     key={idx}
                     onClick={() => { goTo(idx); resetInterval(); }}
                     aria-label={`Destaque ${idx + 1}`}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${
-                      idx === current ? 'bg-blue-500 w-5' : 'bg-slate-700 hover:bg-slate-500 w-2'
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      idx === current ? 'bg-blue-600 w-6' : 'bg-slate-200 hover:bg-slate-300 w-2'
                     }`}
                   />
                 ))}
@@ -222,12 +224,12 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
         </div>
 
         {/* ── COLUNA 2: Plantão Lateral (Secondary Breaking News) ── */}
-        <div className="lg:col-span-4 flex flex-col justify-between gap-3 bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-xs">
+        <div className="lg:col-span-4 flex flex-col justify-between gap-3 bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
             <span className="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
               <span>⚡</span> Plantão de Notícias
             </span>
-            <span className="text-[11px] font-bold text-blue-600 hover:underline">
+            <span className="text-[11px] font-bold text-blue-600">
               Atualizado
             </span>
           </div>
@@ -277,9 +279,9 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
             })}
           </div>
         </div>
-
       </div>
     </section>
   );
 }
+
 

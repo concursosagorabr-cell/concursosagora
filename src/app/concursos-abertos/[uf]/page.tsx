@@ -144,7 +144,7 @@ export default async function StateContestsPage({ params }: StatePageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <main className="min-h-screen bg-slate-50 dark:bg-slate-950 py-6 sm:py-10">
+      <main className="min-h-screen bg-slate-50 py-6 sm:py-10">
         <div className="container mx-auto px-4 max-w-7xl">
           <Breadcrumb
             items={[
@@ -191,7 +191,7 @@ export default async function StateContestsPage({ params }: StatePageProps) {
 
               {/* Lista de Concursos do Estado */}
               <section aria-label={`Lista de concursos em ${stateName}`}>
-                <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100 mb-6 flex items-center gap-2.5">
+                <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 mb-6 flex items-center gap-2.5">
                   <span className="w-2.5 h-6 bg-blue-600 rounded-full" />
                   Editais Recentes em {stateName}
                 </h2>
@@ -203,9 +203,9 @@ export default async function StateContestsPage({ params }: StatePageProps) {
                     ))}
                   </div>
                 ) : (
-                  <div className="p-8 text-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-3">
+                  <div className="p-8 text-center rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
                     <p className="text-3xl">📋</p>
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                    <h3 className="text-lg font-bold text-slate-900">
                       Nenhum edital recente específico para {stateName} no momento
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto">
@@ -225,8 +225,8 @@ export default async function StateContestsPage({ params }: StatePageProps) {
               <CommunityBanner categoryName={stateName} />
 
               {/* Navegação Rápida entre Outros Estados da Mesma Região */}
-              <section className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-4">
+              <section className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs">
+                <h3 className="text-base font-bold text-slate-900 mb-4">
                   Outros Estados na Região {state.region}:
                 </h3>
                 <div className="flex flex-wrap gap-2">
@@ -236,7 +236,7 @@ export default async function StateContestsPage({ params }: StatePageProps) {
                       <Link
                         key={otherUf}
                         href={`/concursos-abertos/${otherUf}`}
-                        className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-blue-950/40 text-slate-700 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition-colors"
+                        className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-600 text-xs font-semibold border border-slate-200 transition-colors"
                       >
                         {otherData.name} ({otherUf.toUpperCase()})
                       </Link>
