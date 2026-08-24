@@ -10,7 +10,7 @@ Consome dados do [Sanity CMS](https://sanity.io) via queries GROQ em tempo real 
 ```
 frontend/
 ├── src/
-│   ├── app/
+│   ├── app/ACZZ
 │   │   ├── layout.tsx              # Layout raiz (GA4, Consent Mode v2, Speed Insights, Vercel Analytics, Header, Footer)
 │   │   ├── page.tsx                # Home — Carrossel de destaques + grid de concursos paginados (10 em 10)
 │   │   ├── globals.css             # Estilos globais + Tailwind CSS v4

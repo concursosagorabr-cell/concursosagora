@@ -20,6 +20,45 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'upload.wikimedia.org' },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/concursos-municipais',
+        destination: '/hub/concursos-municipais',
+        permanent: true,
+      },
+      {
+        source: '/concursos-policiais',
+        destination: '/hub/concursos-policiais',
+        permanent: true,
+      },
+      {
+        source: '/concursos-tribunais',
+        destination: '/hub/concursos-tribunais',
+        permanent: true,
+      },
+      {
+        source: '/concursos-bancarios',
+        destination: '/hub/concursos-bancarios',
+        permanent: true,
+      },
+      {
+        source: '/concursos-fiscais',
+        destination: '/hub/concursos-fiscais',
+        permanent: true,
+      },
+      {
+        source: '/concursos-saude',
+        destination: '/hub/concursos-saude',
+        permanent: true,
+      },
+      {
+        source: '/concursos-educacao',
+        destination: '/hub/concursos-educacao',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

@@ -17,15 +17,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Erro ao buscar slugs para sitemap:', error);
   }
 
-  const postUrls: MetadataRoute.Sitemap = postSlugs.map((slug) => ({
-    url: `${baseUrl}/post/${slug}`,
+  const cleanPostSlugs = (postSlugs || [])
+    .map((item: any) => (typeof item === 'string' ? item : item?.slug || item?._id))
+    .filter((s): s is string => typeof s === 'string' && s.trim().length > 0);
+
+  const cleanCategorySlugs = (categorySlugs || [])
+    .map((item: any) => (typeof item === 'string' ? item : item?.slug || item?._id))
+    .filter((s): s is string => typeof s === 'string' && s.trim().length > 0);
+
+  const postUrls: MetadataRoute.Sitemap = cleanPostSlugs.map((slug) => ({
+    url: `${baseUrl}/post/${encodeURIComponent(slug)}`,
     lastModified: new Date(),
     changeFrequency: 'daily',
     priority: 0.8,
   }));
 
-  const categoryUrls: MetadataRoute.Sitemap = categorySlugs.map((slug) => ({
-    url: `${baseUrl}/categoria/${slug}`,
+  const categoryUrls: MetadataRoute.Sitemap = cleanCategorySlugs.map((slug) => ({
+    url: `${baseUrl}/categoria/${encodeURIComponent(slug)}`,
     lastModified: new Date(),
     changeFrequency: 'weekly',
     priority: 0.6,
@@ -59,6 +67,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1.0,
     },
     {
+      url: `${baseUrl}/noticias`,
+      lastModified: new Date(),
+      changeFrequency: 'always',
+      priority: 0.95,
+    },
+    {
       url: `${baseUrl}/hub`,
       lastModified: new Date(),
       changeFrequency: 'daily',
@@ -69,6 +83,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/sobre-nos`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.4,
+    },
+    {
+      url: `${baseUrl}/politica-de-privacidade`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.2,
+    },
+    {
+      url: `${baseUrl}/aviso-legal`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.2,
     },
     ...hubUrls,
     ...stateUrls,

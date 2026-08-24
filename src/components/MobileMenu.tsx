@@ -184,6 +184,15 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
             🏠 Início
           </Link>
 
+          {/* Todas as Notícias */}
+          <Link
+            href="/noticias"
+            onClick={onClose}
+            className="flex items-center gap-2 px-4 py-3 text-sm font-semibold text-blue-600 hover:bg-slate-50 border-b border-slate-100 transition-colors"
+          >
+            📰 Todas as Notícias
+          </Link>
+
           {/* Status */}
           <SectionToggle title="Status do Concurso" defaultOpen={true}>
             {STATUS_LINKS.map((link) => (
