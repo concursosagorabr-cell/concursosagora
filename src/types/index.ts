@@ -15,6 +15,7 @@ export interface SanityImage {
   asset: SanityImageAsset;
   alt?: string;
   caption?: string;
+  credit?: string;
 }
 
 export interface Author {

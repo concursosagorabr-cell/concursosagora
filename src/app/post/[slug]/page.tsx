@@ -453,16 +453,30 @@ export default async function PostPage({ params }: PostPageProps) {
               </div>
             </header>
 
-            {/* Imagem de Capa do Artigo */}
-            <figure className="relative w-full h-[320px] sm:h-[420px] md:h-[500px] rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-slate-100">
-              <Image
-                src={mainImageUrl}
-                alt={post.title}
-                fill
-                className="object-cover"
-                priority
-                sizes="(max-width: 1024px) 100vw, 850px"
-              />
+            {/* Imagem de Capa do Artigo com Legenda e Créditos Editoriais */}
+            <figure className="relative w-full rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-slate-100 mb-6">
+              <div className="relative w-full h-[320px] sm:h-[420px] md:h-[500px]">
+                <Image
+                  src={mainImageUrl}
+                  alt={post.mainImage?.alt || post.title}
+                  fill
+                  className="object-cover"
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 850px"
+                />
+              </div>
+              {(post.mainImage?.caption || post.mainImage?.credit) && (
+                <figcaption className="px-4 py-2.5 bg-slate-50 border-t border-slate-200/80 text-xs text-slate-500 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 leading-relaxed">
+                  {post.mainImage?.caption && (
+                    <span className="font-normal text-slate-600">{post.mainImage.caption}</span>
+                  )}
+                  {post.mainImage?.credit && (
+                    <span className="text-[11px] text-slate-400 font-medium shrink-0 italic">
+                      {post.mainImage.credit.toLowerCase().startsWith('foto') ? post.mainImage.credit : `Foto: ${post.mainImage.credit}`}
+                    </span>
+                  )}
+                </figcaption>
+              )}
             </figure>
 
             {/* Conteúdo Rico (Portable Text com injeção dinâmica de Leia Também) */}
