@@ -73,16 +73,26 @@ export default function Header({ categories = [] }: HeaderProps) {
             </div>
 
 
-            {/* Ícone de busca no mobile — abre o drawer com o campo de busca em destaque */}
-            <button
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="lg:hidden ml-auto flex items-center justify-center w-9 h-9 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors shrink-0"
-              aria-label="Pesquisar"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </button>
+            {/* Ações Mobile: Botão Explorar Vagas e Ícone de Busca */}
+            <div className="lg:hidden ml-auto flex items-center gap-1.5 shrink-0">
+              <Link
+                href="/concursos"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl font-black text-xs text-blue-700 bg-blue-50 border border-blue-200/80 active:scale-95 transition-all shadow-xs"
+              >
+                <span>🔍</span>
+                <span>Vagas</span>
+              </Link>
+
+              <button
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="flex items-center justify-center w-9 h-9 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors shrink-0"
+                aria-label="Pesquisar"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </button>
+            </div>
 
           </div>
         </div>

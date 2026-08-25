@@ -173,6 +173,21 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
           <SearchBar placeholder="Pesquisar concurso..." />
         </div>
 
+        {/* Explorar Vagas com Filtro Avançado — Destaque Mobile */}
+        <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100 shrink-0">
+          <Link
+            href="/concursos"
+            onClick={onClose}
+            className="flex items-center justify-between p-3 rounded-2xl bg-blue-600 hover:bg-blue-700 active:scale-98 text-white font-black text-xs sm:text-sm shadow-md shadow-blue-500/25 transition-all"
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-base">🔍</span>
+              <span>Explorar Todas as Vagas</span>
+            </div>
+            <span className="text-[10px] bg-blue-500 text-white px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Filtros</span>
+          </Link>
+        </div>
+
         {/* Links do menu — rolável */}
         <div className="flex-1 overflow-y-auto">
           {/* Início */}

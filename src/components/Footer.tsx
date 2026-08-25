@@ -48,6 +48,7 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-bold text-xs tracking-wider uppercase mb-4">Hubs & Destaques</h3>
             <ul className="space-y-2 text-xs md:text-sm">
+              <li><Link href="/concursos" className="text-emerald-400 font-extrabold hover:underline">🔍 Explorar Todas as Vagas</Link></li>
               <li><Link href="/hub" className="text-blue-400 font-bold hover:underline">🎯 Hubs de Conteúdo (Silos)</Link></li>
               <li><Link href="/hub/concursos-municipais" className="hover:text-white transition-colors">🏛️ Hub Municipais</Link></li>
               <li><Link href="/hub/concursos-policiais" className="hover:text-white transition-colors">🚓 Hub Policiais</Link></li>
