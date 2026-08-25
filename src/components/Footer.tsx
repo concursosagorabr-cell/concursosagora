@@ -97,7 +97,22 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-slate-900 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-          <p>© {new Date().getFullYear()} Concursos Agora. Todos os direitos reservados.</p>
+          <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3 text-center sm:text-left">
+            <p>© {new Date().getFullYear()} Concursos Agora. Todos os direitos reservados.</p>
+            <span className="hidden sm:inline text-slate-700" aria-hidden="true">•</span>
+            <p className="text-slate-400 text-[11px]">
+              Tecnologia & IA por{' '}
+              <a
+                href="https://www.vetorestrategico.com/"
+                target="_blank"
+                rel="noopener"
+                className="text-blue-400 font-bold hover:text-blue-300 hover:underline transition-colors"
+                title="Vetor Estratégico — Criação de Sites e Inteligência Artificial"
+              >
+                Vetor Estratégico
+              </a>
+            </p>
+          </div>
           <div className="flex items-center gap-4 text-xs">
             <Link href="/sobre-nos" className="hover:underline">Sobre Nós</Link>
             <span aria-hidden="true">•</span>
