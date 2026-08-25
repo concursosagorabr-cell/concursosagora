@@ -4,7 +4,7 @@ import { Post, Category } from '@/types';
 import { getImageUrl } from '@/lib/image';
 import { deduplicateCategories, getPureCategories } from '@/utils/categories';
 import Newsletter from './Newsletter';
-import { InstagramIcon, FacebookIcon, YouTubeIcon } from './SocialIcons';
+import { InstagramIcon, FacebookIcon, YouTubeIcon, TelegramIcon } from './SocialIcons';
 import { SOCIAL_LINKS } from '@/lib/constants';
 
 interface SidebarProps {
@@ -19,6 +19,7 @@ interface SidebarProps {
 const SOCIAL_ICON_MAP: Record<string, React.ElementType> = {
   instagram: InstagramIcon,
   facebook: FacebookIcon,
+  telegram: TelegramIcon,
   youtube: YouTubeIcon,
 };
 
@@ -161,7 +162,7 @@ export default function Sidebar({ recentPosts = [], categories = [], categoryPos
         </p>
 
         <div className="grid grid-cols-1 gap-2 text-xs font-bold">
-          {SOCIAL_LINKS.filter(l => ['instagram', 'facebook', 'youtube'].includes(l.icon)).map((link) => {
+          {SOCIAL_LINKS.filter(l => ['telegram', 'instagram', 'facebook', 'youtube'].includes(l.icon)).map((link) => {
             const Icon = SOCIAL_ICON_MAP[link.icon];
             return (
               <a

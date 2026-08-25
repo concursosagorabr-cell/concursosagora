@@ -72,26 +72,16 @@ export default function SegmentedAlertBox({
           Não perca prazos de inscrição, retificações e divulgação de gabaritos para {segmentName}. Escolha como deseja ser avisado gratuitamente:
         </p>
 
-        {/* Botões de Acesso Imediato: WhatsApp e Telegram */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-          <a
-            href={whatsappGroupUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2.5 px-4 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-xs sm:text-sm shadow-lg shadow-emerald-950/50 transition-all"
-          >
-            <span>💬</span>
-            <span>Entrar no Grupo WhatsApp</span>
-          </a>
-
+        {/* Botão de Acesso Imediato: Canal VIP no Telegram */}
+        <div className="pt-1">
           <a
             href={telegramChannelUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2.5 px-4 py-3 rounded-2xl bg-sky-600 hover:bg-sky-500 active:scale-95 text-white font-bold text-xs sm:text-sm shadow-lg shadow-sky-950/50 transition-all"
+            className="flex items-center justify-center gap-2.5 w-full px-5 py-3.5 rounded-2xl bg-sky-500 hover:bg-sky-400 active:scale-98 text-white font-black text-sm sm:text-base shadow-lg shadow-sky-950/60 hover:shadow-sky-500/25 transition-all duration-200"
           >
             <span>✈️</span>
-            <span>Canal VIP no Telegram</span>
+            <span>Entrar no Canal VIP no Telegram</span>
           </a>
         </div>
 

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { InstagramIcon, FacebookIcon, YouTubeIcon } from './SocialIcons';
+import { InstagramIcon, FacebookIcon, YouTubeIcon, TelegramIcon } from './SocialIcons';
 
 interface RegionItem {
   label: string;
@@ -74,6 +74,16 @@ export default function RegionBar() {
 
         {/* Direita: Redes Sociais Oficiais */}
         <div className="hidden lg:flex items-center gap-3 shrink-0 text-slate-400 font-semibold pl-2 border-l border-slate-800">
+          <a
+            href="https://t.me/concursosagorabr"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-sky-400 text-sky-400/90 font-bold transition-colors flex items-center gap-1"
+            title="Canal VIP no Telegram"
+          >
+            <TelegramIcon className="w-3.5 h-3.5" />
+            <span className="text-[10px]">Telegram VIP</span>
+          </a>
           <a
             href="https://www.instagram.com/concursosagora_/"
             target="_blank"

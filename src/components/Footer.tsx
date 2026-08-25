@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { InstagramIcon, FacebookIcon, XIcon, ThreadsIcon, YouTubeIcon } from './SocialIcons';
+import { InstagramIcon, FacebookIcon, XIcon, ThreadsIcon, YouTubeIcon, TelegramIcon } from './SocialIcons';
 import { SOCIAL_LINKS } from '@/lib/constants';
 
 const SOCIAL_ICON_MAP: Record<string, React.ElementType> = {
@@ -8,6 +8,7 @@ const SOCIAL_ICON_MAP: Record<string, React.ElementType> = {
   facebook: FacebookIcon,
   x: XIcon,
   threads: ThreadsIcon,
+  telegram: TelegramIcon,
   youtube: YouTubeIcon,
 };
 
@@ -16,6 +17,7 @@ const SOCIAL_COLORS: Record<string, string> = {
   facebook: 'text-blue-400 hover:border-blue-500',
   x: 'text-slate-200 hover:border-slate-500',
   threads: 'text-slate-300 hover:border-slate-500',
+  telegram: 'text-sky-400 hover:border-sky-500',
   youtube: 'text-red-400 hover:border-red-500',
 };
 

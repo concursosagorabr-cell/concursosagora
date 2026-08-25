@@ -20,8 +20,8 @@ export const SOCIAL_LINKS = [
   },
   {
     name: 'X',
-    label: 'X (Twitter)',
-    href: 'https://x.com/home',
+    label: 'X (@ConcursosAgora1)',
+    href: 'https://x.com/ConcursosAgora1',
     icon: 'x' as const,
   },
   {
@@ -29,6 +29,12 @@ export const SOCIAL_LINKS = [
     label: 'Threads',
     href: 'https://www.threads.com/@concursosagorabr?hl=pt-br',
     icon: 'threads' as const,
+  },
+  {
+    name: 'Telegram',
+    label: 'Telegram VIP (@concursosagorabr)',
+    href: 'https://t.me/concursosagorabr',
+    icon: 'telegram' as const,
   },
   {
     name: 'YouTube',

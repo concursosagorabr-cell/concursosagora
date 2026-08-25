@@ -578,7 +578,7 @@ export default async function PostPage({ params }: PostPageProps) {
               categoryName={primaryCategory?.title}
             />
 
-            {/* Banner de Canais WhatsApp e Telegram VIP */}
+            {/* Banner do Canal VIP do Telegram */}
             <CommunityBanner
               categoryName={primaryCategory?.title}
             />
