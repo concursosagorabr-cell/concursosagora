@@ -10,37 +10,45 @@ Consome dados do [Sanity CMS](https://sanity.io) via queries GROQ em tempo real 
 ```
 frontend/
 ├── src/
-│   ├── app/ACZZ
+│   ├── app/
 │   │   ├── layout.tsx              # Layout raiz (GA4, Consent Mode v2, Speed Insights, Vercel Analytics, Header, Footer)
 │   │   ├── page.tsx                # Home — Carrossel de destaques + grid de concursos paginados (10 em 10)
 │   │   ├── globals.css             # Estilos globais + Tailwind CSS v4
 │   │   ├── icon.png                # Ícone do aplicativo / Favicon (192x192)
 │   │   ├── apple-icon.png          # Ícone Apple Touch (192x192)
-│   │   ├── post/[slug]/            # Página do artigo completo
+│   │   ├── concursos/              # Diretório Central de Concursos (Explorador com Filtros Vivos) 🏛️
+│   │   │   ├── page.tsx            # Página do Explorador com busca facetada e CollectionPage Schema
+│   │   │   ├── [nivel]/[uf]/       # Rotas Programáticas por Escolaridade + Estado (ex: /concursos/nivel-medio/sp) 🎯
+│   │   │   └── salario-acima-de-10-mil/ # Rota Programática de Altos Salários (R$ 10.000+) 💰
+│   │   ├── banca/[slug]/           # Rotas Programáticas por Banca Organizadora (FGV, Cebraspe, Vunesp...) 🏢
+│   │   ├── post/[slug]/            # Página do artigo completo (com Schema JobPosting, FAQPage e NewsArticle) 📰
 │   │   ├── categoria/[slug]/       # Página de categoria (com agrupamento por sinônimos e paginação 10 em 10)
-│   │   ├── hub/                    # Index de Hubs de Conteúdo (Guias Pilares de SEO) 🎯
+│   │   ├── concursos-abertos/[uf]/ # Página programática por estado (/concursos-abertos/sp)
+│   │   ├── hub/                    # Index de Hubs de Conteúdo (Guias Pilares de SEO)
 │   │   │   └── [slug]/             # Páginas Pilares (Pillar Pages) por área e municípios
 │   │   ├── search/                 # Busca global por palavras-chave
-│   │   ├── sitemap.ts              # Sitemap XML automático
+│   │   ├── sitemap.ts              # Sitemap XML dinâmico com todas as rotas programáticas
 │   │   └── api/
 │   │       ├── categories/
 │   │       │   └── resolve/
 │   │       │       └── route.ts    # API de resolução de categorias ⚙️
 │   │       └── newsletter/
-│   │           └── route.ts        # API de captação de e-mails da Newsletter (Brevo) ✉️
+│   │           └── route.ts        # API de captação de e-mails da Newsletter e Alertas VIP (Brevo) ✉️
 │   ├── components/
+│   │   ├── ContestExplorer.tsx     # Explorador com busca facetada reativa (Salário, Escolaridade, UF, Banca) 🎛️
+│   │   ├── SegmentedAlertBox.tsx   # Captura de leads VIP segmentada por nicho (WhatsApp, Telegram e E-mail) 🔔
 │   │   ├── HeroCarousel.tsx        # Carrossel responsivo com auto-play (5s), swipe e controles manuais 🎠
 │   │   ├── CookieBanner.tsx        # Banner e modal de consentimento de cookies (LGPD / Consent Mode v2) 🍪
 │   │   ├── Newsletter.tsx          # Widget de inscrição em alertas de concursos com integração Brevo
 │   │   ├── InArticleCTA.tsx        # Bloco "Leia Também" contextual inserido no artigo — reduz bounce rate 📌
 │   │   ├── Header.tsx              # Cabeçalho com logo oficial otimizado, RegionBar + Navbar
-│   │   ├── Navbar.tsx              # Menu desktop otimizado (Regiões, Estados, Carreiras, Guias de Concursos)
+│   │   ├── Navbar.tsx              # Menu desktop otimizado com link para Explorar Vagas
 │   │   ├── MobileMenu.tsx          # Drawer mobile com seções filtradas e redes sociais
-│   │   ├── RegionBar.tsx           # Atalhos diretos para as 27 UFs (/categoria/[slug])
+│   │   ├── RegionBar.tsx           # Atalhos diretos para as 27 UFs
 │   │   ├── SearchBar.tsx           # Campo de busca rápida
-│   │   ├── PostCard.tsx            # Card de concurso na listagem com categorias deduplicadas
+│   │   ├── PostCard.tsx            # Card de concurso na listagem com badges de salário e vagas
 │   │   ├── CategoryCard.tsx        # Card de link direto para a categoria
-│   │   ├── Sidebar.tsx             # Barra lateral contextual: mostra posts da mesma categoria no artigo, ou posts recentes + newsletter na home
+│   │   ├── Sidebar.tsx             # Barra lateral contextual com posts da área e newsletter
 │   │   ├── RelatedPosts.tsx        # Grid de 3 matérias relacionadas no rodapé do artigo
 │   │   ├── PostHubWidget.tsx       # Widget de linkagem interna bidirecional (Hub SEO)
 │   │   ├── AuthorCard.tsx          # Card do autor no rodapé do artigo
@@ -48,12 +56,13 @@ frontend/
 │   │   ├── Pagination.tsx          # Paginação com botões numéricos e indicadores de matérias
 │   │   └── PortableText.tsx        # Renderizador de Portable Text do Sanity
 │   ├── lib/
-│   │   ├── sanity.ts               # Cliente Sanity configurado
-│   │   ├── queries.ts              # Queries GROQ otimizadas (incluindo relatedPostsQuery por categoria + fallback)
+│   │   ├── sanity.ts               # Cliente Sanity com métodos em cache (ISR)
+│   │   ├── queries.ts              # Queries GROQ completas e projeções com novos campos estruturados
 │   │   └── consent.ts              # Utilitários de cookies e sincronização com Google Consent Mode v2
 │   ├── types/
-│   │   └── index.ts                # Tipos TypeScript (Post, Category, Author, Consent)
+│   │   └── index.ts                # Tipos TypeScript atualizados (Post com salaryMax, educationLevel, banca, etc.)
 │   └── utils/
+│       ├── bancas.ts               # Mapeamento e perfil detalhado das 9 principais bancas examinadoras 🏢
 │       ├── status.ts               # Cálculo dinâmico de status do concurso (Aberto/Encerrado)
 │       ├── categories.ts           # Deduplicação, filtro de puras e mapeamento de sinônimos/aliases 🧩
 │       └── hubs.ts                 # Definição e configuração dos Hubs de Conteúdo (Silos SEO)
@@ -109,6 +118,22 @@ Conjunto de melhorias implementadas com base na análise do Vercel Analytics (55
 - **7 Hubs Estruturados**: Municipais & Prefeituras, Carreiras Policiais, Tribunais & Judiciário, Bancários & Finanças, Fiscais & Controle, Saúde & SUS, Educação & Docência.
 - **Schema.org**: `CollectionPage` + `BreadcrumbList` em todas as páginas pilares.
 
+### 🏛️ 9. Diretório Central de Vagas & Explorador Interativo (`/concursos` e `ContestExplorer.tsx`)
+- **Busca Facetada Dinâmica**: Filtros instantâneos combináveis por Nível de Escolaridade (Fundamental, Médio, Superior), Faixa Salarial (até 5k, 5k-10k, 10k+, 15k+), Estado/UF (27 unidades da federação), Banca Organizadora e Status (somente abertos).
+- **Sem Recarregamento de Página**: Atualização fluida do grid de vagas com badges informativas de remuneração, vagas e prazos de encerramento.
+
+### 🎯 10. Matrizes Programáticas de SEO (Micro-Diretórios de Cauda Longa)
+- **Por Escolaridade + Estado (`/concursos/[nivel]/[uf]`)**: 81 landing pages indexáveis (ex: `/concursos/nivel-medio/sp`, `/concursos/nivel-superior/rj`) com FAQs e ItemList Schema.
+- **Por Banca Organizadora (`/banca/[slug]`)**: Guias completos para 9 bancas examinadoras (FGV, Cebraspe, Vunesp, FCC, IBFC, AOCP, Fundatec, Quadrix e Cesgranrio) com perfil de prova e dicas de aprovação.
+- **Altos Salários (`/concursos/salario-acima-de-10-mil`)**: Landing page para editais com remuneração de elite (R$ 10.000+).
+
+### 💼 11. Google Jobs & Rich Snippets (`JobPosting` Schema)
+- Injeção automática de dados estruturados Schema.org `@type: "JobPosting"` nas páginas de artigos (`/post/[slug]`), habilitando a exibição nos cards nativos de vagas do Google Search.
+- Suporte a `@type: "CollectionPage"`, `@type: "ItemList"` e `@type: "FAQPage"`.
+
+### 🔔 12. Captura de Leads VIP Segmentada (`SegmentedAlertBox.tsx`)
+- Lead magnet contextual com opções de entrada direta em grupos de WhatsApp, canal VIP do Telegram e alertas personalizados por e-mail no nicho específico da página.
+
 ---
 
 ## 📄 Rotas e Endpoints
@@ -116,14 +141,19 @@ Conjunto de melhorias implementadas com base na análise do Vercel Analytics (55
 | Rota | Tipo | Descrição |
 |---|---|---|
 | `/` | Dynamic (SSR) | Home com Carrossel de Destaques e feed paginado (10 em 10) |
-| `/post/[slug]` | SSG + Revalidação 60s | Matéria completa do concurso |
+| `/concursos` | SSG + ISR 180s | Diretório Central e Explorador Interativo de Concursos Públicos |
+| `/concursos/[nivel]/[uf]` | SSG + ISR 300s | Páginas Programáticas de Escolaridade + Estado (81 combinações) |
+| `/banca/[slug]` | SSG + ISR 300s | Páginas Programáticas por Banca Examinadora (9 bancas) |
+| `/concursos/salario-acima-de-10-mil` | SSG + ISR 300s | Página Programática para Concursos com Salários R$ 10k+ |
+| `/post/[slug]` | SSG + ISR 60s | Matéria completa com Schema JobPosting (Google Jobs), FAQPage e NewsArticle |
 | `/categoria/[slug]` | SSG + Paginação | Listagem de concursos por categoria (com resolvedor de sinônimos) |
+| `/concursos-abertos/[uf]` | SSG + ISR 300s | Página programática por estado (/concursos-abertos/sp) |
 | `/hub` | SSG | Index de Hubs de Conteúdo (Guias Pilares) |
 | `/hub/[slug]` | SSG | Guia Pilar definitivo por área/setor |
 | `/search?q=termo` | Dynamic | Busca global por título, conteúdo ou categoria |
-| `/sitemap.xml` | Static | Sitemap XML dinâmico |
+| `/sitemap.xml` | Static | Sitemap XML dinâmico com todas as rotas programáticas |
 | `/api/categories/resolve` | API Route | Endpoint para o robô Python consultar categorias |
-| `/api/newsletter` | API Route (POST) | Endpoint seguro para cadastro de leitores na Brevo |
+| `/api/newsletter` | API Route (POST) | Endpoint seguro para cadastro de leitores e alertas na Brevo |
 
 ---
 

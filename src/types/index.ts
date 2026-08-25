@@ -85,6 +85,16 @@ export interface Post {
   examDate?: string;
   isExpired?: boolean;
   statusLabel?: string;
+  salaryMax?: number;
+  salaryMin?: number;
+  vacanciesTotal?: number;
+  educationLevel?: string[];
+  banca?: string;
+  stateUf?: string;
+  cityName?: string;
+  registrationFee?: number;
+  hasExemption?: boolean;
+  status?: 'aberto' | 'previsto' | 'em_andamento' | 'encerrado';
   mainImage?: SanityImage;
   excerpt?: string;
   author?: Author;

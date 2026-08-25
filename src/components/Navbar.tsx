@@ -149,6 +149,15 @@ export default function Navbar({ categories = [] }: NavbarProps) {
         Início
       </Link>
 
+      {/* Explorador / Diretório de Concursos */}
+      <Link
+        href="/concursos"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-extrabold text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-colors whitespace-nowrap shadow-xs"
+      >
+        <span>🔍</span>
+        <span>Explorar Vagas</span>
+      </Link>
+
       {/* Todas as Notícias */}
       <Link
         href="/noticias"

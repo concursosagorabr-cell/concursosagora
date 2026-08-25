@@ -18,6 +18,10 @@ import {
   searchPostsQuery,
   allPostSlugsQuery,
   allCategorySlugsQuery,
+  directoryPostsQuery,
+  bancaPostsQuery,
+  educationAndStatePostsQuery,
+  highSalaryPostsQuery,
 } from './queries';
 import { Category, Post } from '@/types';
 
@@ -340,4 +344,61 @@ export const getCachedRssFeedPosts = cache((): Promise<any[]> => {
     { revalidate: 300, tags: ['posts', 'feed'] }
   )();
 });
+
+/**
+ * 16. Posts para o Explorador de Diretório (TTL: 3 minutos / 180s, Tag: 'posts')
+ */
+export const getCachedDirectoryPosts = cache((): Promise<Post[]> => {
+  return unstable_cache(
+    async () => (await client.fetch<Post[]>(directoryPostsQuery, {}, { next: { tags: ['posts', 'directory-posts'] } })) || [],
+    ['sanity', 'directory-posts'],
+    { revalidate: 180, tags: ['posts', 'directory-posts'] }
+  )();
+});
+
+/**
+ * 17. Posts por Banca Organizadora (TTL: 5 minutos / 300s, Tag: 'posts')
+ */
+export const getCachedBancaPosts = cache((bancaSlug: string, bancaName: string): Promise<Post[]> => {
+  return unstable_cache(
+    async () => (await client.fetch<Post[]>(bancaPostsQuery, { bancaSlug, bancaName }, { next: { tags: ['posts', `banca:${bancaSlug}`] } })) || [],
+    ['sanity', 'banca-posts', bancaSlug],
+    { revalidate: 300, tags: ['posts', `banca:${bancaSlug}`] }
+  )();
+});
+
+/**
+ * 18. Posts por Nível de Escolaridade e Estado (TTL: 5 minutos / 300s, Tag: 'posts')
+ */
+export const getCachedEducationAndStatePosts = cache((
+  education: string,
+  educationLabel: string,
+  ufLower: string,
+  ufUpper: string,
+  stateName: string
+): Promise<Post[]> => {
+  return unstable_cache(
+    async () => (await client.fetch<Post[]>(educationAndStatePostsQuery, {
+      education,
+      educationLabel,
+      ufLower,
+      ufUpper,
+      stateName
+    }, { next: { tags: ['posts', `edu-state:${education}:${ufLower}`] } })) || [],
+    ['sanity', 'edu-state-posts', education, ufLower],
+    { revalidate: 300, tags: ['posts', `edu-state:${education}:${ufLower}`] }
+  )();
+});
+
+/**
+ * 19. Posts de Altos Salários (R$ 10.000+) (TTL: 5 minutos / 300s, Tag: 'posts')
+ */
+export const getCachedHighSalaryPosts = cache((): Promise<Post[]> => {
+  return unstable_cache(
+    async () => (await client.fetch<Post[]>(highSalaryPostsQuery, {}, { next: { tags: ['posts', 'high-salary-posts'] } })) || [],
+    ['sanity', 'high-salary-posts'],
+    { revalidate: 300, tags: ['posts', 'high-salary-posts'] }
+  )();
+});
+
 

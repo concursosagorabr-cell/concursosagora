@@ -9,6 +9,16 @@ export const compactPostFields = `
   publishedAt,
   enrollmentEndDate,
   examDate,
+  salaryMax,
+  salaryMin,
+  vacanciesTotal,
+  educationLevel,
+  banca,
+  stateUf,
+  cityName,
+  registrationFee,
+  hasExemption,
+  status,
   mainImage {
     ...,
     asset-> {
@@ -41,6 +51,16 @@ export const fullPostFields = `
   publishedAt,
   enrollmentEndDate,
   examDate,
+  salaryMax,
+  salaryMin,
+  vacanciesTotal,
+  educationLevel,
+  banca,
+  stateUf,
+  cityName,
+  registrationFee,
+  hasExemption,
+  status,
   mainImage {
     ...,
     asset-> {
@@ -231,3 +251,63 @@ export const allCategorySlugsQuery = `
     "slug": coalesce(slug.current, _id)
   }[].slug
 `;
+
+// 14. Consulta para o Explorador de Diretório (Lote principal de concursos recentes com metadados)
+export const directoryPostsQuery = `
+  *[_type == "post"] | order(publishedAt desc)[0..120] {
+    ${compactPostFields}
+  }
+`;
+
+// 15. Consulta para Bancas Organizadoras (ex: FGV, Cebraspe, Vunesp...)
+export const bancaPostsQuery = `
+  *[_type == "post" && (
+    banca match $bancaName ||
+    title match "*" + $bancaName + "*" ||
+    title match "*" + $bancaSlug + "*" ||
+    excerpt match "*" + $bancaName + "*"
+  )] | order(publishedAt desc)[0..50] {
+    ${compactPostFields}
+  }
+`;
+
+// 16. Consulta para Combinações de Escolaridade + Estado (ex: Nível Médio em SP)
+export const educationAndStatePostsQuery = `
+  *[_type == "post" && (
+    $education in educationLevel ||
+    title match "*" + $educationLabel + "*" ||
+    excerpt match "*" + $educationLabel + "*" ||
+    $educationLabel in categories[]->title
+  ) && (
+    stateUf == $ufUpper ||
+    stateUf == "Nacional" ||
+    $ufLower in categories[]->slug.current ||
+    $ufUpper in categories[]->title ||
+    title match " " + $ufUpper ||
+    title match "-" + $ufUpper ||
+    title match "/" + $ufUpper ||
+    title match $stateName
+  )] | order(publishedAt desc)[0..50] {
+    ${compactPostFields}
+  }
+`;
+
+// 17. Consulta para Concursos com Salários Acima de R$ 10.000
+export const highSalaryPostsQuery = `
+  *[_type == "post" && (
+    salaryMax >= 10000 ||
+    title match "*10 mil*" ||
+    title match "*15 mil*" ||
+    title match "*20 mil*" ||
+    title match "*30 mil*" ||
+    title match "*R$ 1*" ||
+    title match "*R$ 2*" ||
+    title match "*R$ 3*" ||
+    excerpt match "*10.000*" ||
+    excerpt match "*15.000*" ||
+    excerpt match "*20.000*"
+  )] | order(publishedAt desc)[0..50] {
+    ${compactPostFields}
+  }
+`;
+

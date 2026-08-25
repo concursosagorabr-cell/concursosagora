@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { getCachedAllPostSlugs, getCachedAllCategorySlugs } from '@/lib/sanity';
 import { CONTENT_HUBS } from '@/utils/hubs';
+import { getAllExamBoards } from '@/utils/bancas';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://concursosagora.com.br';
@@ -59,12 +60,47 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
+  // Rotas Programáticas de Bancas Organizadoras
+  const examBoards = getAllExamBoards();
+  const bancaUrls: MetadataRoute.Sitemap = examBoards.map((banca) => ({
+    url: `${baseUrl}/banca/${banca.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily',
+    priority: 0.85,
+  }));
+
+  // Rotas Programáticas por Escolaridade + Estado
+  const eduLevels = ['nivel-medio', 'nivel-superior', 'nivel-fundamental'];
+  const eduStateUrls: MetadataRoute.Sitemap = [];
+  for (const nivel of eduLevels) {
+    for (const uf of stateUfs) {
+      eduStateUrls.push({
+        url: `${baseUrl}/concursos/${nivel}/${uf}`,
+        lastModified: new Date(),
+        changeFrequency: 'daily',
+        priority: 0.85,
+      });
+    }
+  }
+
   return [
     {
       url: baseUrl,
       lastModified: new Date(),
       changeFrequency: 'always',
       priority: 1.0,
+    },
+    {
+      url: `${baseUrl}/concursos`,
+      lastModified: new Date(),
+      changeFrequency: 'always',
+      priority: 1.0,
+    },
+    {
+      url: `${baseUrl}/concursos/salario-acima-de-10-mil`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.9,
     },
     {
       url: `${baseUrl}/noticias`,
@@ -104,6 +140,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     ...hubUrls,
     ...stateUrls,
+    ...bancaUrls,
+    ...eduStateUrls,
     ...postUrls,
     ...categoryUrls,
   ];

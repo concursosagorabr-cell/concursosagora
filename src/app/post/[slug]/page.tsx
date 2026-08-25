@@ -211,6 +211,70 @@ function extractFaqJsonLd(body?: any[]): any | null {
   };
 }
 
+/**
+ * Gera Schema.org/JobPosting para inclusão automática e destaque no Google Jobs (Vagas).
+ */
+function generateJobPostingJsonLd(post: Post, postUrl: string): any | null {
+  const validThrough =
+    post.enrollmentEndDate ||
+    new Date(new Date(post.publishedAt || Date.now()).getTime() + 180 * 24 * 60 * 60 * 1000).toISOString();
+
+  const hiringName = post.cityName
+    ? `Prefeitura Municipal de ${post.cityName}`
+    : post.stateUf && post.stateUf !== 'Nacional'
+    ? `Órgão Público Estadual (${post.stateUf})`
+    : 'Serviço Público Federal / Concurso Nacional';
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'JobPosting',
+    title: post.title,
+    description: post.excerpt || `Oportunidade no concurso público ${post.title}. Veja requisitos, cargos e edital completo.`,
+    identifier: {
+      '@type': 'PropertyValue',
+      name: 'Concursos Agora',
+      value: post._id,
+    },
+    datePosted: post.publishedAt,
+    validThrough: validThrough,
+    employmentType: 'FULL_TIME',
+    hiringOrganization: {
+      '@type': 'Organization',
+      name: hiringName,
+      sameAs: 'https://concursosagora.com.br',
+    },
+    jobLocation: {
+      '@type': 'Place',
+      address: {
+        '@type': 'PostalAddress',
+        addressRegion: post.stateUf || 'BR',
+        addressCountry: 'BR',
+        ...(post.cityName ? { addressLocality: post.cityName } : {}),
+      },
+    },
+    ...(post.salaryMax
+      ? {
+          baseSalary: {
+            '@type': 'MonetaryAmount',
+            currency: 'BRL',
+            value: {
+              '@type': 'QuantitativeValue',
+              value: post.salaryMax,
+              minValue: post.salaryMin || post.salaryMax,
+              maxValue: post.salaryMax,
+              unitText: 'MONTH',
+            },
+          },
+        }
+      : {}),
+    ...(post.educationLevel && post.educationLevel.length > 0
+      ? {
+          educationRequirements: post.educationLevel.join(', '),
+        }
+      : {}),
+  };
+}
+
 export default async function PostPage({ params }: PostPageProps) {
   const { slug } = await params;
 
@@ -331,6 +395,9 @@ export default async function PostPage({ params }: PostPageProps) {
   // Extração automática de FAQ para Google Rich Snippets (Schema.org/FAQPage)
   const faqJsonLd = extractFaqJsonLd(post.body);
 
+  // Schema.org/JobPosting para o Google Jobs
+  const jobPostingJsonLd = generateJobPostingJsonLd(post, postUrl);
+
   // Injeta dinamicamente o card de "Leia Também" após o 2º parágrafo no Portable Text
   const bodyWithRelated = post.body
     ? injectRelatedArticle(post.body, relatedPosts[0], 2)
@@ -350,6 +417,12 @@ export default async function PostPage({ params }: PostPageProps) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
+      {jobPostingJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jobPostingJsonLd) }}
         />
       )}
 
