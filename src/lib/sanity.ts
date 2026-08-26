@@ -22,8 +22,11 @@ import {
   bancaPostsQuery,
   educationAndStatePostsQuery,
   highSalaryPostsQuery,
+  postsBySlugsQuery,
 } from './queries';
 import { Category, Post } from '@/types';
+import { getRedis, REDIS_KEYS } from './redis';
+import { orderPostsBySlugs, mergeWithFallback } from './views-helpers.mjs';
 
 export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'wobukj4j';
 export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
@@ -99,6 +102,48 @@ export const getCachedRecentPosts = cache((): Promise<Post[]> => {
     { revalidate: 180, tags: ['posts', 'recent-posts'] }
   )();
 });
+
+/**
+ * 3b. Posts mais lidos com base no Upstash Redis (TTL: 5 minutos / 300s, Tag: 'top-posts')
+ * Se o Redis não estiver configurado ou tiver poucos posts, completa com recentes como fallback.
+ */
+export const getCachedTopPosts = cache((limit: number = 5): Promise<Post[]> => {
+  return unstable_cache(
+    async () => {
+      try {
+        const redis = getRedis();
+        let topSlugs: string[] = [];
+
+        if (redis) {
+          const results = await redis.zrange<string[]>(REDIS_KEYS.POSTS_VIEWS_ALL, 0, limit - 1, { rev: true });
+          if (Array.isArray(results)) {
+            topSlugs = results.filter((s) => typeof s === 'string' && s.length > 0);
+          }
+        }
+
+        let topPosts: Post[] = [];
+        if (topSlugs.length > 0) {
+          const rawPosts = await client.fetch<Post[]>(postsBySlugsQuery, { slugs: topSlugs });
+          topPosts = orderPostsBySlugs(rawPosts || [], topSlugs);
+        }
+
+        if (topPosts.length >= limit) {
+          return topPosts.slice(0, limit);
+        }
+
+        const recent = await client.fetch<Post[]>(recentPostsQuery, {}, { next: { tags: ['posts', 'recent-posts'] } });
+        return mergeWithFallback(topPosts, recent || [], limit);
+      } catch (error) {
+        console.error('[getCachedTopPosts] Erro ao buscar ranking, usando fallback de recentes:', error);
+        const fallbackRecent = await client.fetch<Post[]>(recentPostsQuery, {}, { next: { tags: ['posts', 'recent-posts'] } });
+        return (fallbackRecent || []).slice(0, limit);
+      }
+    },
+    ['sanity', 'top-posts', String(limit)],
+    { revalidate: 300, tags: ['posts', 'top-posts'] }
+  )();
+});
+
 
 /**
  * 4. Posts paginados da Home (TTL: 3 minutos / 180s, Tag: 'posts')

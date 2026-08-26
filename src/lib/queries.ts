@@ -134,6 +134,13 @@ export const recentPostsQuery = `
   }
 `;
 
+// 6b. Consulta de posts por lista de slugs para o ranking de Mais Lidas
+export const postsBySlugsQuery = `
+  *[_type == "post" && (slug.current in $slugs || _id in $slugs)] {
+    ${compactPostFields}
+  }
+`;
+
 // 7. Consulta de todas as categorias do Sanity
 export const allCategoriesQuery = `
   *[_type == "category"] | order(title asc) {

@@ -9,6 +9,8 @@ import { SOCIAL_LINKS } from '@/lib/constants';
 
 interface SidebarProps {
   recentPosts?: Post[];
+  /** Posts com mais acessos reais apurados via Redis */
+  topPosts?: Post[];
   categories?: Category[];
   /** Posts da mesma categoria — exibidos na página de post para reter o leitor */
   categoryPosts?: Post[];
@@ -87,9 +89,17 @@ function RankedPostList({ posts, title, icon = '🔥' }: { posts: Post[]; title:
   );
 }
 
-export default function Sidebar({ recentPosts = [], categories = [], categoryPosts, categoryName }: SidebarProps) {
+export default function Sidebar({
+  recentPosts = [],
+  topPosts = [],
+  categories = [],
+  categoryPosts,
+  categoryName,
+}: SidebarProps) {
   const uniqueCategories = deduplicateCategories(categories);
   const pureCategories = getPureCategories(uniqueCategories);
+
+  const displayPopularPosts = topPosts && topPosts.length > 0 ? topPosts : recentPosts;
 
   return (
     <aside className="space-y-6">
@@ -103,7 +113,7 @@ export default function Sidebar({ recentPosts = [], categories = [], categoryPos
         />
       ) : (
         <RankedPostList
-          posts={recentPosts}
+          posts={displayPopularPosts}
           title="Mais Lidas do Portal"
           icon="🔥"
         />

@@ -5,6 +5,7 @@ import {
   getCachedPostsByCategory,
   getCachedPostsByCategoryCount,
   getCachedRecentPosts,
+  getCachedTopPosts,
   getCachedCategories,
   getCachedAllCategorySlugs,
 } from '@/lib/sanity';
@@ -75,10 +76,11 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
   const categorySlugs = getCategoryAliases(slug);
 
-  const [posts, totalPosts, recentPosts, categories]: [Post[], number, Post[], Category[]] = await Promise.all([
+  const [posts, totalPosts, recentPosts, topPosts, categories] = await Promise.all([
     getCachedPostsByCategory(slug, categorySlugs, start, end),
     getCachedPostsByCategoryCount(slug, categorySlugs),
     getCachedRecentPosts(),
+    getCachedTopPosts(5),
     getCachedCategories(),
   ]);
 
@@ -141,7 +143,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           )}
         </div>
 
-        <Sidebar recentPosts={recentPosts} categories={uniqueCategories} />
+        <Sidebar recentPosts={recentPosts} topPosts={topPosts} categories={uniqueCategories} />
       </div>
     </div>
   );

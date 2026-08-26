@@ -7,6 +7,7 @@ import {
   getCachedRelatedPosts,
   getCachedRelatedPostsFallback,
   getCachedRecentPosts,
+  getCachedTopPosts,
   getCachedCategories,
   getCachedAllPostSlugs,
 } from '@/lib/sanity';
@@ -26,6 +27,7 @@ import ShareButtons from '@/components/ShareButtons';
 import CommunityBanner from '@/components/CommunityBanner';
 import ContestCountdown from '@/components/ContestCountdown';
 import Sidebar from '@/components/Sidebar';
+import ViewTracker from '@/components/ViewTracker';
 
 interface PostPageProps {
   params: Promise<{
@@ -287,10 +289,11 @@ export default async function PostPage({ params }: PostPageProps) {
   // IDs das categorias do post atual para filtrar posts relacionados
   const categoryIds = (post.categories || []).map((c: { _id: string }) => c._id).filter(Boolean);
 
-  const [relatedByCategory, recentPosts, categories] = await Promise.all([
+  const [relatedByCategory, recentPosts, topPosts, categories] = await Promise.all([
     // Busca relacionados da mesma categoria (cacheado)
     categoryIds.length > 0 ? getCachedRelatedPosts(post._id, categoryIds) : Promise.resolve([]),
     getCachedRecentPosts(),
+    getCachedTopPosts(5),
     getCachedCategories(),
   ]);
 
@@ -427,6 +430,7 @@ export default async function PostPage({ params }: PostPageProps) {
       )}
 
       <article className="max-w-7xl mx-auto px-0 py-2 sm:py-6">
+        <ViewTracker slug={slugStr} />
         {/* Trilha de Navegação (Breadcrumb) */}
         <Breadcrumb
           items={[
@@ -602,6 +606,7 @@ export default async function PostPage({ params }: PostPageProps) {
           {/* Barra Lateral — passa posts relacionados por categoria quando disponíveis */}
           <Sidebar
             recentPosts={recentPosts}
+            topPosts={topPosts}
             categories={uniqueCategories}
             categoryPosts={relatedPosts.length > 0 ? relatedPosts : undefined}
             categoryName={primaryCategory?.title}

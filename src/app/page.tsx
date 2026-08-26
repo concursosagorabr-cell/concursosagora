@@ -10,6 +10,7 @@ import {
   getCachedPostsPaginated,
   getCachedPostsCount,
   getCachedRecentPosts,
+  getCachedTopPosts,
   getCachedCategories,
 } from '@/lib/sanity';
 import { Post, Category } from '@/types';
@@ -34,19 +35,22 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   let posts: Post[] = [];
   let totalPosts = 0;
   let recentPosts: Post[] = [];
+  let topPosts: Post[] = [];
   let categories: Category[] = [];
 
   try {
-    const [fetchedPosts, fetchedCount, fetchedRecent, fetchedCategories] = await Promise.all([
+    const [fetchedPosts, fetchedCount, fetchedRecent, fetchedTop, fetchedCategories] = await Promise.all([
       getCachedPostsPaginated(start, end),
       getCachedPostsCount(),
       getCachedRecentPosts(),
+      getCachedTopPosts(5),
       getCachedCategories(),
     ]);
 
     posts = fetchedPosts || [];
     totalPosts = fetchedCount || 0;
     recentPosts = fetchedRecent || [];
+    topPosts = fetchedTop || [];
     categories = fetchedCategories || [];
   } catch (error) {
     console.error('Erro ao buscar dados na Home Page:', error);
@@ -138,7 +142,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         </div>
 
         {/* Barra Lateral (Sidebar) */}
-        <Sidebar recentPosts={recentPosts} categories={uniqueCategories} />
+        <Sidebar recentPosts={recentPosts} topPosts={topPosts} categories={uniqueCategories} />
       </div>
     </div>
   );
