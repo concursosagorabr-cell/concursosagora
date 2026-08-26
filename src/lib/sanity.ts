@@ -103,9 +103,17 @@ export const getCachedRecentPosts = cache((): Promise<Post[]> => {
   )();
 });
 
+const INITIAL_TOP_SLUGS = [
+  'transpetro-vagas-2026',
+  'concurso-maringa-pr',
+  'prf-administrativo-vagas',
+  'concurso-trt-8-2026-vagas-salarios-e-provas-discursivas',
+  'rede-sarah-vagas',
+];
+
 /**
  * 3b. Posts mais lidos com base no Upstash Redis (TTL: 5 minutos / 300s, Tag: 'top-posts')
- * Se o Redis não estiver configurado ou tiver poucos posts, completa com recentes como fallback.
+ * Se o Redis for novo ou vazio, inicializa com o histórico real do Vercel Analytics.
  */
 export const getCachedTopPosts = cache((limit: number = 5): Promise<Post[]> => {
   return unstable_cache(
@@ -116,9 +124,28 @@ export const getCachedTopPosts = cache((limit: number = 5): Promise<Post[]> => {
 
         if (redis) {
           const results = await redis.zrange<string[]>(REDIS_KEYS.POSTS_VIEWS_ALL, 0, limit - 1, { rev: true });
-          if (Array.isArray(results)) {
+          if (Array.isArray(results) && results.length > 0) {
             topSlugs = results.filter((s) => typeof s === 'string' && s.length > 0);
+          } else {
+            // Semeia o Redis com os dados reais históricos do Vercel Analytics
+            try {
+              await redis.zadd(
+                REDIS_KEYS.POSTS_VIEWS_ALL,
+                { score: 160, member: 'transpetro-vagas-2026' },
+                { score: 113, member: 'concurso-maringa-pr' },
+                { score: 92, member: 'prf-administrativo-vagas' },
+                { score: 69, member: 'concurso-trt-8-2026-vagas-salarios-e-provas-discursivas' },
+                { score: 69, member: 'rede-sarah-vagas' }
+              );
+              topSlugs = INITIAL_TOP_SLUGS;
+            } catch (seedError) {
+              console.error('[getCachedTopPosts] Erro ao semear Redis inicial:', seedError);
+            }
           }
+        }
+
+        if (topSlugs.length === 0) {
+          topSlugs = INITIAL_TOP_SLUGS;
         }
 
         let topPosts: Post[] = [];

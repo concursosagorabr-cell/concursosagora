@@ -22,6 +22,22 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // ── Consolidação de Canibalização de Palavras-chave (SEO) ──
+      {
+        source: '/post/concurso-transpetro-2026-4-171-vagas-e-salario-ate-r-15-034-81',
+        destination: '/post/transpetro-vagas-2026',
+        permanent: true,
+      },
+      {
+        source: '/post/transpetro-2026-vagas',
+        destination: '/post/transpetro-vagas-2026',
+        permanent: true,
+      },
+      {
+        source: '/post/concurso-prf-vagas',
+        destination: '/post/prf-administrativo-vagas',
+        permanent: true,
+      },
       {
         source: '/concursos-municipais',
         destination: '/hub/concursos-municipais',
