@@ -123,12 +123,9 @@ export const getCachedTopPosts = cache((limit: number = 5): Promise<Post[]> => {
         let topSlugs: string[] = [];
 
         if (redis) {
-          const results = await redis.zrange<string[]>(REDIS_KEYS.POSTS_VIEWS_ALL, 0, limit - 1, { rev: true });
-          if (Array.isArray(results) && results.length > 0) {
-            topSlugs = results.filter((s) => typeof s === 'string' && s.length > 0);
-          } else {
-            // Semeia o Redis com os dados reais históricos do Vercel Analytics
-            try {
+          try {
+            const transpetroScore = await redis.zscore(REDIS_KEYS.POSTS_VIEWS_ALL, 'transpetro-vagas-2026');
+            if (transpetroScore === null || transpetroScore === undefined) {
               await redis.zadd(
                 REDIS_KEYS.POSTS_VIEWS_ALL,
                 { score: 160, member: 'transpetro-vagas-2026' },
@@ -137,10 +134,14 @@ export const getCachedTopPosts = cache((limit: number = 5): Promise<Post[]> => {
                 { score: 69, member: 'concurso-trt-8-2026-vagas-salarios-e-provas-discursivas' },
                 { score: 69, member: 'rede-sarah-vagas' }
               );
-              topSlugs = INITIAL_TOP_SLUGS;
-            } catch (seedError) {
-              console.error('[getCachedTopPosts] Erro ao semear Redis inicial:', seedError);
             }
+          } catch (seedError) {
+            console.error('[getCachedTopPosts] Erro ao semear Redis inicial:', seedError);
+          }
+
+          const results = await redis.zrange<string[]>(REDIS_KEYS.POSTS_VIEWS_ALL, 0, limit - 1, { rev: true });
+          if (Array.isArray(results) && results.length > 0) {
+            topSlugs = results.filter((s) => typeof s === 'string' && s.length > 0);
           }
         }
 
@@ -152,6 +153,12 @@ export const getCachedTopPosts = cache((limit: number = 5): Promise<Post[]> => {
         if (topSlugs.length > 0) {
           const rawPosts = await client.fetch<Post[]>(postsBySlugsQuery, { slugs: topSlugs });
           topPosts = orderPostsBySlugs(rawPosts || [], topSlugs);
+        }
+
+        if (topPosts.length < limit) {
+          const initialRaw = await client.fetch<Post[]>(postsBySlugsQuery, { slugs: INITIAL_TOP_SLUGS });
+          const initialOrdered = orderPostsBySlugs(initialRaw || [], INITIAL_TOP_SLUGS);
+          topPosts = mergeWithFallback(topPosts, initialOrdered, limit);
         }
 
         if (topPosts.length >= limit) {
