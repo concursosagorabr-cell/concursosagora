@@ -1,14 +1,32 @@
-import { Post } from '@/types';
+import type { Post } from '../types';
 
 export interface ContestStatusInfo {
   isExpired: boolean;
-  label: 'Concurso Aberto' | 'Concurso Encerrado';
+  label: 'Concurso Aberto' | 'Concurso Encerrado' | 'Edital Previsto' | 'Em Andamento';
   badgeBg: string;
   badgeText: string;
   dotColor: string;
   formattedTargetDate?: string;
   formattedExpirationDate?: string;
   expirationNote: string;
+}
+
+function isPrevistoHeuristic(title?: string): boolean {
+  if (!title) return false;
+  const t = title.toLowerCase();
+  return (
+    t.includes('previsto') ||
+    t.includes('autorizad') ||
+    t.includes('anunciad') ||
+    t.includes('comissao') ||
+    t.includes('iminente') ||
+    t.includes('estudo') ||
+    t.includes('sem numero') ||
+    t.includes('em definicao') ||
+    t.includes('organiza') ||
+    /\bbanca\b.*\b(confirmad|definid|escolhid|contratad)/i.test(t) ||
+    /\b(fcc|cebraspe|fgv|vunesp|quadrix|aocp|idecan)\s+(organiza|confirmad|definid)/i.test(t)
+  );
 }
 
 /**
@@ -83,10 +101,8 @@ export function getContestStatusInfo(post: Partial<Post>): ContestStatusInfo {
       ? `Encerrado em ${formattedTargetDate}`
       : `Inscrições até ${formattedTargetDate}`;
   }
-  // Quando não há data real cadastrada no Sanity, o fallback de 12 meses é apenas
-  // para cálculo interno de expiração — não exibimos nota ao usuário.
 
-  if (expired) {
+  if (expired || post.status === 'encerrado') {
     return {
       isExpired: true,
       label: 'Concurso Encerrado',
@@ -96,6 +112,35 @@ export function getContestStatusInfo(post: Partial<Post>): ContestStatusInfo {
       formattedTargetDate,
       formattedExpirationDate,
       expirationNote,
+    };
+  }
+
+  const isExplicitlyPrevisto = post.status === 'previsto';
+  const isHeuristicPrevisto = !targetDateStr && isPrevistoHeuristic(post.title);
+
+  if (isExplicitlyPrevisto || isHeuristicPrevisto) {
+    return {
+      isExpired: false,
+      label: 'Edital Previsto',
+      badgeBg: 'bg-amber-600/95 text-white border border-amber-400/30',
+      badgeText: 'text-white',
+      dotColor: 'bg-amber-300 animate-pulse',
+      formattedTargetDate,
+      formattedExpirationDate,
+      expirationNote: 'Edital previsto / Em fase preparatória',
+    };
+  }
+
+  if (post.status === 'em_andamento') {
+    return {
+      isExpired: false,
+      label: 'Em Andamento',
+      badgeBg: 'bg-blue-600/95 text-white border border-blue-400/30',
+      badgeText: 'text-white',
+      dotColor: 'bg-blue-300 animate-pulse',
+      formattedTargetDate,
+      formattedExpirationDate,
+      expirationNote: 'Inscrições encerradas / Em andamento',
     };
   }
 
