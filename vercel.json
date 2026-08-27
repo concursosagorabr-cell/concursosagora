@@ -1,3 +1,165 @@
 {
-  "regions": ["gru1"]
+  "regions": ["gru1"],
+  "redirects": [
+    {
+      "source": "/noticia",
+      "destination": "/noticias",
+      "permanent": true
+    },
+    {
+      "source": "/posts",
+      "destination": "/noticias",
+      "permanent": true
+    },
+    {
+      "source": "/blog",
+      "destination": "/noticias",
+      "permanent": true
+    },
+    {
+      "source": "/concurso",
+      "destination": "/concursos",
+      "permanent": true
+    },
+    {
+      "source": "/categoria",
+      "destination": "/concursos",
+      "permanent": true
+    },
+    {
+      "source": "/post/concurso-camara-municipal-de-maringa",
+      "destination": "/post/concurso-maringa-pr",
+      "permanent": true
+    },
+    {
+      "source": "/post/concurso-camara-maringa",
+      "destination": "/post/concurso-maringa-pr",
+      "permanent": true
+    },
+    {
+      "source": "/post/concurso-prf-administrativo-2026",
+      "destination": "/post/prf-administrativo-vagas",
+      "permanent": true
+    },
+    {
+      "source": "/post/concurso-prf-vagas",
+      "destination": "/post/prf-administrativo-vagas",
+      "permanent": true
+    },
+    {
+      "source": "/post/concurso-prf-2026",
+      "destination": "/post/prf-administrativo-vagas",
+      "permanent": true
+    },
+    {
+      "source": "/post/concurso-trt-8-2026",
+      "destination": "/post/concurso-trt-8-2026-vagas-salarios-e-provas-discursivas",
+      "permanent": true
+    },
+    {
+      "source": "/post/concurso-trt-8",
+      "destination": "/post/concurso-trt-8-2026-vagas-salarios-e-provas-discursivas",
+      "permanent": true
+    },
+    {
+      "source": "/post/concurso-seduc-pa-2026",
+      "destination": "/post/concurso-seduc-pa-2026-vagas-salarios-e-edital-da-fgv",
+      "permanent": true
+    },
+    {
+      "source": "/post/seduc-pa-2026",
+      "destination": "/post/concurso-seduc-pa-2026-vagas-salarios-e-edital-da-fgv",
+      "permanent": true
+    },
+    {
+      "source": "/post/concurso-transpetro-2026",
+      "destination": "/post/transpetro-vagas-2026",
+      "permanent": true
+    },
+    {
+      "source": "/post/concurso-transpetro",
+      "destination": "/post/transpetro-vagas-2026",
+      "permanent": true
+    },
+    {
+      "source": "/post/concurso-transpetro-2026-4-171-vagas-e-salario-ate-r-15-034-81",
+      "destination": "/post/transpetro-vagas-2026",
+      "permanent": true
+    },
+    {
+      "source": "/post/transpetro-2026-vagas",
+      "destination": "/post/transpetro-vagas-2026",
+      "permanent": true
+    },
+    {
+      "source": "/post/concurso-trt-8-fcc-organiza-salarios-ate-r-16-mil-veja-vagas",
+      "destination": "/post/concurso-trt-8-2026-vagas-salarios-e-provas-discursivas",
+      "permanent": true
+    },
+    {
+      "source": "/post/concurso-trt-8-ate-92-vagas-salarios-de-ate-r-16-mil-veja-detalhes",
+      "destination": "/post/concurso-trt-8-2026-vagas-salarios-e-provas-discursivas",
+      "permanent": true
+    },
+    {
+      "source": "/post/trt-8-banca-fcc-confirmada-salarios-ate-r-16-mil-veja-detalhes-do-certame",
+      "destination": "/post/concurso-trt-8-2026-vagas-salarios-e-provas-discursivas",
+      "permanent": true
+    },
+    {
+      "source": "/post/concurso-trt-8-banca-fcc-confirmada-vagas-ainda-sem-numero-veja-detalhes",
+      "destination": "/post/concurso-trt-8-2026-vagas-salarios-e-provas-discursivas",
+      "permanent": true
+    },
+    {
+      "source": "/post/concurso-trt-8-fcc-ja-e-banca-vagas-e-salarios-ainda-em-fase-de-definicao",
+      "destination": "/post/concurso-trt-8-2026-vagas-salarios-e-provas-discursivas",
+      "permanent": true
+    },
+    {
+      "source": "/post/concurso-trt-8-1-vaga-e-cadastro-de-reserva",
+      "destination": "/post/concurso-trt-8-2026-vagas-salarios-e-provas-discursivas",
+      "permanent": true
+    },
+    {
+      "source": "/post/concurso-trt-8-103-vagas-para-tecnico-e-analista-judiciario",
+      "destination": "/post/concurso-trt-8-2026-vagas-salarios-e-provas-discursivas",
+      "permanent": true
+    },
+    {
+      "source": "/concursos-municipais",
+      "destination": "/hub/concursos-municipais",
+      "permanent": true
+    },
+    {
+      "source": "/concursos-policiais",
+      "destination": "/hub/concursos-policiais",
+      "permanent": true
+    },
+    {
+      "source": "/concursos-tribunais",
+      "destination": "/hub/concursos-tribunais",
+      "permanent": true
+    },
+    {
+      "source": "/concursos-bancarios",
+      "destination": "/hub/concursos-bancarios",
+      "permanent": true
+    },
+    {
+      "source": "/concursos-fiscais",
+      "destination": "/hub/concursos-fiscais",
+      "permanent": true
+    },
+    {
+      "source": "/concursos-saude",
+      "destination": "/hub/concursos-saude",
+      "permanent": true
+    },
+    {
+      "source": "/concursos-educacao",
+      "destination": "/hub/concursos-educacao",
+      "permanent": true
+    }
+  ]
 }

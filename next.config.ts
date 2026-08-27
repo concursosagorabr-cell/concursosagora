@@ -22,7 +22,110 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      // ── Consolidação de Canibalização de Palavras-chave (SEO) ──
+      // ══════════════════════════════════════════════════════════════
+      // 1. ROTAS ESTRUTURAIS — typos e variantes comuns que geram 404
+      // ══════════════════════════════════════════════════════════════
+      {
+        source: '/noticia',
+        destination: '/noticias',
+        permanent: true,
+      },
+      {
+        source: '/posts',
+        destination: '/noticias',
+        permanent: true,
+      },
+      {
+        source: '/blog',
+        destination: '/noticias',
+        permanent: true,
+      },
+      {
+        source: '/concurso',
+        destination: '/concursos',
+        permanent: true,
+      },
+      {
+        source: '/categoria',
+        destination: '/concursos',
+        permanent: true,
+      },
+
+      // ══════════════════════════════════════════════════════════════
+      // 2. SLUGS COM TRÁFEGO NO GA QUE RETORNAM 404
+      //    Detectados via teste de URLs em 27/08/2026
+      // ══════════════════════════════════════════════════════════════
+
+      // Câmara Municipal de Maringá — GA mostra tráfego em slug longo que não existe
+      {
+        source: '/post/concurso-camara-municipal-de-maringa',
+        destination: '/post/concurso-maringa-pr',
+        permanent: true,
+      },
+      {
+        source: '/post/concurso-camara-maringa',
+        destination: '/post/concurso-maringa-pr',
+        permanent: true,
+      },
+
+      // PRF Administrativo — GA top page com slug "concurso-prf-administrativo-2026"
+      {
+        source: '/post/concurso-prf-administrativo-2026',
+        destination: '/post/prf-administrativo-vagas',
+        permanent: true,
+      },
+      {
+        source: '/post/concurso-prf-vagas',
+        destination: '/post/prf-administrativo-vagas',
+        permanent: true,
+      },
+      {
+        source: '/post/concurso-prf-2026',
+        destination: '/post/prf-administrativo-vagas',
+        permanent: true,
+      },
+
+      // TRT-8 — slug curto "concurso-trt-8-2026" gera 404 (artigo pilar tem slug longo)
+      {
+        source: '/post/concurso-trt-8-2026',
+        destination: '/post/concurso-trt-8-2026-vagas-salarios-e-provas-discursivas',
+        permanent: true,
+      },
+      {
+        source: '/post/concurso-trt-8',
+        destination: '/post/concurso-trt-8-2026-vagas-salarios-e-provas-discursivas',
+        permanent: true,
+      },
+
+      // SEDUC PA — GA mostra tráfego, mas slug "concurso-seduc-pa-2026" não existe
+      {
+        source: '/post/concurso-seduc-pa-2026',
+        destination: '/post/concurso-seduc-pa-2026-vagas-salarios-e-edital-da-fgv',
+        permanent: true,
+      },
+      {
+        source: '/post/seduc-pa-2026',
+        destination: '/post/concurso-seduc-pa-2026-vagas-salarios-e-edital-da-fgv',
+        permanent: true,
+      },
+
+      // Transpetro — slug genérico "concurso-transpetro-2026" gera 404
+      {
+        source: '/post/concurso-transpetro-2026',
+        destination: '/post/transpetro-vagas-2026',
+        permanent: true,
+      },
+      {
+        source: '/post/concurso-transpetro',
+        destination: '/post/transpetro-vagas-2026',
+        permanent: true,
+      },
+
+      // ══════════════════════════════════════════════════════════════
+      // 3. CONSOLIDAÇÃO DE CANIBALIZAÇÃO — slugs duplicados → pilar
+      // ══════════════════════════════════════════════════════════════
+
+      // Transpetro: variantes → artigo pilar
       {
         source: '/post/concurso-transpetro-2026-4-171-vagas-e-salario-ate-r-15-034-81',
         destination: '/post/transpetro-vagas-2026',
@@ -33,12 +136,8 @@ const nextConfig: NextConfig = {
         destination: '/post/transpetro-vagas-2026',
         permanent: true,
       },
-      {
-        source: '/post/concurso-prf-vagas',
-        destination: '/post/prf-administrativo-vagas',
-        permanent: true,
-      },
-      // ── Consolidação de Canibalização: TRT-8 (Redirecionamento 301 para o Artigo Pilar de Maior Tráfego) ──
+
+      // TRT-8: variantes antigas → artigo pilar
       {
         source: '/post/concurso-trt-8-fcc-organiza-salarios-ate-r-16-mil-veja-vagas',
         destination: '/post/concurso-trt-8-2026-vagas-salarios-e-provas-discursivas',
@@ -74,6 +173,10 @@ const nextConfig: NextConfig = {
         destination: '/post/concurso-trt-8-2026-vagas-salarios-e-provas-discursivas',
         permanent: true,
       },
+
+      // ══════════════════════════════════════════════════════════════
+      // 4. HUBS — atalhos sem /hub/ prefix
+      // ══════════════════════════════════════════════════════════════
       {
         source: '/concursos-municipais',
         destination: '/hub/concursos-municipais',
