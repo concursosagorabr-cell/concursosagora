@@ -69,7 +69,7 @@ export default function SegmentedAlertBox({
         </h3>
 
         <p className="text-sm text-slate-300 leading-relaxed max-w-xl">
-          Não perca prazos de inscrição, retificações e divulgação de gabaritos para {segmentName}. Escolha como deseja ser avisado gratuitamente:
+          Não perca prazos de inscrição, retificações e novidades para {segmentName}. Escolha como deseja ser avisado gratuitamente:
         </p>
 
         {/* Botão de Acesso Imediato: Canal VIP no Telegram */}

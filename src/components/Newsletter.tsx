@@ -56,7 +56,7 @@ export default function Newsletter() {
         </h3>
 
         <p className="text-blue-100 text-xs md:text-sm leading-relaxed">
-          Cadastre-se e seja o primeiro a saber sobre concursos abertos, gabaritos e convocações.
+          Cadastre-se e seja o primeiro a saber sobre concursos abertos, editais e convocações.
         </p>
 
         {/* ── Estado: sucesso (novo cadastro) ── */}

@@ -30,14 +30,14 @@ export async function generateMetadata({ searchParams }: NoticiasPageProps): Pro
   return {
     title: `Todas as Notícias de Concursos Públicos e Editais${pageSuffix}`,
     description:
-      'Acompanhe todas as notícias, editais publicados, inscrições abertas e gabaritos de concursos públicos no Brasil em tempo real.',
+      'Acompanhe todas as notícias, editais publicados, inscrições abertas e atualizações de concursos públicos no Brasil em tempo real.',
     alternates: {
       canonical: url,
     },
     openGraph: {
       title: `Todas as Notícias de Concursos Públicos e Editais${pageSuffix}`,
       description:
-        'Acompanhe todas as notícias, editais publicados, inscrições abertas e gabaritos de concursos públicos no Brasil em tempo real.',
+        'Acompanhe todas as notícias, editais publicados, inscrições abertas e atualizações de concursos públicos no Brasil em tempo real.',
       url,
       type: 'website',
     },
@@ -128,7 +128,7 @@ export default async function NoticiasPage({ searchParams }: NoticiasPageProps) 
               📰 Todas as Notícias & Editais
             </h1>
             <p className="text-slate-300 text-sm md:text-base max-w-2xl leading-relaxed">
-              Cobertura em tempo real com editais autorizados, publicados, bancas organizadoras, gabaritos e convocações em todo o Brasil.
+              Cobertura em tempo real com editais autorizados, publicados, bancas organizadoras e convocações em todo o Brasil.
             </p>
           </div>
           <div className="bg-white/10 backdrop-blur-md px-5 py-3 rounded-2xl border border-white/10 text-center">

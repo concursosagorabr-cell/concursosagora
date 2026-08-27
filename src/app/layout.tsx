@@ -24,12 +24,12 @@ export const metadata: Metadata = {
     template: '%s | Concursos Agora',
   },
   description:
-    'Notícias em tempo real sobre concursos públicos no Brasil, editais abertos, gabaritos, inscrições e dicas de estudo para sua aprovação.',
+    'Notícias em tempo real sobre concursos públicos no Brasil, editais abertos, inscrições, materiais de estudo e dicas para sua aprovação.',
   keywords: [
     'concursos públicos',
     'editais abertos',
     'concursos 2026',
-    'gabarito concurso',
+    'materiais de estudo',
     'provas de concurso',
   ],
   authors: [{ name: 'Equipe Concursos Agora' }],

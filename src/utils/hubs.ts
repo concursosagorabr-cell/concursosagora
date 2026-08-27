@@ -24,7 +24,7 @@ export const CONTENT_HUBS: ContentHub[] = [
     shortTitle: 'Municipais',
     icon: '🏛️',
     description:
-      'Guia completo com notícias, editais e gabaritos de Prefeituras, Câmaras Municipais e Guardas de todas as cidades brasileiras.',
+      'Guia completo com notícias, editais e prazos de Prefeituras, Câmaras Municipais e Guardas de todas as cidades brasileiras.',
     seoDescription:
       'Confira os concursos públicos municipais com editais abertos e previstos para prefeituras e câmaras em todos os estados do Brasil.',
     keywords: ['municipal', 'prefeitura', 'câmara', 'guarda municipal', 'município'],
@@ -145,7 +145,7 @@ export const CONTENT_HUBS: ContentHub[] = [
     shortTitle: 'Educação & Docência',
     icon: '🎓',
     description:
-      'Gabaritos, editais e vagas para Professores, Pedagogos, Universidades Federais (UFs), Institutos Federais (IFs) e Secretarias.',
+      'Notícias, editais e vagas para Professores, Pedagogos, Universidades Federais (UFs), Institutos Federais (IFs) e Secretarias.',
     seoDescription:
       'Tudo sobre concursos para professores e magistério público em secretarias de educação, IFs e universidades federais.',
     keywords: ['educação', 'professor', 'pedagogia', 'universidade', 'if', 'uf', 'magistério', 'docência'],

@@ -40,7 +40,7 @@ export default function Footer() {
               <span>Concursos<span className="text-blue-500">Agora</span></span>
             </Link>
             <p className="text-xs md:text-sm text-slate-400 leading-relaxed">
-              O portal definitivo de notícias sobre concursos públicos no Brasil. Inscrições abertas, editais previstos, gabaritos e materiais de estudo.
+              O portal definitivo de notícias sobre concursos públicos no Brasil. Inscrições abertas, editais previstos e materiais de estudo.
             </p>
           </div>
 
