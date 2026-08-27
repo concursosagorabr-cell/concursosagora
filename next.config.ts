@@ -38,6 +38,42 @@ const nextConfig: NextConfig = {
         destination: '/post/prf-administrativo-vagas',
         permanent: true,
       },
+      // ── Consolidação de Canibalização: TRT-8 (Redirecionamento 301 para o Artigo Pilar de Maior Tráfego) ──
+      {
+        source: '/post/concurso-trt-8-fcc-organiza-salarios-ate-r-16-mil-veja-vagas',
+        destination: '/post/concurso-trt-8-2026-vagas-salarios-e-provas-discursivas',
+        permanent: true,
+      },
+      {
+        source: '/post/concurso-trt-8-ate-92-vagas-salarios-de-ate-r-16-mil-veja-detalhes',
+        destination: '/post/concurso-trt-8-2026-vagas-salarios-e-provas-discursivas',
+        permanent: true,
+      },
+      {
+        source: '/post/trt-8-banca-fcc-confirmada-salarios-ate-r-16-mil-veja-detalhes-do-certame',
+        destination: '/post/concurso-trt-8-2026-vagas-salarios-e-provas-discursivas',
+        permanent: true,
+      },
+      {
+        source: '/post/concurso-trt-8-banca-fcc-confirmada-vagas-ainda-sem-numero-veja-detalhes',
+        destination: '/post/concurso-trt-8-2026-vagas-salarios-e-provas-discursivas',
+        permanent: true,
+      },
+      {
+        source: '/post/concurso-trt-8-fcc-ja-e-banca-vagas-e-salarios-ainda-em-fase-de-definicao',
+        destination: '/post/concurso-trt-8-2026-vagas-salarios-e-provas-discursivas',
+        permanent: true,
+      },
+      {
+        source: '/post/concurso-trt-8-1-vaga-e-cadastro-de-reserva',
+        destination: '/post/concurso-trt-8-2026-vagas-salarios-e-provas-discursivas',
+        permanent: true,
+      },
+      {
+        source: '/post/concurso-trt-8-103-vagas-para-tecnico-e-analista-judiciario',
+        destination: '/post/concurso-trt-8-2026-vagas-salarios-e-provas-discursivas',
+        permanent: true,
+      },
       {
         source: '/concursos-municipais',
         destination: '/hub/concursos-municipais',
