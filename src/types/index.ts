@@ -24,6 +24,7 @@ export interface Author {
   slug?: string;
   image?: SanityImage;
   bio?: string | PortableTextBlock[];
+  facebookUrl?: string;
 }
 
 export interface Category {

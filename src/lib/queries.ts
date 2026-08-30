@@ -31,7 +31,8 @@ export const compactPostFields = `
     _id,
     name,
     "slug": coalesce(slug.current, _id),
-    image
+    image,
+    facebookUrl
   },
   "categories": coalesce(categories[]->{
     _id,
@@ -74,7 +75,8 @@ export const fullPostFields = `
     name,
     "slug": coalesce(slug.current, _id),
     image,
-    bio
+    bio,
+    facebookUrl
   },
   "categories": coalesce(categories[]->{
     _id,
