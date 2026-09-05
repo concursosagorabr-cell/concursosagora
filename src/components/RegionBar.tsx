@@ -97,6 +97,12 @@ export default function RegionBar() {
 
   const displayDate = todayFormatted.charAt(0).toUpperCase() + todayFormatted.slice(1);
 
+  const shortDate = new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(new Date());
+
   // Fechar menu ao clicar fora do componente RegionBar ou pressionar Escape
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -121,22 +127,27 @@ export default function RegionBar() {
 
   return (
     <div ref={barContainerRef} className="relative z-50 bg-slate-950 text-slate-300 border-b border-slate-800/80 text-xs">
-      <div className="flex items-center justify-between max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-1.5">
+      <div className="flex items-center justify-between max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-1.5 gap-2">
         
         {/* Esquerda: Data ao vivo e Selo de Plantão */}
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-2.5 shrink-0">
           <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-red-950/80 border border-red-800/60 text-red-400 font-extrabold tracking-wider uppercase text-xs">
             <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping motion-reduce:animate-none inline-block" />
             <span>Plantão de Editais</span>
           </div>
-          <span className="hidden xl:inline-block text-slate-400 font-medium">
+          {/* Data completa em telas amplas (2xl), compacta em xl, oculta em menores para garantir espaço aos filtros */}
+          <span className="hidden 2xl:inline-block text-slate-400 font-medium">
             {displayDate}
           </span>
+          <span className="hidden xl:inline-block 2xl:hidden text-slate-400 font-medium text-[11px]">
+            {shortDate}
+          </span>
+          <span className="hidden md:inline-block h-3.5 w-px bg-slate-800 shrink-0" aria-hidden="true" />
         </div>
 
-        {/* Centro: Filtro Rápido com Estados em Destaque + Botão Toggle */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth whitespace-nowrap px-2 mx-2 flex-1 justify-start lg:justify-center">
-          <span className="hidden sm:inline-block text-slate-500 font-semibold text-xs uppercase tracking-wider shrink-0">
+        {/* Centro: Filtro Rápido com Estados em Destaque + Botão Toggle (Alinhado à esquerda para NUNCA cortar a palavra Regiões) */}
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth whitespace-nowrap px-1 flex-1 justify-start min-w-0">
+          <span className="text-slate-400 font-bold text-xs uppercase tracking-wider shrink-0 select-none">
             Regiões:
           </span>
 
@@ -181,46 +192,50 @@ export default function RegionBar() {
         </div>
 
         {/* Direita: Redes Sociais Oficiais */}
-        <div className="hidden lg:flex items-center gap-3 shrink-0 text-slate-400 font-semibold pl-2 border-l border-slate-800">
+        <div className="hidden lg:flex items-center gap-2.5 shrink-0 text-slate-400 font-semibold pl-2 border-l border-slate-800">
           <a
             href="https://t.me/concursosagorabr"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-sky-400 text-sky-400/90 font-bold transition-colors flex items-center gap-1"
             title="Canal VIP no Telegram"
+            aria-label="Canal VIP no Telegram"
           >
             <TelegramIcon className="w-3.5 h-3.5" />
-            <span className="text-xs">Telegram VIP</span>
+            <span className="text-xs">Telegram <span className="hidden xl:inline">VIP</span></span>
           </a>
           <a
             href="https://www.instagram.com/concursosagora_/"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-pink-400 transition-colors flex items-center gap-1"
+            className="hover:text-pink-400 transition-colors flex items-center gap-1 p-0.5 rounded hover:bg-slate-800/60"
             title="Instagram Oficial"
+            aria-label="Instagram Oficial"
           >
             <InstagramIcon className="w-3.5 h-3.5" />
-            <span className="text-xs">Instagram</span>
+            <span className="text-xs hidden 2xl:inline">Instagram</span>
           </a>
           <a
             href="https://www.facebook.com/profile.php?id=61592443961535"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-blue-400 transition-colors flex items-center gap-1"
+            className="hover:text-blue-400 transition-colors flex items-center gap-1 p-0.5 rounded hover:bg-slate-800/60"
             title="Facebook Oficial"
+            aria-label="Facebook Oficial"
           >
             <FacebookIcon className="w-3.5 h-3.5" />
-            <span className="text-xs">Facebook</span>
+            <span className="text-xs hidden 2xl:inline">Facebook</span>
           </a>
           <a
             href="https://www.youtube.com/@ConcursosAgora"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-red-400 transition-colors flex items-center gap-1"
+            className="hover:text-red-400 transition-colors flex items-center gap-1 p-0.5 rounded hover:bg-slate-800/60"
             title="Canal YouTube"
+            aria-label="Canal YouTube"
           >
             <YouTubeIcon className="w-3.5 h-3.5" />
-            <span className="text-xs">YouTube</span>
+            <span className="text-xs hidden 2xl:inline">YouTube</span>
           </a>
         </div>
 

@@ -146,8 +146,9 @@ Conjunto de melhorias implementadas com base na análise do Vercel Analytics (55
 
 ### 🌐 14. Barra Superior de Plantão Otimizada (`RegionBar.tsx`)
 - **Destaque de Alto Tráfego:** Exibição imediata dos estados com maior volume de buscas no Google e maior número de vagas no Brasil (`🇧🇷 NACIONAL`, `SP`, `RJ`, `MG`, `DF`, `BA`, `PR`, `RS`).
-- **Botão Discreto `+ Estados ▾`:** Menu compacto com popover responsivo que agrupa todos os demais estados pelas macrorregiões do Brasil (Nordeste, Centro-Oeste, Sul & Sudeste, Norte), eliminando qualquer corte horizontal ou barra de rolagem quebrada em telas de notebooks (1366px, 1280px).
-- **Interatividade Acessível:** Fechamento automático ao clicar fora (`useRef` + `mousedown`) ou pressionar `Escape`.
+- **Layout Anti-Clipping de Regiões:** Eliminação do bug de corte horizontal ("ÕES:") causado por `justify-center` em containers scrolláveis. Uso de `justify-start` com ancoragem segura em `x = 0`, garantindo que o rótulo **"Regiões:"** e todos os estados fiquem 100% visíveis em qualquer resolução (mobile, notebook 1280px/1366px, desktop 4K).
+- **Otimização Inteligente de Espaço:** Data completa em telas ultra-wide (`2xl`), versão compacta (`DD/MM/AAAA`) em notebooks (`xl`) e badges compactos para redes sociais no canto direito, liberando mais de 350px de largura útil na barra.
+- **Menu Toggle Expansível `+ Estados ▾`:** Painel expansível sob a barra estruturado com as 5 macrorregiões oficiais do Brasil (Sudeste, Sul, Centro-Oeste, Nordeste e Norte) e todas as 27 UFs, com fechamento por clique externo (`mousedown`), tecla `Escape` ou clique em qualquer UF.
 
 ### 🛡️ 15. Blindagem Editorial Anti-404 e Saneamento de Badges
 - **Saneamento de Badges (`HeroCarousel.tsx` e `PostCard.tsx`):** Aplicação de `getPureCategories` para garantir que apenas áreas e carreiras apareçam nos badges primários dos cards, evitando duplicação visual de siglas de UF.
