@@ -81,7 +81,7 @@ function CookieCategoryCard({
         <div className="flex items-center gap-2 mb-1">
           <span className="text-sm font-bold text-slate-900">{title}</span>
           {badge && (
-            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-emerald-100 text-emerald-700">
+            <span className="px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wide bg-emerald-100 text-emerald-700">
               {badge}
             </span>
           )}
@@ -177,7 +177,7 @@ export default function CookieBanner() {
                     <h2 className="text-base font-extrabold text-slate-900">
                       Privacidade e Cookies
                     </h2>
-                    <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 border border-blue-200 ml-1">
+                    <span className="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-100 text-blue-700 border border-blue-200 ml-1">
                       LGPD
                     </span>
                   </div>
@@ -260,8 +260,8 @@ export default function CookieBanner() {
               <button
                 type="button"
                 onClick={closeModal}
-                aria-label="Fechar"
-                className="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                aria-label="Fechar modal de preferências"
+                className="w-8 h-8 flex items-center justify-center rounded-full text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors"
               >
                 <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
                   <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
@@ -320,7 +320,7 @@ export default function CookieBanner() {
 
               {/* Base legal */}
               <div className="p-3 rounded-lg bg-blue-50 border border-blue-100">
-                <p className="text-[11px] text-blue-700 leading-relaxed">
+                <p className="text-xs text-blue-700 leading-relaxed">
                   <strong>Base legal (LGPD — Art. 7º, I):</strong> o tratamento de dados de análise é realizado mediante o seu consentimento expresso, que pode ser retirado a qualquer momento clicando no ícone 🍪 na parte inferior da tela.
                 </p>
               </div>

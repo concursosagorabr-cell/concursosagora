@@ -17,7 +17,7 @@ export default function HubCard({ hub }: HubCardProps) {
             <span className="text-xl p-2 bg-blue-50/80 rounded-xl group-hover:scale-110 transition-transform inline-flex items-center justify-center">
               {hub.icon}
             </span>
-            <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200/60">
+            <span className="text-xs font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200/60">
               Guia de Carreira
             </span>
           </div>
@@ -38,13 +38,13 @@ export default function HubCard({ hub }: HubCardProps) {
           {hub.subSilos.slice(0, 3).map((sub, idx) => (
             <span
               key={idx}
-              className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-100/90 text-slate-700 border border-slate-200/60"
+              className="text-xs font-medium px-2 py-0.5 rounded-md bg-slate-100/90 text-slate-700 border border-slate-200/60"
             >
               {sub.title}
             </span>
           ))}
           {hub.subSilos.length > 3 && (
-            <span className="text-[10px] font-semibold text-slate-400 self-center">
+            <span className="text-xs font-semibold text-slate-600 self-center">
               +{hub.subSilos.length - 3}
             </span>
           )}

@@ -21,10 +21,14 @@ export interface SanityImage {
 export interface Author {
   _id: string;
   name: string;
+  role?: string;
   slug?: string;
   image?: SanityImage;
   bio?: string | PortableTextBlock[];
   facebookUrl?: string;
+  linkedinUrl?: string;
+  instagramUrl?: string;
+  twitterUrl?: string;
 }
 
 export interface Category {

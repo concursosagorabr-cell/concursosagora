@@ -68,7 +68,7 @@ export default function RegionalExplorer() {
       {/* Cabeçalho da Seção */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-100">
         <div>
-          <span className="text-[11px] font-black uppercase tracking-wider text-blue-600 block">
+          <span className="text-xs font-black uppercase tracking-wider text-blue-600 block">
             Guia Geográfico
           </span>
           <h2 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
@@ -121,7 +121,7 @@ export default function RegionalExplorer() {
                 {state.name}
               </span>
             </div>
-            <span className="text-slate-400 group-hover:text-blue-600 text-xs transition-transform group-hover:translate-x-0.5" aria-hidden="true">
+            <span className="text-slate-500 group-hover:text-blue-600 text-xs transition-transform group-hover:translate-x-0.5" aria-hidden="true">
               →
             </span>
           </Link>
@@ -131,7 +131,7 @@ export default function RegionalExplorer() {
       {/* Banner de atalho rápido para Concursos Nacionais */}
       <div className="mt-6 pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse motion-reduce:animate-none" />
           <span>Editais atualizados diariamente em todos os 26 estados e Distrito Federal.</span>
         </div>
         <div className="flex items-center gap-2 font-bold text-slate-700">

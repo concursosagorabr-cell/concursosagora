@@ -131,7 +131,7 @@ export default function Newsletter() {
               )}
             </button>
 
-            <p className="text-blue-200/70 text-[11px] text-center leading-relaxed">
+            <p className="text-blue-200 text-xs text-center leading-relaxed">
               Sem spam. Cancele quando quiser.{' '}
               <Link
                 href="/politica-de-privacidade"

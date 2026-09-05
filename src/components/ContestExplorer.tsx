@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Post } from '@/types';
 import { getImageUrl } from '@/lib/image';
+import { getDescriptiveImageAlt } from '@/utils/imageAlt';
 import { BRAZIL_STATES } from '@/utils/states';
 import { getAllExamBoards } from '@/utils/bancas';
 
@@ -195,15 +196,16 @@ export default function ContestExplorer({
                 setCurrentPage(1);
               }}
               placeholder="Ex: Polícia Federal, TJ-SP, Prefeitura, Professor, TI..."
-              className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all"
+              aria-label="Filtrar por cargo, órgão ou palavra-chave"
+              className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-500 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all"
             />
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-base">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-base" aria-hidden="true">
               🔍
             </span>
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-sm p-1"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 text-sm p-1"
                 aria-label="Limpar busca"
               >
                 ✕
@@ -379,7 +381,7 @@ export default function ContestExplorer({
                 <div className="relative aspect-[16/9] w-full bg-slate-100 overflow-hidden">
                   <Image
                     src={imageUrl}
-                    alt={post.title}
+                    alt={getDescriptiveImageAlt(post)}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -390,12 +392,12 @@ export default function ContestExplorer({
                   {/* Badges Flutuantes */}
                   <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
                     {post.stateUf && (
-                      <span className="px-2.5 py-1 rounded-full bg-blue-600/90 backdrop-blur-xs text-white text-[11px] font-black uppercase tracking-wider shadow-xs">
+                      <span className="px-2.5 py-1 rounded-full bg-blue-600/90 backdrop-blur-xs text-white text-xs font-black uppercase tracking-wider shadow-xs">
                         📍 {post.stateUf}
                       </span>
                     )}
                     {post.banca && (
-                      <span className="px-2.5 py-1 rounded-full bg-slate-900/90 backdrop-blur-xs text-slate-200 text-[11px] font-bold shadow-xs">
+                      <span className="px-2.5 py-1 rounded-full bg-slate-900/90 backdrop-blur-xs text-slate-200 text-xs font-bold shadow-xs">
                         {post.banca}
                       </span>
                     )}
@@ -445,11 +447,11 @@ export default function ContestExplorer({
                   {/* Rodapé do Card com CTA */}
                   <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
                     {post.educationLevel && post.educationLevel.length > 0 ? (
-                      <span className="text-[11px] font-semibold text-slate-500 capitalize">
+                      <span className="text-xs font-semibold text-slate-600 capitalize">
                         🎓 {post.educationLevel.join(', ')}
                       </span>
                     ) : (
-                      <span className="text-[11px] font-semibold text-slate-400">Ver requisitos</span>
+                      <span className="text-xs font-semibold text-slate-600">Ver requisitos</span>
                     )}
 
                     <Link

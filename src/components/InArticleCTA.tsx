@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Post } from '@/types';
 import { getImageUrl } from '@/lib/image';
+import { getDescriptiveImageAlt } from '@/utils/imageAlt';
 
 interface InArticleCTAProps {
   posts: Post[];
@@ -47,7 +48,7 @@ export default function InArticleCTA({ posts, categoryName }: InArticleCTAProps)
                 <div className="relative w-16 h-12 rounded-lg overflow-hidden shrink-0 bg-slate-200">
                   <Image
                     src={imgUrl}
-                    alt={post.title}
+                    alt={getDescriptiveImageAlt(post)}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
                     sizes="64px"
@@ -59,7 +60,7 @@ export default function InArticleCTA({ posts, categoryName }: InArticleCTAProps)
                   {post.title}
                 </p>
                 {date && (
-                  <span className="text-[10px] text-slate-400 font-medium mt-0.5 block">{date}</span>
+                  <span className="text-xs text-slate-600 font-medium mt-0.5 block">{date}</span>
                 )}
               </div>
               <span className="text-blue-500 text-sm font-bold shrink-0 group-hover:translate-x-1 transition-transform">

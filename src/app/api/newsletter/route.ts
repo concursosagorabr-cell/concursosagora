@@ -1,13 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@sanity/client';
+import { getRedis } from '@/lib/redis';
 
-// Rate limiting por IP (em memória por instância serverless)
+// Rate limiting por IP: Redis distribuído com fallback em memória por instância serverless
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT_MAX = 20; // 20 requisições por minuto por IP real
 const RATE_LIMIT_WINDOW_MS = 60_000;
 
-function isRateLimited(ip: string): boolean {
+async function isRateLimited(ip: string): Promise<boolean> {
   if (!ip || ip === 'unknown' || ip === '127.0.0.1') return false;
+
+  const redis = getRedis();
+  if (redis) {
+    try {
+      const key = `ratelimit:newsletter:${ip}`;
+      const count = await redis.incr(key);
+      if (count === 1) {
+        await redis.expire(key, 60);
+      }
+      return count > RATE_LIMIT_MAX;
+    } catch (err) {
+      console.warn('[newsletter] Erro no rate limit Redis, aplicando fallback em memória:', err);
+    }
+  }
+
   const now = Date.now();
   const entry = rateLimitMap.get(ip);
 
@@ -68,7 +84,7 @@ export async function POST(request: NextRequest) {
     request.headers.get('x-real-ip') ??
     'unknown';
 
-  if (isRateLimited(ip)) {
+  if (await isRateLimited(ip)) {
     return NextResponse.json(
       { error: 'Muitas tentativas. Aguarde um minuto e tente novamente.' },
       { status: 429 },

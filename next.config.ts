@@ -1,12 +1,7 @@
 import type { NextConfig } from "next";
 
-// Em produção na nuvem (Vercel/CI), a verificação de certificados TLS é 100% estrita e obrigatória.
-// Apenas no ambiente local de desenvolvimento Windows com interceptação de proxy/antivírus permite fallback.
-if (!process.env.VERCEL && !process.env.CI) {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-}
-
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   images: {
     unoptimized: true,
     remotePatterns: [
@@ -48,6 +43,16 @@ const nextConfig: NextConfig = {
       {
         source: '/categoria',
         destination: '/concursos',
+        permanent: true,
+      },
+      {
+        source: '/sobre',
+        destination: '/sobre-nos',
+        permanent: true,
+      },
+      {
+        source: '/about',
+        destination: '/sobre-nos',
         permanent: true,
       },
 
@@ -238,6 +243,23 @@ const nextConfig: NextConfig = {
           {
             key: 'Strict-Transport-Security',
             value: 'max-age=63072000; includeSubDomains; preload',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://www.googletagmanager.com https://va.vercel-scripts.com https://partner.googleadservices.com https://tpc.googlesyndication.com https://adservice.google.com https://www.google.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "font-src 'self' data: https://fonts.gstatic.com",
+              "img-src 'self' data: blob: https://cdn.sanity.io https://*.google.com https://*.doubleclick.net https://pagead2.googlesyndication.com https://*.googleadservices.com https://*.googlesyndication.com https://pixabay.com https://cdn.pixabay.com https://images.unsplash.com https://images.pexels.com https://flagcdn.com https://upload.wikimedia.org https://commons.wikimedia.org",
+              "connect-src 'self' https://*.sanity.io https://*.sanity.work https://*.googleapis.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://va.vercel-scripts.com https://vitals.vercel-insights.com https://*.doubleclick.net https://pagead2.googlesyndication.com https://*.upstash.io",
+              "frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com https://*.google.com",
+              "frame-ancestors 'self'",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+              "upgrade-insecure-requests",
+            ].join('; '),
           },
         ],
       },

@@ -32,9 +32,10 @@ export default function Footer() {
               <div className="relative h-10 w-20 shrink-0">
                 <Image
                   src="/logo.png"
-                  alt="Concursos Agora Logo"
-                  fill
-                  className="object-contain"
+                  alt="Logotipo oficial do Portal Concursos Agora"
+                  width={80}
+                  height={40}
+                  className="w-full h-full object-contain"
                 />
               </div>
               <span>Concursos<span className="text-blue-500">Agora</span></span>
@@ -72,7 +73,7 @@ export default function Footer() {
           {/* Coluna 4: Institucional & Redes */}
           <div>
             <h3 className="text-white font-bold text-xs tracking-wider uppercase mb-4">Institucional & Redes</h3>
-            <h4 className="text-white font-bold text-[11px] tracking-wider uppercase mb-3">Siga o Concursos Agora</h4>
+            <h4 className="text-white font-bold text-xs tracking-wider uppercase mb-3">Siga o Concursos Agora</h4>
             <div className="flex flex-wrap gap-2 text-xs">
               {SOCIAL_LINKS.map((link) => {
                 const Icon = SOCIAL_ICON_MAP[link.icon];
@@ -100,7 +101,7 @@ export default function Footer() {
           <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3 text-center sm:text-left">
             <p>© {new Date().getFullYear()} Concursos Agora. Todos os direitos reservados.</p>
             <span className="hidden sm:inline text-slate-700" aria-hidden="true">•</span>
-            <p className="text-slate-400 text-[11px]">
+            <p className="text-slate-400 text-xs">
               Tecnologia & IA por{' '}
               <a
                 href="https://www.vetorestrategico.com/"

@@ -32,8 +32,10 @@ frontend/
 │   │       ├── categories/
 │   │       │   └── resolve/
 │   │       │       └── route.ts    # API de resolução de categorias ⚙️
-│   │       └── newsletter/
-│   │           └── route.ts        # API de captação de e-mails da Newsletter e Alertas VIP (Brevo) ✉️
+│   │       ├── newsletter/
+│   │       │   └── route.ts        # API de captação de e-mails da Newsletter e Alertas VIP (Brevo) ✉️
+│   │       └── revalidate/
+│   │           └── route.ts        # Revalidação On-Demand (ISR) segura via webhook Sanity 🛡️
 │   ├── components/
 │   │   ├── ContestExplorer.tsx     # Explorador com busca facetada reativa (Salário, Escolaridade, UF, Banca) 🎛️
 │   │   ├── SegmentedAlertBox.tsx   # Captura de leads VIP segmentada por nicho (WhatsApp, Telegram e E-mail) 🔔
@@ -43,18 +45,18 @@ frontend/
 │   │   ├── InArticleCTA.tsx        # Bloco "Leia Também" contextual inserido no artigo — reduz bounce rate 📌
 │   │   ├── Header.tsx              # Cabeçalho com logo oficial otimizado, RegionBar + Navbar
 │   │   ├── Navbar.tsx              # Menu desktop otimizado com link para Explorar Vagas
-│   │   ├── MobileMenu.tsx          # Drawer mobile com seções filtradas e redes sociais
+│   │   ├── MobileMenu.tsx          # Drawer mobile acessível (WCAG) com suporte a inert e foco seguro 📱
 │   │   ├── RegionBar.tsx           # Atalhos diretos para as 27 UFs
-│   │   ├── SearchBar.tsx           # Campo de busca rápida
+│   │   ├── SearchBar.tsx           # Campo de busca progressiva (SSR amigável e acessível) 🔍
 │   │   ├── PostCard.tsx            # Card de concurso na listagem com badges de salário e vagas
 │   │   ├── CategoryCard.tsx        # Card de link direto para a categoria
 │   │   ├── Sidebar.tsx             # Barra lateral contextual com posts da área e newsletter
 │   │   ├── RelatedPosts.tsx        # Grid de 3 matérias relacionadas no rodapé do artigo
 │   │   ├── PostHubWidget.tsx       # Widget de linkagem interna bidirecional (Hub SEO)
-│   │   ├── AuthorCard.tsx          # Card do autor no rodapé do artigo
+│   │   ├── AuthorCard.tsx          # Card do autor no rodapé do artigo com redes sociais verificáveis e EEAT ✍️
 │   │   ├── Footer.tsx              # Rodapé com logo oficial e links por região
 │   │   ├── Pagination.tsx          # Paginação com botões numéricos e indicadores de matérias
-│   │   └── PortableText.tsx        # Renderizador de Portable Text do Sanity
+│   │   └── PortableText.tsx        # Renderizador de Portable Text do Sanity com suporte a tabelas
 │   ├── lib/
 │   │   ├── sanity.ts               # Cliente Sanity com métodos em cache (ISR)
 │   │   ├── queries.ts              # Queries GROQ completas e projeções com novos campos estruturados
@@ -65,7 +67,8 @@ frontend/
 │       ├── bancas.ts               # Mapeamento e perfil detalhado das 9 principais bancas examinadoras 🏢
 │       ├── status.ts               # Cálculo dinâmico de status do concurso (Aberto/Encerrado)
 │       ├── categories.ts           # Deduplicação, filtro de puras e mapeamento de sinônimos/aliases 🧩
-│       └── hubs.ts                 # Definição e configuração dos Hubs de Conteúdo (Silos SEO)
+│       ├── hubs.ts                 # Definição e configuração dos Hubs de Conteúdo (Silos SEO)
+│       └── imageAlt.ts             # Geração de alt texts contextuais e descritivos para acessibilidade e SEO 🖼️
 ├── vercel.json                     # Configuração de deploy da Vercel (região gru1 - São Paulo)
 ├── .env.example                    # Modelo de variáveis de ambiente
 └── package.json
@@ -134,6 +137,23 @@ Conjunto de melhorias implementadas com base na análise do Vercel Analytics (55
 ### 🔔 12. Captura de Leads VIP Segmentada (`SegmentedAlertBox.tsx`)
 - Lead magnet contextual com opções de entrada direta em grupos de WhatsApp, canal VIP do Telegram e alertas personalizados por e-mail no nicho específico da página.
 
+### ♿ 13. Acessibilidade (Conformidade WCAG 2.1 Nível AA/AAA)
+- **Tipografia e Zoom Escalável (WCAG 1.4.4 AA):** Eliminação de micro-textos inferiores a 12px em todos os componentes (`text-xs` mínimo escalável em `rem`), assegurando legibilidade e suporte a zoom de até 200% sem perda de conteúdo ou sobreposição.
+- **Redução de Movimento (`prefers-reduced-motion` - WCAG 2.3.3 AAA):** Regra CSS global em `globals.css` que anula transições e animações quando solicitado pelo sistema do usuário, combinada com classes utilitárias `motion-reduce:animate-none` em elementos visuais contínuos (como o badge pulsante `animate-ping`).
+- **Contraste de Cores Otimizado (WCAG 1.4.3 AA):** Revisão cromática garantindo contraste superior a 4.5:1 para texto normal e superior a 7:1 em botões, tags e metadados de leitura rápida.
+- **Busca Progressiva e Acessível (`SearchBar.tsx`):** Campo de pesquisa habilitado imediatamente no SSR sem bloqueios que pudessem desorientar usuários de leitores de tela.
+- **Textos Alternativos Descritivos (`imageAlt.ts` - WCAG 1.1.1 A):** Geração contextual de `alt` para imagens de editais e órgãos públicos, descrevendo o contexto visual em vez de apenas repetir o título da página.
+- **Menu Mobile Sem Armadilhas de Foco (`MobileMenu.tsx`):** Uso do atributo nativo `inert` e controle reativo de `aria-hidden` quando o drawer estiver fechado, prevenindo que leitores de tela naveguem por links invisíveis.
+
+### 🛡️ 14. Segurança & Cabeçalhos HTTP (Nota A+ / OWASP)
+- **Content-Security-Policy (CSP) Estrito:** Configurado diretamente nos cabeçalhos HTTP no `next.config.ts`, restringindo a execução de scripts, conexões e fontes apenas para origens confiáveis (Sanity CDN, Google Fonts, GA4, Vercel).
+- **Ocultação de Fingerprinting:** Supressão do cabeçalho `X-Powered-By: Next.js` via `poweredByHeader: false`.
+- **Revalidação ISR Blindada (`/api/revalidate`):** Endpoint de purge de cache On-Demand protegido obrigatoriamente pela variável `SANITY_REVALIDATE_SECRET`, com rejeição imediata (HTTP 500/401) e zero segredos estáticos no código-fonte.
+
+### ✍️ 15. Perfis Editoriais Humanizados & EEAT (`AuthorCard.tsx`)
+- Card de identificação profissional no rodapé dos artigos exibindo a especialidade editorial do jornalista (ex: Especialista em Carreiras Jurídicas, Carreiras Policiais, etc.).
+- Links sociais diretos e verificáveis (LinkedIn, X/Twitter, Instagram, Facebook) com `rel="noopener noreferrer"`.
+
 ---
 
 ## 📄 Rotas e Endpoints
@@ -154,6 +174,7 @@ Conjunto de melhorias implementadas com base na análise do Vercel Analytics (55
 | `/sitemap.xml` | Static | Sitemap XML dinâmico com todas as rotas programáticas |
 | `/api/categories/resolve` | API Route | Endpoint para o robô Python consultar categorias |
 | `/api/newsletter` | API Route (POST) | Endpoint seguro para cadastro de leitores e alertas na Brevo |
+| `/api/revalidate` | API Route (GET/POST) | Revalidação On-Demand (ISR) blindada com `SANITY_REVALIDATE_SECRET` |
 
 ---
 
@@ -167,6 +188,9 @@ NEXT_PUBLIC_SANITY_PROJECT_ID=mcc3s7d2
 NEXT_PUBLIC_SANITY_DATASET=production
 NEXT_PUBLIC_SANITY_API_VERSION=2026-07-25
 SANITY_API_TOKEN=skESugwi5EBz6Wh...
+
+# Segredo de Revalidação On-Demand (ISR)
+SANITY_REVALIDATE_SECRET=seu_segredo_de_revalidacao_aqui
 
 # Google Analytics 4
 NEXT_PUBLIC_GA_ID=G-YX2KZMH82Y
@@ -185,6 +209,12 @@ npm install
 
 # Iniciar servidor local
 npm run dev
+
+# Executar suite de testes unitários (Vitest)
+npm test
+
+# Executar linter ESLint
+npm run lint
 
 # Checar tipos TypeScript (não requer conexão com Google Fonts)
 npx tsc --noEmit

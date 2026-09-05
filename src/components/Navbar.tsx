@@ -171,7 +171,7 @@ export default function Navbar({ categories = [] }: NavbarProps) {
         href="/search?q=aberto"
         className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition-colors whitespace-nowrap"
       >
-        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse motion-reduce:animate-none shrink-0" />
         Abertas
       </Link>
 
@@ -213,7 +213,7 @@ export default function Navbar({ categories = [] }: NavbarProps) {
           ))}
           {extraCategories.length > 0 && (
             <>
-              <div className="px-4 py-1.5 text-[11px] font-black uppercase tracking-wider text-slate-400 border-t border-slate-100 mt-1 pt-2">
+              <div className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-600 border-t border-slate-100 mt-1 pt-2">
                 Outras Áreas
               </div>
               {extraCategories.map((cat) => (

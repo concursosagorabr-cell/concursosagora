@@ -56,7 +56,7 @@ export default function SobreNosPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 not-prose my-8">
           <div className="bg-slate-100 rounded-xl p-5 text-center border border-slate-200 shadow-sm">
             <div className="w-20 h-20 mx-auto rounded-full overflow-hidden mb-3 relative border-2 border-blue-600">
-              <Image src="/logo.png" alt="Marco Antonio" fill className="object-cover" />
+              <Image src="/logo.png" alt="Foto de perfil de Marco Antonio — Equipe Editorial Concursos Agora" width={80} height={80} className="w-full h-full object-cover" />
             </div>
             <h3 className="font-bold text-slate-900 text-base">Marco Antonio</h3>
             <p className="text-xs text-blue-600 font-semibold mt-0.5">Editor Chefe & Analista de Editais</p>
@@ -65,7 +65,7 @@ export default function SobreNosPage() {
 
           <div className="bg-slate-100 rounded-xl p-5 text-center border border-slate-200 shadow-sm">
             <div className="w-20 h-20 mx-auto rounded-full overflow-hidden mb-3 relative border-2 border-blue-600">
-              <Image src="/logo.png" alt="Amanda Nunes" fill className="object-cover" />
+              <Image src="/logo.png" alt="Foto de perfil de Amanda Nunes — Equipe Editorial Concursos Agora" width={80} height={80} className="w-full h-full object-cover" />
             </div>
             <h3 className="font-bold text-slate-900 text-base">Amanda Nunes</h3>
             <p className="text-xs text-blue-600 font-semibold mt-0.5">Jornalista & Redatora Sênior</p>
@@ -74,7 +74,7 @@ export default function SobreNosPage() {
 
           <div className="bg-slate-100 rounded-xl p-5 text-center border border-slate-200 shadow-sm">
             <div className="w-20 h-20 mx-auto rounded-full overflow-hidden mb-3 relative border-2 border-blue-600">
-              <Image src="/logo.png" alt="Gleice Melo" fill className="object-cover" />
+              <Image src="/logo.png" alt="Foto de perfil de Gleice Melo — Equipe Editorial Concursos Agora" width={80} height={80} className="w-full h-full object-cover" />
             </div>
             <h3 className="font-bold text-slate-900 text-base">Gleice Melo</h3>
             <p className="text-xs text-blue-600 font-semibold mt-0.5">Pesquisadora & Curadora de Conteúdo</p>

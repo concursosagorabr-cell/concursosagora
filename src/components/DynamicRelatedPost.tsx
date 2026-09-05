@@ -3,7 +3,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getImageUrl } from '@/lib/image';
 import { getPostUrl } from '@/lib/helpers';
-import { DynamicRelatedPostBlock, RelatedPostData } from '@/types';
+import { getDescriptiveImageAlt } from '@/utils/imageAlt';
+import { DynamicRelatedPostBlock, RelatedPostData, Post } from '@/types';
 
 interface DynamicRelatedPostProps {
   value?: DynamicRelatedPostBlock | { data: RelatedPostData };
@@ -25,13 +26,13 @@ export default function DynamicRelatedPost({ value }: DynamicRelatedPostProps) {
       {/* Top Tag Header */}
       <div className="flex items-center justify-between gap-2 mb-2.5">
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md shadow-xs">
+          <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs font-black uppercase tracking-wider px-2.5 py-1 rounded-md shadow-xs">
             <span aria-hidden="true">🔥</span>
             <span>LEIA TAMBÉM</span>
           </span>
 
           {primaryCategory && (
-            <span className="text-[11px] font-bold text-blue-700 bg-blue-100/80 px-2 py-0.5 rounded uppercase tracking-wider hidden sm:inline-block">
+            <span className="text-xs font-bold text-blue-700 bg-blue-100/80 px-2 py-0.5 rounded uppercase tracking-wider hidden sm:inline-block">
               {primaryCategory.title}
             </span>
           )}
@@ -50,7 +51,7 @@ export default function DynamicRelatedPost({ value }: DynamicRelatedPostProps) {
           <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden shrink-0 border border-slate-200/80 shadow-xs bg-slate-100">
             <Image
               src={imageUrl}
-              alt={postData.title}
+              alt={getDescriptiveImageAlt(postData as unknown as Partial<Post>)}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"
               sizes="96px"

@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { Post, Category } from '@/types';
 import { getImageUrl } from '@/lib/image';
 import { deduplicateCategories, getPureCategories } from '@/utils/categories';
+import { getDescriptiveImageAlt } from '@/utils/imageAlt';
 import Newsletter from './Newsletter';
 import { InstagramIcon, FacebookIcon, YouTubeIcon, TelegramIcon } from './SocialIcons';
 import { SOCIAL_LINKS } from '@/lib/constants';
@@ -44,7 +45,7 @@ function RankedPostList({ posts, title, icon = '🔥' }: { posts: Post[]; title:
           <span>{icon}</span>
           <span>{title}</span>
         </h3>
-        <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Top 5</span>
+        <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">Top 5</span>
       </div>
 
       <div className="space-y-3.5">
@@ -64,7 +65,7 @@ function RankedPostList({ posts, title, icon = '🔥' }: { posts: Post[]; title:
               <Link href={postLink} className="relative w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-slate-100 border border-slate-200/60 block">
                 <Image
                   src={imgUrl}
-                  alt={post.title}
+                  alt={getDescriptiveImageAlt(post)}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                   sizes="56px"
@@ -77,7 +78,7 @@ function RankedPostList({ posts, title, icon = '🔥' }: { posts: Post[]; title:
                     {post.title}
                   </Link>
                 </h4>
-                <span className="text-[10px] text-slate-400 font-medium block">
+                <span className="text-xs text-slate-600 font-medium block">
                   {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString('pt-BR') : ''}
                 </span>
               </div>
@@ -132,7 +133,7 @@ export default function Sidebar({
               className="py-2 flex items-center justify-between text-slate-700 hover:text-blue-600 hover:translate-x-0.5 transition-all group"
             >
               <span>{career.label}</span>
-              <span className="text-slate-400 group-hover:text-blue-600 font-bold">→</span>
+              <span className="text-slate-500 group-hover:text-blue-600 font-bold">→</span>
             </Link>
           ))}
         </div>
@@ -140,7 +141,7 @@ export default function Sidebar({
         {/* Tags adicionais filtradas */}
         {pureCategories.length > 0 && (
           <div className="mt-4 pt-3 border-t border-slate-100">
-            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2">
+            <span className="text-xs font-black uppercase tracking-wider text-slate-600 block mb-2">
               Outras Tags Populares:
             </span>
             <div className="flex flex-wrap gap-1.5">
@@ -148,7 +149,7 @@ export default function Sidebar({
                 <Link
                   key={cat._id}
                   href={`/categoria/${cat.slug || cat._id}`}
-                  className="text-[11px] font-medium px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-blue-50 text-slate-600 hover:text-blue-600 transition-colors"
+                  className="text-xs font-medium px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-blue-50 text-slate-600 hover:text-blue-600 transition-colors"
                 >
                   {cat.title}
                 </Link>
@@ -161,7 +162,7 @@ export default function Sidebar({
       {/* Widget 3: Comunidade Oficial Concursos Agora */}
       <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-xs">
         <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-blue-600 mb-1">
-          <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse motion-reduce:animate-none" />
           <span>Canal de Notificações</span>
         </div>
         <h3 className="text-base font-black text-slate-900 mb-1.5 leading-snug">
@@ -186,7 +187,7 @@ export default function Sidebar({
                   {Icon && <Icon className="w-4 h-4 text-blue-600 group-hover:scale-110 transition-transform" />}
                   <span className="text-xs">{link.label}</span>
                 </div>
-                <span className="text-slate-400 group-hover:text-blue-600 text-xs">Acessar →</span>
+                <span className="text-slate-500 group-hover:text-blue-600 text-xs">Acessar →</span>
               </a>
             );
           })}

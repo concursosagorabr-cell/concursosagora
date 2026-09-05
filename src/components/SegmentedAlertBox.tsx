@@ -88,7 +88,7 @@ export default function SegmentedAlertBox({
         {/* Divisor */}
         <div className="relative flex items-center justify-center py-2">
           <div className="border-t border-slate-700 w-full" />
-          <span className="bg-slate-900 px-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest absolute">
+          <span className="bg-slate-900 px-3 text-xs font-bold text-slate-400 uppercase tracking-widest absolute">
             ou por E-mail
           </span>
         </div>
@@ -137,7 +137,7 @@ export default function SegmentedAlertBox({
           </form>
         )}
 
-        <p className="text-[11px] text-slate-400 text-center sm:text-left">
+        <p className="text-xs text-slate-400 text-center sm:text-left">
           100% gratuito. Cancele a qualquer momento.{' '}
           <Link href="/politica-de-privacidade" className="underline hover:text-slate-200">
             Privacidade protegida

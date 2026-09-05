@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useEffect, useState } from 'react';
 
@@ -85,7 +85,7 @@ export default function ContestCountdown({
           <span className="block text-base font-extrabold text-amber-600 dark:text-amber-400 font-mono">
             {enrollmentTime.days}
           </span>
-          <span className="block text-[10px] font-medium text-slate-700 dark:text-slate-300 uppercase">
+          <span className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">
             dias
           </span>
         </div>
@@ -94,7 +94,7 @@ export default function ContestCountdown({
           <span className="block text-base font-extrabold text-amber-600 dark:text-amber-400 font-mono">
             {String(enrollmentTime.hours).padStart(2, '0')}
           </span>
-          <span className="block text-[10px] font-medium text-slate-700 dark:text-slate-300 uppercase">
+          <span className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">
             horas
           </span>
         </div>
@@ -103,7 +103,7 @@ export default function ContestCountdown({
           <span className="block text-base font-extrabold text-amber-600 dark:text-amber-400 font-mono">
             {String(enrollmentTime.minutes).padStart(2, '0')}
           </span>
-          <span className="block text-[10px] font-medium text-slate-700 dark:text-slate-300 uppercase">
+          <span className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">
             min
           </span>
         </div>
@@ -112,7 +112,7 @@ export default function ContestCountdown({
           <span className="block text-base font-extrabold text-amber-600 dark:text-amber-400 font-mono">
             {String(enrollmentTime.seconds).padStart(2, '0')}
           </span>
-          <span className="block text-[10px] font-medium text-slate-700 dark:text-slate-300 uppercase">
+          <span className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">
             seg
           </span>
         </div>

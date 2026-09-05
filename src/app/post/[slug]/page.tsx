@@ -15,6 +15,7 @@ import { Post } from '@/types';
 import { getImageUrl } from '@/lib/image';
 import { deduplicateCategories } from '@/utils/categories';
 import { getContestStatusInfo } from '@/utils/status';
+import { getDescriptiveImageAlt } from '@/utils/imageAlt';
 import { injectRelatedArticle } from '@/utils/injectRelatedArticle';
 import PortableText from '@/components/PortableText';
 import Breadcrumb from '@/components/Breadcrumb';
@@ -67,18 +68,10 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
   const slugStr = typeof post.slug === 'string' ? post.slug : (post.slug as any)?.current || post._id;
   const url = `https://concursosagora.com.br/post/${slugStr}`;
 
-  // Palavras-chave para Google Discover (news_keywords)
-  const categoryKeywords = (post.categories || [])
-    .map((c: { title: string }) => c.title)
-    .filter(Boolean)
-    .join(', ');
-
   return {
     title: post.title,
     description: post.excerpt || `Confira a matéria completa sobre ${post.title}`,
     alternates: { canonical: url },
-    // news_keywords melhora as chances de aparecer no Google Discover
-    keywords: categoryKeywords || 'concursos públicos, editais, concursos 2026',
     robots: {
       index: true,
       follow: true,
@@ -356,7 +349,39 @@ export default async function PostPage({ params }: PostPageProps) {
     description: post.excerpt || `Confira a matéria completa sobre ${post.title}`,
   };
 
-  const primaryCategory = uniquePostCategories[0];
+  // Seleção Inteligente de Categoria Primária para Breadcrumb e Rich Results (Google Schema):
+  const BRAZILIAN_UFS = [
+    'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
+    'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
+    'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO',
+  ];
+
+  // 1. Se o post tem stateUf definido (ex: "SC"), busca categoria com este estado
+  const stateCategory = post.stateUf && post.stateUf !== 'Nacional'
+    ? uniquePostCategories.find(
+        (c) =>
+          c.title?.toUpperCase() === post.stateUf?.toUpperCase() ||
+          c.slug?.toLowerCase() === post.stateUf?.toLowerCase()
+      )
+    : null;
+
+  // 2. Filtra categorias válidas (remove UFs conflitantes que não pertençam ao post)
+  const validThematicCategories = uniquePostCategories.filter((c) => {
+    const titleUpper = c.title?.toUpperCase();
+    if (!titleUpper) return false;
+    if (post.stateUf && post.stateUf !== 'Nacional' && BRAZILIAN_UFS.includes(titleUpper)) {
+      return titleUpper === post.stateUf.toUpperCase();
+    }
+    return !['SUDESTE', 'SUL', 'NORDESTE', 'NORTE', 'CENTRO-OESTE', 'NACIONAL'].includes(titleUpper);
+  });
+
+  // 3. A categoria primária prioriza a UF legítima do post, ou a área temática de maior relevância
+  const primaryCategory =
+    stateCategory ||
+    validThematicCategories[0] ||
+    (post.stateUf && post.stateUf !== 'Nacional'
+      ? { title: post.stateUf.toUpperCase(), slug: post.stateUf.toLowerCase(), _id: `cat-${post.stateUf.toLowerCase()}` }
+      : uniquePostCategories[0]);
 
   // Schema.org JSON-LD para Breadcrumbs
   const breadcrumbJsonLd = {
@@ -501,19 +526,27 @@ export default async function PostPage({ params }: PostPageProps) {
                     <div className="relative w-11 h-11 rounded-full overflow-hidden shrink-0 border-2 border-blue-500 shadow-xs">
                       <Image
                         src={getImageUrl(post.author.image, 88, 88)}
-                        alt={post.author.name}
-                        fill
-                        className="object-cover"
+                        alt={post.author.name ? `Foto de perfil de ${post.author.name}` : 'Foto do autor'}
+                        width={44}
+                        height={44}
+                        className="object-cover w-full h-full"
                       />
                     </div>
                   )}
                   <div>
-                    <span className="font-bold text-slate-900 block text-sm">
-                      {post.author?.name || 'Redação Concursos Agora'}
-                    </span>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-bold text-slate-900 block text-sm">
+                        {post.author?.name || 'Redação Concursos Agora'}
+                      </span>
+                      {post.author?.role && (
+                        <span className="hidden sm:inline-block text-xs font-semibold text-blue-800 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-full">
+                          {post.author.role}
+                        </span>
+                      )}
+                    </div>
                     <span>Publicado em {formattedDate}</span>
                     {/* Tempo estimado de leitura */}
-                    <span className="flex items-center gap-1 text-[11px] text-slate-400 mt-0.5">
+                    <span className="flex items-center gap-1 text-xs text-slate-600 mt-0.5">
                       <span>⏱️</span>
                       <span>Leitura: ~{readingMinutes} min</span>
                     </span>
@@ -535,7 +568,7 @@ export default async function PostPage({ params }: PostPageProps) {
               <div className="relative w-full h-[320px] sm:h-[420px] md:h-[500px]">
                 <Image
                   src={mainImageUrl}
-                  alt={post.mainImage?.alt || post.title}
+                  alt={getDescriptiveImageAlt(post)}
                   fill
                   className="object-cover"
                   priority
@@ -548,7 +581,7 @@ export default async function PostPage({ params }: PostPageProps) {
                     <span className="font-normal text-slate-600">{post.mainImage.caption}</span>
                   )}
                   {post.mainImage?.credit && (
-                    <span className="text-[11px] text-slate-400 font-medium shrink-0 italic">
+                    <span className="text-xs text-slate-600 font-medium shrink-0 italic">
                       {post.mainImage.credit.toLowerCase().startsWith('foto') ? post.mainImage.credit : `Foto: ${post.mainImage.credit}`}
                     </span>
                   )}

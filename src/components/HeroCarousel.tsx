@@ -8,6 +8,7 @@ import { getImageUrl } from '@/lib/image';
 import { getPostUrl, getCategoryUrl, formatDate } from '@/lib/helpers';
 import { deduplicateCategories } from '@/utils/categories';
 import { getContestStatusInfo } from '@/utils/status';
+import { getDescriptiveImageAlt } from '@/utils/imageAlt';
 
 interface HeroCarouselProps {
   posts: Post[];
@@ -95,14 +96,14 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
       <div className="mb-3.5 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="flex h-2.5 w-2.5 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75"></span>
+            <span className="animate-ping motion-reduce:animate-none absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-600"></span>
           </span>
           <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
             <span>Manchetes & Destaques de Hoje</span>
           </h2>
         </div>
-        <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+        <div className="flex items-center gap-1.5 text-xs text-slate-600 font-medium">
           <span>{current + 1} de {total}</span>
         </div>
       </div>
@@ -122,7 +123,7 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
               <Image
                 key={leadPost._id}
                 src={leadImageUrl}
-                alt={leadPost.title}
+                alt={getDescriptiveImageAlt(leadPost)}
                 fill
                 className={`object-cover transition-all duration-500 group-hover:scale-105 ${
                   isAnimating ? 'opacity-50 scale-102' : 'opacity-100 scale-100'
@@ -136,7 +137,7 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
             <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-10">
               <div className="flex flex-wrap gap-1.5 pointer-events-auto">
                 <span
-                  className={`inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm backdrop-blur-md ${leadStatus.badgeBg}`}
+                  className={`inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm backdrop-blur-md ${leadStatus.badgeBg}`}
                 >
                   <span className={`w-1.5 h-1.5 rounded-full ${leadStatus.dotColor}`} />
                   {leadStatus.label}
@@ -145,7 +146,7 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
                   <Link
                     key={cat._id}
                     href={getCategoryUrl(cat)}
-                    className="bg-slate-900/80 hover:bg-blue-600 text-white text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm backdrop-blur-md transition-colors"
+                    className="bg-slate-900/80 hover:bg-blue-600 text-white text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm backdrop-blur-md transition-colors"
                   >
                     {cat.title}
                   </Link>
@@ -229,7 +230,7 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
             <span className="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
               <span>⚡</span> Plantão de Notícias
             </span>
-            <span className="text-[11px] font-bold text-blue-600">
+            <span className="text-xs font-bold text-blue-600">
               Atualizado
             </span>
           </div>
@@ -247,7 +248,7 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
                     <div className="relative w-20 h-20 sm:w-22 sm:h-22 rounded-xl overflow-hidden shrink-0 bg-slate-100 border border-slate-200/60">
                       <Image
                         src={img}
-                        alt={post.title}
+                        alt={getDescriptiveImageAlt(post)}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
                         sizes="88px"
@@ -256,20 +257,20 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
                     <div className="space-y-1 flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap">
                         {cats[0] && (
-                          <span className="text-[10px] font-extrabold uppercase tracking-wider text-blue-600">
+                          <span className="text-xs font-extrabold uppercase tracking-wider text-blue-600">
                             {cats[0].title}
                           </span>
                         )}
-                        <span className="text-[10px] text-slate-400">•</span>
-                        <span className="text-[10px] text-slate-400 font-medium">
+                        <span className="text-xs text-slate-500">•</span>
+                        <span className="text-xs text-slate-600 font-medium">
                           {formatDate(post.publishedAt)}
                         </span>
                       </div>
                       <h4 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
                         {post.title}
                       </h4>
-                      <span className={`inline-flex items-center gap-1 text-[9px] font-black uppercase px-1.5 py-0.5 rounded ${status.badgeBg}`}>
-                        <span className={`w-1 h-1 rounded-full ${status.dotColor}`} />
+                      <span className={`inline-flex items-center gap-1 text-xs font-black uppercase px-2 py-0.5 rounded ${status.badgeBg}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${status.dotColor}`} />
                         {status.label}
                       </span>
                     </div>

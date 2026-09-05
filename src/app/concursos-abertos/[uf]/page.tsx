@@ -175,7 +175,7 @@ export default async function StateContestsPage({ params }: StatePageProps) {
 
                   <div className="pt-2 flex flex-wrap items-center gap-3">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse motion-reduce:animate-none" />
                       {posts.length} {posts.length === 1 ? 'oportunidade listada' : 'oportunidades listadas'}
                     </span>
                   </div>

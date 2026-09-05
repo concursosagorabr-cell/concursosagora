@@ -54,7 +54,7 @@ export default function Pagination({
             ← Anterior
           </Link>
         ) : (
-          <span className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-slate-100 text-slate-400 cursor-not-allowed border border-transparent">
+          <span className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-slate-100 text-slate-500 cursor-not-allowed border border-transparent" aria-disabled="true">
             ← Anterior
           </span>
         )}
@@ -67,7 +67,7 @@ export default function Pagination({
             >
               1
             </Link>
-            {startPage > 2 && <span className="px-1 text-slate-400">...</span>}
+            {startPage > 2 && <span className="px-1 text-slate-500" aria-hidden="true">...</span>}
           </>
         )}
 
@@ -76,6 +76,7 @@ export default function Pagination({
           return isActive ? (
             <span
               key={p}
+              aria-current="page"
               className="px-3.5 py-2 text-sm font-bold rounded-xl bg-blue-600 text-white shadow-xs"
             >
               {p}
@@ -93,7 +94,7 @@ export default function Pagination({
 
         {endPage < totalPages && (
           <>
-            {endPage < totalPages - 1 && <span className="px-1 text-slate-400">...</span>}
+            {endPage < totalPages - 1 && <span className="px-1 text-slate-500" aria-hidden="true">...</span>}
             <Link
               href={getPageUrl(totalPages)}
               className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-white border border-slate-300 text-slate-700 hover:bg-blue-50 transition-colors"
@@ -111,7 +112,7 @@ export default function Pagination({
             Próxima →
           </Link>
         ) : (
-          <span className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-slate-100 text-slate-400 cursor-not-allowed border border-transparent">
+          <span className="px-3.5 py-2 text-sm font-semibold rounded-xl bg-slate-100 text-slate-500 cursor-not-allowed border border-transparent" aria-disabled="true">
             Próxima →
           </span>
         )}

@@ -4,6 +4,7 @@ import { Post } from '@/types';
 import { getImageUrl } from '@/lib/image';
 import { deduplicateCategories } from '@/utils/categories';
 import { getContestStatusInfo } from '@/utils/status';
+import { getDescriptiveImageAlt } from '@/utils/imageAlt';
 
 interface PostCardProps {
   post: Post;
@@ -31,7 +32,7 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
         <Link href={postLink} className="relative block w-full h-full" tabIndex={-1}>
           <Image
             src={imageUrl}
-            alt={post.title}
+            alt={getDescriptiveImageAlt(post)}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-500"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -42,7 +43,7 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
         {/* Badges sobre a imagem */}
         <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10 pointer-events-none">
           <div className="flex flex-wrap gap-1.5 pointer-events-auto">
-            <span className={`inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md backdrop-blur-md ${statusInfo.badgeBg}`}>
+            <span className={`inline-flex items-center gap-1 text-xs font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md backdrop-blur-md ${statusInfo.badgeBg}`}>
               <span className={`w-1.5 h-1.5 rounded-full ${statusInfo.dotColor}`} />
               {statusInfo.label}
             </span>
@@ -52,7 +53,7 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
             <Link
               key={uniquePostCategories[0]._id}
               href={`/categoria/${uniquePostCategories[0].slug || uniquePostCategories[0]._id}`}
-              className="pointer-events-auto bg-slate-900/80 hover:bg-blue-600 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-xs transition-colors"
+              className="pointer-events-auto bg-slate-900/80 hover:bg-blue-600 backdrop-blur-md text-white text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-xs transition-colors"
             >
               {uniquePostCategories[0].title}
             </Link>
@@ -63,7 +64,7 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
       {/* ── Corpo do Card ── */}
       <div className="p-4 sm:p-5 flex flex-col flex-grow justify-between space-y-3">
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-[11px] text-slate-400 font-medium">
+          <div className="flex items-center justify-between text-xs text-slate-600 font-medium">
             <span>{formattedDate}</span>
             {post.author && (
               <span className="truncate max-w-[120px]">Por {post.author.name}</span>
@@ -90,7 +91,7 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
             <span>→</span>
           </Link>
           {statusInfo.expirationNote && (
-            <span className="text-[10px] text-slate-400 font-normal">
+            <span className="text-xs text-slate-600 font-normal">
               {statusInfo.expirationNote}
             </span>
           )}

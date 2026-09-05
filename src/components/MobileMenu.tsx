@@ -122,8 +122,15 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
 
   return (
     <div
+      id="mobile-menu"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Menu principal de navegação"
       aria-hidden={!isOpen}
-      className={`fixed inset-0 z-[100] lg:hidden transition-all duration-300 ${isOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
+      inert={!isOpen ? true : undefined}
+      className={`fixed inset-0 z-[100] lg:hidden transition-all duration-300 ${
+        isOpen ? 'opacity-100 pointer-events-auto visible' : 'opacity-0 pointer-events-none invisible'
+      }`}
     >
       {/* Backdrop */}
       <div
@@ -148,9 +155,10 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
             <div className="relative h-8 w-14 shrink-0">
               <Image
                 src="/logo.png"
-                alt="Concursos Agora Logo"
-                fill
-                className="object-contain"
+                alt="Logotipo oficial do Portal Concursos Agora"
+                width={56}
+                height={32}
+                className="w-full h-full object-contain"
               />
             </div>
             <span className="text-base font-black">
@@ -184,7 +192,7 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
               <span className="text-base">🔍</span>
               <span>Explorar Todas as Vagas</span>
             </div>
-            <span className="text-[10px] bg-blue-500 text-white px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Filtros</span>
+            <span className="text-xs bg-blue-500 text-white px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Filtros</span>
           </Link>
         </div>
 
@@ -323,7 +331,7 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
         </div>
 
         {/* Footer do drawer */}
-        <div className="px-4 py-3 border-t border-slate-200 text-center text-[11px] text-slate-400 shrink-0">
+        <div className="px-4 py-3 border-t border-slate-200 text-center text-xs text-slate-600 shrink-0">
           © {new Date().getFullYear()} Concursos Agora
         </div>
       </div>

@@ -30,9 +30,13 @@ export const compactPostFields = `
   "author": author->{
     _id,
     name,
+    role,
     "slug": coalesce(slug.current, _id),
     image,
-    facebookUrl
+    facebookUrl,
+    linkedinUrl,
+    instagramUrl,
+    twitterUrl
   },
   "categories": coalesce(categories[]->{
     _id,
@@ -73,10 +77,14 @@ export const fullPostFields = `
   "author": author->{
     _id,
     name,
+    role,
     "slug": coalesce(slug.current, _id),
     image,
     bio,
-    facebookUrl
+    facebookUrl,
+    linkedinUrl,
+    instagramUrl,
+    twitterUrl
   },
   "categories": coalesce(categories[]->{
     _id,

@@ -21,7 +21,7 @@ export default function PostHubWidget({ postTitle, categoryTitles = [] }: PostHu
           <div className="space-y-1.5 max-w-xl">
             <div className="flex items-center gap-2">
               <span className="text-xl">{hub.icon}</span>
-              <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded bg-blue-500/30 text-blue-200 border border-blue-400/30">
+              <span className="text-xs font-black uppercase tracking-widest px-2.5 py-0.5 rounded bg-blue-500/30 text-blue-200 border border-blue-400/30">
                 Silo de Conteúdo SEO
               </span>
             </div>

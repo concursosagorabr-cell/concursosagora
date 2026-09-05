@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { getCachedRecentPosts, getCachedTopPosts } from '@/lib/sanity';
 import { Post } from '@/types';
 import { getImageUrl } from '@/lib/image';
+import { getDescriptiveImageAlt } from '@/utils/imageAlt';
 import SearchBar from '@/components/SearchBar';
 
 /**
@@ -131,7 +132,7 @@ export default async function NotFound() {
                     <div className="relative w-full h-40 bg-slate-100">
                       <Image
                         src={imgUrl}
-                        alt={post.mainImage?.alt || post.title}
+                        alt={getDescriptiveImageAlt(post)}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -141,7 +142,7 @@ export default async function NotFound() {
 
                   <div className="p-4 space-y-2">
                     {post.categories && post.categories.length > 0 && (
-                      <span className="text-[10px] font-black uppercase tracking-wider text-blue-600">
+                      <span className="text-xs font-black uppercase tracking-wider text-blue-600">
                         {post.categories[0].title}
                       </span>
                     )}
@@ -153,7 +154,7 @@ export default async function NotFound() {
                     </h3>
 
                     {formattedDate && (
-                      <span className="text-[11px] text-slate-400 font-medium block">
+                      <span className="text-xs text-slate-600 font-medium block">
                         {formattedDate}
                       </span>
                     )}

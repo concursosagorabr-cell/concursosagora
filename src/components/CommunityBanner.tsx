@@ -21,7 +21,7 @@ export default function CommunityBanner({ className = '', categoryName }: Commun
       <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
         <div className="space-y-1.5 max-w-xl">
           <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-300 text-xs font-bold uppercase tracking-wider">
-            <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse motion-reduce:animate-none" />
             Alertas em Tempo Real
           </div>
           <h3 className="text-lg sm:text-xl font-bold tracking-tight text-white">

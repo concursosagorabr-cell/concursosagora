@@ -64,6 +64,11 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
   return (
     <div className="max-w-7xl mx-auto px-0 py-2 sm:py-4">
+      {/* ── H1 Semântico Principal para SEO Técnico e Acessibilidade ── */}
+      <h1 className="sr-only">
+        Concursos Agora — Portal de Notícias, Editais Abertos e Concursos Públicos no Brasil
+      </h1>
+
       {/* ── 1. Grade Editorial de Manchetes & Plantão de Notícias ── */}
       {currentPage === 1 && heroPosts.length > 0 && (
         <HeroCarousel posts={heroPosts} />
@@ -79,7 +84,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <section className="my-10">
           <div className="flex items-center justify-between mb-5">
             <div>
-              <span className="text-[11px] font-black uppercase tracking-wider text-blue-600 block">
+              <span className="text-xs font-black uppercase tracking-wider text-blue-600 block">
                 Especialidades
               </span>
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">

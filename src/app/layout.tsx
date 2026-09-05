@@ -25,13 +25,9 @@ export const metadata: Metadata = {
   },
   description:
     'Notícias em tempo real sobre concursos públicos no Brasil, editais abertos, inscrições, materiais de estudo e dicas para sua aprovação.',
-  keywords: [
-    'concursos públicos',
-    'editais abertos',
-    'concursos 2026',
-    'materiais de estudo',
-    'provas de concurso',
-  ],
+  alternates: {
+    canonical: 'https://concursosagora.com.br',
+  },
   authors: [{ name: 'Equipe Concursos Agora' }],
   openGraph: {
     type: 'website',
@@ -41,12 +37,21 @@ export const metadata: Metadata = {
     title: 'Concursos Agora — Portal de Notícias e Editais',
     description:
       'Notícias em tempo real sobre concursos públicos no Brasil, editais abertos e materiais de estudo.',
+    images: [
+      {
+        url: 'https://concursosagora.com.br/logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Concursos Agora — Portal de Notícias e Editais de Concursos Públicos',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Concursos Agora — Portal de Notícias e Editais',
     description:
       'Notícias em tempo real sobre concursos públicos no Brasil, editais abertos e materiais de estudo.',
+    images: ['https://concursosagora.com.br/logo.png'],
   },
   robots: {
     index: true,

@@ -135,7 +135,7 @@ export default async function NoticiasPage({ searchParams }: NoticiasPageProps) 
             <span className="text-2xl sm:text-3xl font-black text-yellow-400 block">
               {totalPosts}
             </span>
-            <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+            <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
               Matérias Publicadas
             </span>
           </div>
@@ -144,7 +144,7 @@ export default async function NoticiasPage({ searchParams }: NoticiasPageProps) 
         {/* Categorias Rápidas */}
         {uniqueCategories.length > 0 && (
           <div className="mt-6 pt-6 border-t border-white/10 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-            <span className="text-xs font-bold text-slate-400 shrink-0">Filtrar por Área:</span>
+            <span className="text-xs font-bold text-slate-300 shrink-0">Filtrar por Área:</span>
             {uniqueCategories.slice(0, 8).map((cat) => (
               <Link
                 key={cat.slug || cat._id}

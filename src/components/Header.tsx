@@ -46,9 +46,10 @@ export default function Header({ categories = [] }: HeaderProps) {
               <div className="relative h-9 w-12 md:h-10 md:w-14 shrink-0 transition-transform group-hover:scale-105">
                 <Image
                   src="/logo.png"
-                  alt="Concursos Agora Logo"
-                  fill
-                  className="object-contain"
+                  alt="Logotipo oficial do Portal Concursos Agora"
+                  width={56}
+                  height={40}
+                  className="w-full h-full object-contain"
                   priority
                 />
               </div>
@@ -56,7 +57,7 @@ export default function Header({ categories = [] }: HeaderProps) {
                 <span className="text-lg md:text-xl font-black leading-none">
                   Concursos<span className="text-blue-600">Agora</span>
                 </span>
-                <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400 leading-tight">
+                <span className="text-xs font-bold uppercase tracking-widest text-slate-600 leading-tight">
                   Portal de Notícias
                 </span>
               </div>

@@ -24,7 +24,7 @@ export default function Breadcrumb({ items }: BreadcrumbProps) {
           return (
             <React.Fragment key={index}>
               <li className="shrink-0">
-                <span className="text-slate-400" aria-hidden="true">/</span>
+                <span className="text-slate-500" aria-hidden="true">/</span>
               </li>
               <li className="shrink-0 truncate max-w-[200px] md:max-w-md">
                 {item.href ? (
