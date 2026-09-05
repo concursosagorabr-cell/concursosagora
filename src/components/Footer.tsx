@@ -73,6 +73,12 @@ export default function Footer() {
           {/* Coluna 4: Institucional & Redes */}
           <div>
             <h3 className="text-white font-bold text-xs tracking-wider uppercase mb-4">Institucional & Redes</h3>
+            <ul className="space-y-2 text-xs md:text-sm mb-6">
+              <li><Link href="/sobre-nos" className="hover:text-white transition-colors">Quem Somos</Link></li>
+              <li><Link href="/termos-de-uso" className="hover:text-white transition-colors">Termos de Uso</Link></li>
+              <li><Link href="/politica-editorial" className="hover:text-white transition-colors">Política Editorial</Link></li>
+              <li><Link href="/fontes-oficiais" className="hover:text-white transition-colors">Fontes Oficiais</Link></li>
+            </ul>
             <h4 className="text-white font-bold text-xs tracking-wider uppercase mb-3">Siga o Concursos Agora</h4>
             <div className="flex flex-wrap gap-2 text-xs">
               {SOCIAL_LINKS.map((link) => {
@@ -114,12 +120,18 @@ export default function Footer() {
               </a>
             </p>
           </div>
-          <div className="flex items-center gap-4 text-xs">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs justify-center md:justify-end">
             <Link href="/sobre-nos" className="hover:underline">Sobre Nós</Link>
+            <span aria-hidden="true">•</span>
+            <Link href="/termos-de-uso" className="hover:underline">Termos de Uso</Link>
             <span aria-hidden="true">•</span>
             <Link href="/politica-de-privacidade" className="hover:underline">Privacidade</Link>
             <span aria-hidden="true">•</span>
             <Link href="/aviso-legal" className="hover:underline">Aviso Legal</Link>
+            <span aria-hidden="true">•</span>
+            <Link href="/politica-editorial" className="hover:underline">Política Editorial</Link>
+            <span aria-hidden="true">•</span>
+            <Link href="/fontes-oficiais" className="hover:underline">Fontes Oficiais</Link>
           </div>
         </div>
       </div>

@@ -27,6 +27,7 @@ import InstagramFollowBox from '@/components/InstagramFollowBox';
 import ShareButtons from '@/components/ShareButtons';
 import CommunityBanner from '@/components/CommunityBanner';
 import ContestCountdown from '@/components/ContestCountdown';
+import ContestQuickFacts from '@/components/ContestQuickFacts';
 import Sidebar from '@/components/Sidebar';
 import ViewTracker from '@/components/ViewTracker';
 
@@ -518,6 +519,9 @@ export default async function PostPage({ params }: PostPageProps) {
                 enrollmentEndDate={post.enrollmentEndDate}
                 examDate={post.examDate}
               />
+
+              {/* Ficha Técnica Estruturada */}
+              <ContestQuickFacts post={post} />
 
               {/* Metadados do Autor, Data e Leitura */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-y border-slate-200 py-4 gap-4 text-xs md:text-sm text-slate-500">

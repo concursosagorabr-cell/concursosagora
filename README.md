@@ -155,7 +155,17 @@ Conjunto de melhorias implementadas com base na análise do Vercel Analytics (55
 - **Erradicação Total de Páginas Vazias (Zero Soft 404):** Publicação de matérias aprofundadas com dados 100% reais de 2026 cobrindo todas as 27 UFs e todas as 58 categorias do Sanity.
 - **Menu Mobile Sem Armadilhas de Foco (`MobileMenu.tsx`):** Uso do atributo nativo `inert` e controle reativo de `aria-hidden` quando o drawer estiver fechado, prevenindo que leitores de tela naveguem por links invisíveis.
 
-### 🛡️ 14. Segurança & Cabeçalhos HTTP (Nota A+ / OWASP)
+### 🏛️ 16. Auditoria Editorial, Governança & Ficha Técnica (`ContestQuickFacts.tsx`)
+- **Lógica de Status Bidimensional (`status.ts`):** Separação estrita entre *Situação das Inscrições* (`abertas` | `encerradas`) e *Fase do Certame* (`aberto` | `em_andamento` | `encerrado` | `previsto`). Eliminação da inferência indevida de "Concurso Aberto" quando o prazo de inscrição já expirou (concursos com inscrições encerradas e sem prova passam a ser exibidos como "Em Andamento").
+- **Ficha Técnica Nativa (`ContestQuickFacts.tsx`):** Card estruturado em todas as páginas de notícias respondendo às 7 perguntas essenciais do candidato: status das inscrições, fase do certame, vagas, escolaridade, remuneração, banca organizadora (com link direto para `/banca/[slug]`), data da prova, prazo de inscrição, taxa de inscrição, localidade, aviso de checagem no edital oficial e botão direto de "Reportar Erro".
+- **Páginas Institucionais de Governança e Transparência:**
+  - `/termos-de-uso`: Regras de uso, escopo informativo, limitação de responsabilidade e direitos autorais.
+  - `/politica-editorial`: Critérios de apuração, checagem em diários oficiais, política de correções/erratas e canal de retificação.
+  - `/fontes-oficiais`: Metodologia de monitoramento (DOU, DOEs, portais de transparência) e principais bancas acompanhadas.
+- **Saneamento em Lote do Banco Sanity:** Correção retroativa de 23 posts com prazos vencidos e normalização de termos de status (`aberto` → `em_andamento` / `encerrado`), zerando inconsistências.
+- **Blindagem no Agente Publicador (`agente-artigos`):** Validação automática pré-publicação em `publisher.py` e refinamento dos prompts em `writer.py` para impedir novas classificações inadequadas de status.
+
+### 🛡️ 17. Segurança & Cabeçalhos HTTP (Nota A+ / OWASP)
 - **Content-Security-Policy (CSP) Estrito:** Configurado diretamente nos cabeçalhos HTTP no `next.config.ts`, restringindo a execução de scripts, conexões e fontes apenas para origens confiáveis (Sanity CDN, Google Fonts, GA4, Vercel).
 - **Ocultação de Fingerprinting:** Supressão do cabeçalho `X-Powered-By: Next.js` via `poweredByHeader: false`.
 - **Revalidação ISR Blindada (`/api/revalidate`):** Endpoint de purge de cache On-Demand protegido obrigatoriamente pela variável `SANITY_REVALIDATE_SECRET`, com rejeição imediata (HTTP 500/401) e zero segredos estáticos no código-fonte.
