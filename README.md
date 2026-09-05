@@ -143,6 +143,15 @@ Conjunto de melhorias implementadas com base na análise do Vercel Analytics (55
 - **Contraste de Cores Otimizado (WCAG 1.4.3 AA):** Revisão cromática garantindo contraste superior a 4.5:1 para texto normal e superior a 7:1 em botões, tags e metadados de leitura rápida.
 - **Busca Progressiva e Acessível (`SearchBar.tsx`):** Campo de pesquisa habilitado imediatamente no SSR sem bloqueios que pudessem desorientar usuários de leitores de tela.
 - **Textos Alternativos Descritivos (`imageAlt.ts` - WCAG 1.1.1 A):** Geração contextual de `alt` para imagens de editais e órgãos públicos, descrevendo o contexto visual em vez de apenas repetir o título da página.
+
+### 🌐 14. Barra Superior de Plantão Otimizada (`RegionBar.tsx`)
+- **Destaque de Alto Tráfego:** Exibição imediata dos estados com maior volume de buscas no Google e maior número de vagas no Brasil (`🇧🇷 NACIONAL`, `SP`, `RJ`, `MG`, `DF`, `BA`, `PR`, `RS`).
+- **Botão Discreto `+ Estados ▾`:** Menu compacto com popover responsivo que agrupa todos os demais estados pelas macrorregiões do Brasil (Nordeste, Centro-Oeste, Sul & Sudeste, Norte), eliminando qualquer corte horizontal ou barra de rolagem quebrada em telas de notebooks (1366px, 1280px).
+- **Interatividade Acessível:** Fechamento automático ao clicar fora (`useRef` + `mousedown`) ou pressionar `Escape`.
+
+### 🛡️ 15. Blindagem Editorial Anti-404 e Saneamento de Badges
+- **Saneamento de Badges (`HeroCarousel.tsx` e `PostCard.tsx`):** Aplicação de `getPureCategories` para garantir que apenas áreas e carreiras apareçam nos badges primários dos cards, evitando duplicação visual de siglas de UF.
+- **Erradicação Total de Páginas Vazias (Zero Soft 404):** Publicação de matérias aprofundadas com dados 100% reais de 2026 cobrindo todas as 27 UFs e todas as 58 categorias do Sanity.
 - **Menu Mobile Sem Armadilhas de Foco (`MobileMenu.tsx`):** Uso do atributo nativo `inert` e controle reativo de `aria-hidden` quando o drawer estiver fechado, prevenindo que leitores de tela naveguem por links invisíveis.
 
 ### 🛡️ 14. Segurança & Cabeçalhos HTTP (Nota A+ / OWASP)

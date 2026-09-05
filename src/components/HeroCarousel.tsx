@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { Post } from '@/types';
 import { getImageUrl } from '@/lib/image';
 import { getPostUrl, getCategoryUrl, formatDate } from '@/lib/helpers';
-import { deduplicateCategories } from '@/utils/categories';
+import { deduplicateCategories, getPureCategories } from '@/utils/categories';
 import { getContestStatusInfo } from '@/utils/status';
 import { getDescriptiveImageAlt } from '@/utils/imageAlt';
 
@@ -83,7 +83,8 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
   const leadPost = posts[current];
   const leadImageUrl = getImageUrl(leadPost.mainImage, 1200, 700);
   const leadPostLink = getPostUrl(leadPost);
-  const leadCategories = deduplicateCategories(leadPost.categories || []).slice(0, 2);
+  const pureLeadCategories = getPureCategories(leadPost.categories || []);
+  const leadCategories = (pureLeadCategories.length > 0 ? pureLeadCategories : deduplicateCategories(leadPost.categories || [])).slice(0, 2);
   const leadStatus = getContestStatusInfo(leadPost);
   const leadDate = formatDate(leadPost.publishedAt);
 
@@ -239,7 +240,8 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
             {sidePosts.map((post) => {
               const img = getImageUrl(post.mainImage, 160, 160);
               const link = getPostUrl(post);
-              const cats = deduplicateCategories(post.categories || []).slice(0, 1);
+              const pureSideCats = getPureCategories(post.categories || []);
+              const cats = (pureSideCats.length > 0 ? pureSideCats : deduplicateCategories(post.categories || [])).slice(0, 1);
               const status = getContestStatusInfo(post);
 
               return (

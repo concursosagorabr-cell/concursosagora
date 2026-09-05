@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Post } from '@/types';
 import { getImageUrl } from '@/lib/image';
-import { deduplicateCategories } from '@/utils/categories';
+import { deduplicateCategories, getPureCategories } from '@/utils/categories';
 import { getContestStatusInfo } from '@/utils/status';
 import { getDescriptiveImageAlt } from '@/utils/imageAlt';
 
@@ -22,7 +22,8 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
     : '';
 
   const postLink = `/post/${post.slug || post._id}`;
-  const uniquePostCategories = deduplicateCategories(post.categories || []).slice(0, 2);
+  const pureCategories = getPureCategories(post.categories || []);
+  const uniquePostCategories = (pureCategories.length > 0 ? pureCategories : deduplicateCategories(post.categories || [])).slice(0, 2);
   const statusInfo = getContestStatusInfo(post);
 
   return (
