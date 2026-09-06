@@ -244,7 +244,7 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
           </SectionToggle>
 
           {/* Hubs de Conteúdo (SEO Silos) */}
-          <SectionToggle title="Hubs de Conteúdo (Silos)" defaultOpen={true}>
+          <SectionToggle title="Hubs de Conteúdo" defaultOpen={true}>
             <Link
               href="/hub"
               onClick={onClose}

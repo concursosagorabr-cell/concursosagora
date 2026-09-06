@@ -23,7 +23,7 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
 
   const postLink = `/post/${post.slug || post._id}`;
   const pureCategories = getPureCategories(post.categories || []);
-  const uniquePostCategories = (pureCategories.length > 0 ? pureCategories : deduplicateCategories(post.categories || [])).slice(0, 2);
+
   const statusInfo = getContestStatusInfo(post);
 
   return (
@@ -50,15 +50,33 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
             </span>
           </div>
 
-          {uniquePostCategories.length > 0 && (
-            <Link
-              key={uniquePostCategories[0]._id}
-              href={`/categoria/${uniquePostCategories[0].slug || uniquePostCategories[0]._id}`}
-              className="pointer-events-auto bg-slate-900/80 hover:bg-blue-600 backdrop-blur-md text-white text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-xs transition-colors"
-            >
-              {uniquePostCategories[0].title}
-            </Link>
-          )}
+          {(() => {
+            if (pureCategories.length > 0) {
+              const cat = pureCategories[0];
+              return (
+                <Link
+                  key={cat._id}
+                  href={`/categoria/${cat.slug || cat._id}`}
+                  className="pointer-events-auto bg-slate-900/80 hover:bg-blue-600 backdrop-blur-md text-white text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-xs transition-colors"
+                >
+                  {cat.title}
+                </Link>
+              );
+            } else if (post.stateUf) {
+              const ufStr = post.stateUf.trim().toUpperCase();
+              const isNacional = ufStr === 'NACIONAL';
+              return (
+                <Link
+                  key={ufStr}
+                  href={isNacional ? '/concursos/nacional' : `/concursos/${ufStr.toLowerCase()}`}
+                  className="pointer-events-auto bg-slate-900/80 hover:bg-blue-600 backdrop-blur-md text-white text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-xs transition-colors"
+                >
+                  {isNacional ? 'Nacional' : ufStr}
+                </Link>
+              );
+            }
+            return null;
+          })()}
         </div>
       </div>
 

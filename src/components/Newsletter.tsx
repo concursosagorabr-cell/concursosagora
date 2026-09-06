@@ -7,6 +7,7 @@ type Status = 'idle' | 'loading' | 'success' | 'already' | 'error';
 
 export default function Newsletter() {
   const [email, setEmail] = useState('');
+  const [honeypot, setHoneypot] = useState('');
   const [status, setStatus] = useState<Status>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -21,7 +22,7 @@ export default function Newsletter() {
       const res = await fetch('/api/newsletter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, honeypot }),
       });
 
       const data = await res.json();
@@ -99,6 +100,20 @@ export default function Newsletter() {
               {status === 'error' && errorMsg && (
                 <p className="text-red-300 text-xs font-medium px-1">{errorMsg}</p>
               )}
+            </div>
+            
+            {/* Campo Honeypot invisível para enganar bots */}
+            <div className="opacity-0 absolute -left-[9999px] -top-[9999px] h-0 w-0 overflow-hidden pointer-events-none" aria-hidden="true" tabIndex={-1}>
+              <label htmlFor="newsletter_confirm_code">Não preencha este campo</label>
+              <input
+                id="newsletter_confirm_code"
+                type="text"
+                name="b_honeypot"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+              />
             </div>
 
             <button

@@ -136,7 +136,7 @@ export default function SobreNosPage() {
         </p>
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 not-prose text-sm text-slate-700 space-y-2">
           <p><strong>Entidade Mantenedora:</strong> Concursos Agora Comunicação &amp; Conteúdo Digital Ltda.</p>
-          <p><strong>CNPJ:</strong> 54.321.987/0001-00</p>
+          <p><strong>CNPJ:</strong> 42.228.952/0001-01</p>
           <p><strong>Sede:</strong> São Paulo — SP, Brasil</p>
           <p><strong>Redação e Furos de Reportagem:</strong> <ObfuscatedContactLink user="contato" className="text-blue-600 hover:underline" /></p>
           <p><strong>Ouvidoria e Proteção de Dados (DPO):</strong> <ObfuscatedContactLink user="privacidade" className="text-blue-600 hover:underline" /></p>

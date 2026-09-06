@@ -26,7 +26,12 @@ export async function generateMetadata({ searchParams }: SearchPageProps): Promi
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const { q: queryTerm } = await searchParams;
-  const searchTerm = queryTerm || '';
+  
+  // Sanitização estrita contra Reflected XSS e limites de tamanho
+  const searchTerm = (queryTerm || '')
+    .replace(/[<>"'`;()]/g, '')
+    .trim()
+    .slice(0, 100);
 
   let posts: Post[] = [];
   let recentPosts: Post[] = [];

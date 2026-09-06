@@ -93,11 +93,20 @@ export async function POST(request: NextRequest) {
 
   // ── Validação do body ────────────────────────────────────────────────────
   let email: string;
+  let honeypot: string;
   try {
     const body = await request.json();
     email = String(body?.email ?? '').trim().toLowerCase();
+    honeypot = String(body?.honeypot ?? '').trim();
   } catch {
     return NextResponse.json({ error: 'Requisição inválida.' }, { status: 400 });
+  }
+
+  // ── Honeypot Anti-Spam ───────────────────────────────────────────────────
+  // Se um bot preencheu o campo invisível, simulamos sucesso para enganá-lo
+  // e abortamos o processamento real sem consumir créditos de API ou poluir DB.
+  if (honeypot) {
+    return NextResponse.json({ success: true, alreadySubscribed: false });
   }
 
   // Validação de formato de e-mail
