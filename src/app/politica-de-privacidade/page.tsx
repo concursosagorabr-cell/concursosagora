@@ -39,10 +39,11 @@ export default function PoliticaDePrivacidadePage() {
           Para os fins da legislação aplicável de proteção de dados, o <strong>Controlador</strong> das operações de tratamento de dados pessoais realizadas no âmbito deste portal é:
         </p>
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm space-y-1.5 not-prose text-slate-700">
-          <p><strong>Razão Social:</strong> Concursos Agora Comunicação &amp; Conteúdo Digital Ltda.</p>
-          <p><strong>Nome Fantasia:</strong> Portal Concursos Agora</p>
-          <p><strong>Sede / Foro:</strong> São Paulo — SP, Brasil</p>
-          <p><strong>E-mail Institucional:</strong> <ObfuscatedContactLink user="contato" className="text-blue-600 hover:underline" /></p>
+          <p><strong>Controlador:</strong> Marco Antonio de Agostino Mariano de Melo (Pessoa Física)</p>
+          <p><strong>Projeto:</strong> Portal Concursos Agora (projeto independente mantido por pessoa física)</p>
+          <p><strong>Domicílio / Foro:</strong> São Paulo — SP, Brasil</p>
+          <p><strong>Canal Geral e Redação:</strong> <ObfuscatedContactLink user="contato" className="text-blue-600 hover:underline" /></p>
+          <p><strong>Canal de Privacidade / LGPD:</strong> <ObfuscatedContactLink user="privacidade" className="text-blue-600 hover:underline" /></p>
         </div>
 
         {/* 2. Dados Coletados e Finalidades */}
@@ -110,15 +111,19 @@ export default function PoliticaDePrivacidadePage() {
           As requisições serão respondidas no prazo legal de <strong>até 15 (quinze) dias</strong> a contar do protocolo formal, conforme previsto no Artigo 19, II da LGPD.
         </p>
 
-        {/* 6. Encarregado de Dados (DPO) e Contato */}
+        {/* 6. Encarregado de Dados e Contato LGPD */}
         <h2 className="text-xl font-bold text-slate-900 mt-8 mb-4 border-l-4 border-blue-600 pl-3">
-          6. Encarregado pelo Tratamento de Dados Pessoais (DPO)
+          6. Encarregado pelo Tratamento de Dados Pessoais e Contato LGPD
         </h2>
         <p>
-          Em cumprimento ao Artigo 41 da Lei Geral de Proteção de Dados, nomeamos um Encarregado de Proteção de Dados (Data Protection Officer - DPO) responsável por atuar como canal oficial de comunicação entre o portal, os titulares de dados e a Autoridade Nacional de Proteção de Dados (ANPD):
+          Em cumprimento à Lei Geral de Proteção de Dados (LGPD), o responsável pelo portal atua como canal direto de comunicação entre o Concursos Agora, os titulares de dados pessoais e a Autoridade Nacional de Proteção de Dados (ANPD).
+        </p>
+        <p>
+          O controlador dos dados tratados neste site é Marco Antonio de Agostino Mariano de Melo, pessoa física responsável pelo projeto Concursos Agora (não constituído como empresa). Para exercer seus direitos como titular de dados pessoais ou tirar dúvidas sobre este tratamento, entre em contato pelo e-mail <ObfuscatedContactLink user="privacidade" className="text-blue-600 font-semibold hover:underline" />.
         </p>
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 not-prose text-slate-800 space-y-2">
-          <p className="font-bold text-blue-900 text-base">Encarregado pelo Tratamento de Dados Pessoais (DPO):</p>
+          <p className="font-bold text-blue-900 text-base">Atendimento de Privacidade &amp; Direitos dos Titulares:</p>
+          <p className="text-sm"><strong>Responsável pelo Tratamento:</strong> Marco Antonio de Agostino Mariano de Melo</p>
           <p className="text-sm"><strong>Canal Exclusivo de Privacidade:</strong> <ObfuscatedContactLink user="privacidade" className="text-blue-700 font-semibold hover:underline" /></p>
           <p className="text-sm"><strong>Canal de Redação e Atendimento Geral:</strong> <ObfuscatedContactLink user="contato" className="text-blue-700 font-semibold hover:underline" /></p>
           <p className="text-xs text-slate-600 mt-2 leading-relaxed">

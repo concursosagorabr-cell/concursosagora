@@ -49,7 +49,7 @@ export default function PoliticaEditorialPage() {
           3. Processo Editorial e de Checagem
         </h2>
         <p>
-          A elaboração dos nossos conteúdos segue um rigoroso fluxo editorial. Iniciamos com o monitoramento automatizado de publicações oficiais, que agiliza a detecção de novos editais. A partir daí, a redação inicial pode contar com assistência de inteligência artificial (IA) para a formatação e estruturação da matéria. No entanto, <strong>todo e qualquer conteúdo</strong> passa por criteriosa revisão humana e checagem de fatos (cruzamento com os documentos oficiais) antes da publicação final.
+          A elaboração dos nossos conteúdos segue um rigoroso fluxo editorial. Iniciamos com o monitoramento automatizado de publicações oficiais, que agiliza a detecção de novos editais. A partir daí, a redação inicial pode contar com assistência de inteligência artificial (IA) para a formatação e estruturação da matéria. No entanto, <strong>todo e qualquer conteúdo</strong> passa por criteriosa revisão humana e checagem de fatos (cruzamento com os documentos oficiais) antes da publicação final. Todo esse processo — da apuração à revisão final — é conduzido por mim.
         </p>
 
         <h2 className="text-xl font-bold text-slate-900 mt-8 mb-4 border-l-4 border-blue-600 pl-3">
@@ -63,7 +63,7 @@ export default function PoliticaEditorialPage() {
           5. Política de Correções (Errata)
         </h2>
         <p>
-          Embora nossa equipe adote padrões rigorosos, erros podem ocorrer. Quando uma imprecisão factual é detectada ou apontada por nossos leitores, atuamos rapidamente. O artigo é corrigido no sistema, e, para garantir a máxima transparência, incluímos uma nota de "Errata" ou "Atualização" no texto, explicando claramente o que foi corrigido e quando a alteração foi feita.
+          Embora eu adote padrões rigorosos de checagem, erros podem ocorrer. Quando uma imprecisão factual é detectada ou apontada por nossos leitores, atuamos rapidamente. O artigo é corrigido no sistema, e, para garantir a máxima transparência, incluímos uma nota de &quot;Errata&quot; ou &quot;Atualização&quot; no texto, explicando claramente o que foi corrigido e quando a alteração foi feita.
         </p>
 
         <h2 className="text-xl font-bold text-slate-900 mt-8 mb-4 border-l-4 border-blue-600 pl-3">

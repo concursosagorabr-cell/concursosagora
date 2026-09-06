@@ -70,7 +70,7 @@ export default function TermosDeUsoPage() {
           6. Legislação Aplicável e Foro
         </h2>
         <p>
-          Estes Termos de Uso são regidos e interpretados de acordo com as leis da República Federativa do Brasil. Fica eleito o foro da comarca da sede do <strong>Concursos Agora</strong> para dirimir quaisquer dúvidas ou litígios oriundos da utilização deste portal.
+          Estes Termos de Uso são regidos e interpretados de acordo com as leis da República Federativa do Brasil. Fica eleito o foro do domicílio do responsável pelo portal para dirimir eventuais dúvidas ou litígios decorrentes destes Termos, ressalvada a competência de foro privilegiado ao consumidor, quando aplicável.
         </p>
 
         <h2 className="text-xl font-bold text-slate-900 mt-8 mb-4 border-l-4 border-blue-600 pl-3">

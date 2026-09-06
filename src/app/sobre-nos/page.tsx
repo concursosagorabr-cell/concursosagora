@@ -11,31 +11,27 @@ export const metadata: Metadata = {
     canonical: `${SITE_URL}/sobre-nos`,
   },
 };
-
+export const revalidate = 60;
 const EDITORS = [
   {
     name: 'Marco Antonio',
-    role: 'Editor-Chefe & Especialista em Carreiras Fiscais e Jurídicas',
+    role: 'Redator, Desenvolvedor & Responsável pelo Portal',
     image: 'https://cdn.sanity.io/images/wobukj4j/production/200ab6e96347ffba72b00d0ca288a97d83a2ab30-191x191.jpg?w=160&h=160&fit=crop&q=85&auto=format',
-    bio: 'Mais de 10 anos de vivência no ecossistema de concursos públicos. Especialista em análise orçamentária, carreiras de controle, tribunais federais e perfil de bancas examinadoras.',
-    linkedin: 'https://www.linkedin.com/in/marco-antonio-de-agostino-mariano-de-melo-01309432b',
+    bio: 'Formado em Análise e Desenvolvimento de Sistemas (Univesp/SP). Responsável pelo conteúdo editorial, pela infraestrutura técnica e pela conformidade com a LGPD do Concursos Agora.',
+    linkedin: 'https://www.linkedin.com/in/marco-antonio-de-agostino-mariano-de-melo-01309432b/',
     twitter: 'https://x.com/Marco26176183',
   },
   {
     name: 'Amanda Nunes',
     role: 'Repórter Especial de Concursos & Roteiros de Estudo',
     image: 'https://cdn.sanity.io/images/wobukj4j/production/667402ee1a565a00806a6731e2345eeb92b78203-1024x819.jpg?w=160&h=160&fit=crop&crop=top&q=85&auto=format',
-    bio: 'Jornalista investigativa com foco em seleções municipais, prefeituras, magistério e saúde. Especialista em estratégias de reta final e análise de convocações de cadastro reserva.',
-    linkedin: 'https://www.linkedin.com/company/concursosagora',
-    twitter: 'https://x.com/ConcursosAgora1',
+    bio: 'Colaboradora freelance na cobertura e revisão de certames com foco em seleções municipais, prefeituras, magistério e saúde. Apoia na apuração de convocações de cadastro reserva e cronogramas práticos.',
   },
   {
     name: 'Gleice Melo',
     role: 'Especialista em Carreiras Policiais & Preparação para o TAF',
     image: 'https://cdn.sanity.io/images/wobukj4j/production/c3479cde43504faa7dd97f24afeea55be40bdf54-819x1024.jpg?w=160&h=160&fit=crop&crop=top&q=85&auto=format',
-    bio: 'Pesquisadora com foco exclusivo nas corporações policiais militares, civis, federais e penais. Cobertura diária de comissões, editais, testes físicos e critérios médicos eliminatórios.',
-    linkedin: 'https://www.linkedin.com/company/concursosagora',
-    twitter: 'https://x.com/ConcursosAgora1',
+    bio: 'Colaboradora freelance dedicada ao acompanhamento de concursos de Segurança Pública (Polícias Militar, Civil, Federal e Penal) e levantamento de critérios eliminatórios de TAF e exames de aptidão.',
   },
 ];
 
@@ -72,10 +68,10 @@ export default function SobreNosPage() {
         </ul>
 
         <h2 className="text-xl font-bold text-slate-900 mt-8 mb-4 border-l-4 border-blue-600 pl-3">
-          👥 Nossa Equipe Editorial
+          👤 Quem Faz o Concursos Agora
         </h2>
         <p className="mb-6">
-          Nosso conselho de redatores e analistas reúne especialistas com formação em comunicação, direito e serviço público:
+          Conheça quem está por trás do conteúdo do Concursos Agora:
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 not-prose my-8">
@@ -100,46 +96,55 @@ export default function SobreNosPage() {
               </div>
 
               {/* Redes sociais do editor */}
-              <div className="flex items-center justify-center gap-3 mt-4 pt-3 border-t border-slate-100 text-xs">
-                {editor.linkedin && (
-                  <a
-                    href={editor.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#0a66c2] hover:underline font-semibold flex items-center gap-1"
-                    title={`Perfil de ${editor.name} no LinkedIn`}
-                  >
-                    LinkedIn
-                  </a>
-                )}
-                {editor.twitter && (
-                  <a
-                    href={editor.twitter}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-slate-800 hover:underline font-semibold flex items-center gap-1"
-                    title={`Perfil de ${editor.name} no X`}
-                  >
-                    X (Twitter)
-                  </a>
-                )}
-              </div>
+              {(editor.linkedin || editor.twitter) ? (
+                <div className="flex items-center justify-center gap-3 mt-4 pt-3 border-t border-slate-100 text-xs">
+                  {editor.linkedin && (
+                    <a
+                      href={editor.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#0a66c2] hover:underline font-semibold flex items-center gap-1"
+                      title={`Perfil de ${editor.name} no LinkedIn`}
+                    >
+                      LinkedIn
+                    </a>
+                  )}
+                  {editor.twitter && (
+                    <a
+                      href={editor.twitter}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-slate-800 hover:underline font-semibold flex items-center gap-1"
+                      title={`Perfil de ${editor.name} no X`}
+                    >
+                      X (Twitter)
+                    </a>
+                  )}
+                </div>
+              ) : null}
             </div>
           ))}
         </div>
 
         <h2 className="text-xl font-bold text-slate-900 mt-8 mb-4 border-l-4 border-blue-600 pl-3">
-          🏢 Identificação Corporativa &amp; Transparência
+          🤝 Compromisso com a Transparência
         </h2>
         <p>
-          O <strong>Portal Concursos Agora</strong> opera de forma totalmente regular sob os preceitos da legislação de imprensa brasileira e da Lei Geral de Proteção de Dados:
+          O Concursos Agora é um projeto independente, mantido por mim, <strong>Marco Antonio de Agostino Mariano de Melo</strong> — redator e desenvolvedor do portal. Sou formado em Análise e Desenvolvimento de Sistemas pela Univesp (SP) e cuido pessoalmente da infraestrutura técnica, da segurança e da conformidade com a LGPD do site. Não represento nenhuma empresa registrada: é um projeto pessoal, criado para organizar e facilitar o acesso a informações públicas sobre concursos.
         </p>
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 not-prose text-sm text-slate-700 space-y-2">
-          <p><strong>Entidade Mantenedora:</strong> Concursos Agora Comunicação &amp; Conteúdo Digital Ltda.</p>
-          <p><strong>Sede:</strong> São Paulo — SP, Brasil</p>
-          <p><strong>Redação e Furos de Reportagem:</strong> <ObfuscatedContactLink user="contato" className="text-blue-600 hover:underline" /></p>
-          <p><strong>Ouvidoria e Proteção de Dados (DPO):</strong> <ObfuscatedContactLink user="privacidade" className="text-blue-600 hover:underline" /></p>
-        </div>
+        <p>
+          Você pode falar comigo diretamente pelo{' '}
+          <a
+            href="https://www.linkedin.com/in/marco-antonio-de-agostino-mariano-de-melo-01309432b/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:underline font-semibold"
+          >
+            LinkedIn
+          </a>{' '}
+          ou pelo e-mail{' '}
+          <ObfuscatedContactLink user="privacidade" className="text-blue-600 hover:underline font-semibold" />.
+        </p>
 
         <h2 className="text-xl font-bold text-slate-900 mt-8 mb-4 border-l-4 border-blue-600 pl-3">
           📖 Diretrizes e Governança Institucional
