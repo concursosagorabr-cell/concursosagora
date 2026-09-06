@@ -238,7 +238,7 @@ export default function Navbar({ categories = [] }: NavbarProps) {
         <div className="w-64 max-h-80 overflow-y-auto">
           <Link href="/hub" className={`${dropdownItemClass} font-extrabold text-blue-600 border-b border-slate-100`}>
             <span aria-hidden="true" className="mr-1.5">🎯</span>
-            <span>Todos os Guias &amp; Silos</span>
+            <span>Todos os Guias por Área</span>
           </Link>
           {CONTENT_HUBS.map((h) => (
             <Link key={h.slug} href={`/hub/${h.slug}`} className={dropdownItemClass}>

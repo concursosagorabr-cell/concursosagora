@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import ObfuscatedContactLink from '@/components/ObfuscatedContactLink';
 
 export const metadata: Metadata = {
   title: 'Termos de Uso | Concursos Agora',
@@ -77,7 +78,7 @@ export default function TermosDeUsoPage() {
           7. Contato
         </h2>
         <p>
-          Para eventuais dúvidas, críticas ou sugestões a respeito destes Termos de Uso, entre em contato conosco através do e-mail <strong>contato@concursosagora.com.br</strong>.
+          Para eventuais dúvidas, críticas ou sugestões a respeito destes Termos de Uso, entre em contato conosco através do e-mail <ObfuscatedContactLink user="contato" className="text-blue-600 font-semibold hover:underline" />.
         </p>
       </div>
     </article>

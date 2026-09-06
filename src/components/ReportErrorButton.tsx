@@ -12,10 +12,7 @@ export default function ReportErrorButton({
 }: ReportErrorButtonProps) {
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    // Ofuscação de e-mail em tempo de execução para blindagem contra bots
-    const user = 'contato';
-    const domain = 'concursosagora.com.br';
-    const email = `${user}@${domain}`;
+    const email = 'concursosagorabr@gmail.com';
     const subject = encodeURIComponent(`Correção: ${postTitle}`);
     const body = encodeURIComponent(
       `Olá, encontrei uma possível inconsistência na matéria "${postTitle}". Detalhes:`

@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import ObfuscatedContactLink from '@/components/ObfuscatedContactLink';
 
 export const metadata: Metadata = {
   title: 'Política Editorial e de Correções | Concursos Agora',
@@ -77,7 +78,7 @@ export default function PoliticaEditorialPage() {
           7. Reporte um Erro
         </h2>
         <p>
-          Incentivamos nossos leitores a nos ajudarem a manter a mais alta qualidade informativa. Se você notar qualquer erro, imprecisão, link quebrado ou inconsistência, pedimos a gentileza de nos informar imediatamente através do e-mail <strong>contato@concursosagora.com.br</strong>. Agradecemos imensamente o seu apoio.
+          Incentivamos nossos leitores a nos ajudarem a manter a mais alta qualidade informativa. Se você notar qualquer erro, imprecisão, link quebrado ou inconsistência, pedimos a gentileza de nos informar imediatamente através do e-mail <ObfuscatedContactLink user="contato" className="text-blue-600 font-semibold hover:underline" />. Agradecemos imensamente o seu apoio.
         </p>
       </div>
     </article>

@@ -20,7 +20,7 @@ export interface ContentHub {
 export const CONTENT_HUBS: ContentHub[] = [
   {
     slug: 'concursos-municipais',
-    title: 'Hub de Concursos Municipais & Prefeituras',
+    title: 'Guia de Concursos Municipais & Prefeituras',
     shortTitle: 'Municipais',
     icon: '🏛️',
     description:
@@ -44,7 +44,7 @@ export const CONTENT_HUBS: ContentHub[] = [
   },
   {
     slug: 'concursos-policiais',
-    title: 'Hub de Concursos Policiais & Segurança Pública',
+    title: 'Guia de Concursos Policiais & Segurança Pública',
     shortTitle: 'Carreiras Policiais',
     icon: '🚓',
     description:
@@ -64,7 +64,7 @@ export const CONTENT_HUBS: ContentHub[] = [
   },
   {
     slug: 'concursos-tribunais',
-    title: 'Hub de Concursos de Tribunais & Poder Judiciário',
+    title: 'Guia de Concursos de Tribunais & Poder Judiciário',
     shortTitle: 'Tribunais & Judiciário',
     icon: '⚖️',
     description:
@@ -84,7 +84,7 @@ export const CONTENT_HUBS: ContentHub[] = [
   },
   {
     slug: 'concursos-bancarios',
-    title: 'Hub de Concursos Bancários & Área Financeira',
+    title: 'Guia de Concursos Bancários & Área Financeira',
     shortTitle: 'Bancários & Finanças',
     icon: '🏦',
     description:
@@ -103,7 +103,7 @@ export const CONTENT_HUBS: ContentHub[] = [
   },
   {
     slug: 'concursos-fiscais',
-    title: 'Hub de Concursos Fiscais & Controle',
+    title: 'Guia de Concursos Fiscais & Controle',
     shortTitle: 'Fiscal & Controle',
     icon: '📊',
     description:
@@ -122,7 +122,7 @@ export const CONTENT_HUBS: ContentHub[] = [
   },
   {
     slug: 'concursos-saude',
-    title: 'Hub de Concursos da Saúde & SUS',
+    title: 'Guia de Concursos da Saúde & SUS',
     shortTitle: 'Saúde & SUS',
     icon: '🏥',
     description:
@@ -141,7 +141,7 @@ export const CONTENT_HUBS: ContentHub[] = [
   },
   {
     slug: 'concursos-educacao',
-    title: 'Hub de Concursos de Educação & Magistério',
+    title: 'Guia de Concursos de Educação & Magistério',
     shortTitle: 'Educação & Docência',
     icon: '🎓',
     description:

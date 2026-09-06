@@ -243,15 +243,15 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
             ))}
           </SectionToggle>
 
-          {/* Hubs de Conteúdo (SEO Silos) */}
-          <SectionToggle title="Hubs de Conteúdo" defaultOpen={true}>
+          {/* Guias por Área & Carreiras */}
+          <SectionToggle title="Guias por Área" defaultOpen={true}>
             <Link
               href="/hub"
               onClick={onClose}
               className={`${linkClass} font-extrabold text-blue-600 border-b border-slate-100`}
             >
               <span aria-hidden="true" className="mr-1.5">🎯</span>
-              <span>Ver Todos os Hubs</span>
+              <span>Ver Todos os Guias</span>
             </Link>
             {CONTENT_HUBS.map((h) => (
               <Link

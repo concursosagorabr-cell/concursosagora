@@ -47,15 +47,15 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Coluna 2: Concursos por Status & Hubs */}
+          {/* Coluna 2: Concursos por Status & Guias */}
           <div>
-            <h3 className="text-white font-bold text-xs tracking-wider uppercase mb-4">Hubs & Destaques</h3>
+            <h3 className="text-white font-bold text-xs tracking-wider uppercase mb-4">Guias & Destaques</h3>
             <ul className="space-y-2 text-xs md:text-sm">
               <li><Link href="/concursos" className="text-emerald-400 font-extrabold hover:underline">🔍 Explorar Todas as Vagas</Link></li>
-              <li><Link href="/hub" className="text-blue-400 font-bold hover:underline">🎯 Hubs de Conteúdo</Link></li>
-              <li><Link href="/hub/concursos-municipais" className="hover:text-white transition-colors">🏛️ Hub Municipais</Link></li>
-              <li><Link href="/hub/concursos-policiais" className="hover:text-white transition-colors">🚓 Hub Policiais</Link></li>
-              <li><Link href="/hub/concursos-tribunais" className="hover:text-white transition-colors">⚖️ Hub Tribunais</Link></li>
+              <li><Link href="/hub" className="text-blue-400 font-bold hover:underline">🎯 Guias por Área</Link></li>
+              <li><Link href="/hub/concursos-municipais" className="hover:text-white transition-colors">🏛️ Concursos Municipais</Link></li>
+              <li><Link href="/hub/concursos-policiais" className="hover:text-white transition-colors">🚓 Concursos Policiais</Link></li>
+              <li><Link href="/hub/concursos-tribunais" className="hover:text-white transition-colors">⚖️ Concursos de Tribunais</Link></li>
               <li><Link href="/search?q=aberto" className="hover:text-emerald-400 transition-colors">🔥 Inscrições Abertas</Link></li>
             </ul>
           </div>

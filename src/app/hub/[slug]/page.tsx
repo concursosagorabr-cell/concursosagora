@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: HubPageProps): Promise<Metada
   const hub = getHubBySlug(slug);
 
   if (!hub) {
-    return { title: 'Hub não encontrado' };
+    return { title: 'Guia não encontrado' };
   }
 
   const url = `https://concursosagora.com.br/hub/${hub.slug}`;
@@ -104,7 +104,7 @@ export default async function HubDetailPage({ params, searchParams }: HubPagePro
       {
         '@type': 'ListItem',
         position: 2,
-        name: 'Hubs de Conteúdo',
+        name: 'Guias por Área',
         item: 'https://concursosagora.com.br/hub',
       },
       {
@@ -130,7 +130,7 @@ export default async function HubDetailPage({ params, searchParams }: HubPagePro
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Breadcrumb
           items={[
-            { label: 'Hubs de Conteúdo', href: '/hub' },
+            { label: 'Guias por Área', href: '/hub' },
             { label: hub.shortTitle },
           ]}
         />
@@ -146,7 +146,7 @@ export default async function HubDetailPage({ params, searchParams }: HubPagePro
               </span>
               <div>
                 <span className="text-xs font-black uppercase tracking-widest text-blue-300 block">
-                  Página Pilar (SEO Silo)
+                  Guia Completo de Carreiras
                 </span>
                 <span className="text-xs text-blue-200/80 font-medium">
                   {totalPosts} {totalPosts === 1 ? 'matéria mapeada' : 'matérias mapeadas'}
@@ -168,7 +168,7 @@ export default async function HubDetailPage({ params, searchParams }: HubPagePro
         {hub.subSilos.length > 0 && (
           <section className="mb-12 bg-white p-6 md:p-8 rounded-3xl border border-slate-200 shadow-sm">
             <h2 className="text-base font-extrabold text-slate-900 mb-4 flex items-center gap-2">
-              <span>📍</span> Sub-Silos & Categorias Relacionadas
+              <span>📍</span> Especialidades & Regiões Relacionadas
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
               {hub.subSilos.map((sub, idx) => {
@@ -198,7 +198,7 @@ export default async function HubDetailPage({ params, searchParams }: HubPagePro
           <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <h2 className="text-xl font-extrabold text-slate-900 flex items-center gap-2">
-                <span>📰</span> Últimas Notícias do Hub
+                <span>📰</span> Últimas Notícias e Editais
               </h2>
               <span className="text-xs font-semibold text-slate-500">
                 Página {currentPage} de {totalPages || 1}
@@ -224,7 +224,7 @@ export default async function HubDetailPage({ params, searchParams }: HubPagePro
             ) : (
               <div className="bg-white p-8 rounded-2xl border border-slate-200 text-center">
                 <p className="text-slate-600">
-                  Nenhuma notícia associada a este Hub encontrada no momento.
+                  Nenhuma notícia associada a este guia encontrada no momento.
                 </p>
               </div>
             )}

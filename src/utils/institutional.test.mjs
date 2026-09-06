@@ -136,3 +136,48 @@ test('Página Política Editorial (politica-editorial/page.tsx) deve refletir re
   );
 });
 
+test('Todos os links e botões de e-mail devem centralizar o envio para concursosagorabr@gmail.com', () => {
+  const contactLinkContent = fs.readFileSync(path.join(frontendSrc, 'components', 'ObfuscatedContactLink.tsx'), 'utf8');
+  const reportErrorContent = fs.readFileSync(path.join(frontendSrc, 'components', 'ReportErrorButton.tsx'), 'utf8');
+
+  assert.equal(
+    contactLinkContent.includes('concursosagorabr@gmail.com'),
+    true,
+    'ObfuscatedContactLink deve apontar para concursosagorabr@gmail.com'
+  );
+  assert.equal(
+    reportErrorContent.includes('concursosagorabr@gmail.com'),
+    true,
+    'ReportErrorButton deve apontar para concursosagorabr@gmail.com'
+  );
+});
+
+test('Terminologia "Hub" e "Silo" deve ser substituída por termos acessíveis ("Guia", "Guias por Área")', () => {
+  const hubsContent = fs.readFileSync(path.join(frontendSrc, 'utils', 'hubs.ts'), 'utf8');
+  assert.equal(hubsContent.includes("'Hub de Concursos"), false, 'hubs.ts não deve conter "Hub de Concursos"');
+  assert.equal(hubsContent.includes("'Guia de Concursos"), true, 'hubs.ts deve conter "Guia de Concursos"');
+
+  const footerContent = fs.readFileSync(path.join(frontendSrc, 'components', 'Footer.tsx'), 'utf8');
+  assert.equal(footerContent.includes('Hubs & Destaques'), false, 'Footer não deve conter "Hubs & Destaques"');
+  assert.equal(footerContent.includes('Hubs de Conteúdo'), false, 'Footer não deve conter "Hubs de Conteúdo"');
+  assert.equal(footerContent.includes('Hub Municipais'), false, 'Footer não deve conter "Hub Municipais"');
+  assert.equal(footerContent.includes('Hub Policiais'), false, 'Footer não deve conter "Hub Policiais"');
+  assert.equal(footerContent.includes('Hub Tribunais'), false, 'Footer não deve conter "Hub Tribunais"');
+  assert.equal(footerContent.includes('Guias & Destaques'), true, 'Footer deve conter "Guias & Destaques"');
+  assert.equal(footerContent.includes('Guias por Área'), true, 'Footer deve conter "Guias por Área"');
+
+  const postHubWidgetContent = fs.readFileSync(path.join(frontendSrc, 'components', 'PostHubWidget.tsx'), 'utf8');
+  assert.equal(postHubWidgetContent.includes('Silo de Conteúdo SEO'), false, 'PostHubWidget não deve expor "Silo de Conteúdo SEO"');
+  assert.equal(postHubWidgetContent.includes('Acessar Guia do Hub'), false, 'PostHubWidget não deve conter "Acessar Guia do Hub"');
+
+  const mobileMenuContent = fs.readFileSync(path.join(frontendSrc, 'components', 'MobileMenu.tsx'), 'utf8');
+  assert.equal(mobileMenuContent.includes('title="Hubs de Conteúdo"'), false, 'MobileMenu não deve ter title="Hubs de Conteúdo"');
+  assert.equal(mobileMenuContent.includes('Ver Todos os Hubs'), false, 'MobileMenu não deve ter "Ver Todos os Hubs"');
+  assert.equal(mobileMenuContent.includes('title="Guias por Área"'), true, 'MobileMenu deve ter title="Guias por Área"');
+
+  const hubPageContent = fs.readFileSync(path.join(frontendSrc, 'app', 'hub', 'page.tsx'), 'utf8');
+  assert.equal(hubPageContent.includes('Hubs de Conteúdo & Silos Temáticos'), false, 'hub/page.tsx não deve conter "Hubs de Conteúdo & Silos Temáticos"');
+  assert.equal(hubPageContent.includes('Todos os Hubs de Conteúdo'), false, 'hub/page.tsx não deve conter "Todos os Hubs de Conteúdo"');
+});
+
+
