@@ -142,7 +142,7 @@ export default function Footer() {
         {/* Identificação Corporativa e Legal (LGPD & Google EEAT) */}
         <div className="mt-4 pt-4 border-t border-slate-900/60 text-[11px] text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
           <p>
-            <strong>Concursos Agora Comunicação &amp; Conteúdo Digital Ltda.</strong> — CNPJ: 42.228.952/0001-01
+            <strong>Concursos Agora Comunicação &amp; Conteúdo Digital Ltda.</strong>
           </p>
           <p>
             {/* FIX: E-mails ofuscados contra robôs e scrapers - 2026-09-06 */}

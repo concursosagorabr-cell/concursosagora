@@ -41,7 +41,6 @@ export default function PoliticaDePrivacidadePage() {
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm space-y-1.5 not-prose text-slate-700">
           <p><strong>Razão Social:</strong> Concursos Agora Comunicação &amp; Conteúdo Digital Ltda.</p>
           <p><strong>Nome Fantasia:</strong> Portal Concursos Agora</p>
-          <p><strong>CNPJ:</strong> 42.228.952/0001-01</p>
           <p><strong>Sede / Foro:</strong> São Paulo — SP, Brasil</p>
           <p><strong>E-mail Institucional:</strong> <ObfuscatedContactLink user="contato" className="text-blue-600 hover:underline" /></p>
         </div>
