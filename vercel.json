@@ -2,6 +2,12 @@
   "regions": ["gru1"],
   "redirects": [
     {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "concursosagora.com.br" }],
+      "destination": "https://www.concursosagora.com.br/$1",
+      "permanent": true
+    },
+    {
       "source": "/noticia",
       "destination": "/noticias",
       "permanent": true
@@ -160,6 +166,37 @@
       "source": "/concursos-educacao",
       "destination": "/hub/concursos-educacao",
       "permanent": true
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://www.googletagmanager.com https://va.vercel-scripts.com https://partner.googleadservices.com https://tpc.googlesyndication.com https://adservice.google.com https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://cdn.sanity.io https://*.google.com https://*.doubleclick.net https://pagead2.googlesyndication.com https://*.googleadservices.com https://*.googlesyndication.com https://pixabay.com https://cdn.pixabay.com https://images.unsplash.com https://images.pexels.com https://flagcdn.com https://upload.wikimedia.org https://commons.wikimedia.org; connect-src 'self' https://*.sanity.io https://*.sanity.work https://*.googleapis.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://va.vercel-scripts.com https://vitals.vercel-insights.com https://*.doubleclick.net https://pagead2.googlesyndication.com https://*.upstash.io; frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com https://*.google.com; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;"
+        }
+      ]
     }
   ]
 }

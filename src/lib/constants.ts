@@ -1,7 +1,11 @@
+// FIX: Padronização canônica de domínio com www - 2026-09-06
+export const SITE_URL = 'https://www.concursosagora.com.br';
+export const SITE_NAME = 'Concursos Agora';
+
 export const SITE_CONFIG = {
-  name: 'Concursos Agora',
-  url: 'https://concursosagora.com.br',
-  logo: 'https://concursosagora.com.br/logo.png',
+  name: SITE_NAME,
+  url: SITE_URL,
+  logo: `${SITE_URL}/logo.png`,
   description: 'O portal definitivo de notícias sobre concursos públicos no Brasil.',
 } as const;
 

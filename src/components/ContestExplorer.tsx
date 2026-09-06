@@ -217,7 +217,8 @@ export default function ContestExplorer({
         {/* Linha 2: Filtros de Pílulas - Escolaridade */}
         <div>
           <span className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2.5">
-            🎓 Nível de Escolaridade:
+            <span aria-hidden="true" className="mr-1">🎓</span>
+            <span>Nível de Escolaridade:</span>
           </span>
           <div className="flex flex-wrap gap-2">
             {[
@@ -250,7 +251,8 @@ export default function ContestExplorer({
         {/* Linha 3: Filtros de Pílulas - Faixa Salarial */}
         <div>
           <span className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2.5">
-            💰 Faixa Salarial:
+            <span aria-hidden="true" className="mr-1">💰</span>
+            <span>Faixa Salarial:</span>
           </span>
           <div className="flex flex-wrap gap-2">
             {[
@@ -286,7 +288,8 @@ export default function ContestExplorer({
           {/* Dropdown Estado */}
           <div>
             <label htmlFor="state-select" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-              📍 Estado (UF):
+              <span aria-hidden="true" className="mr-1">📍</span>
+              <span>Estado (UF):</span>
             </label>
             <select
               id="state-select"
@@ -309,7 +312,8 @@ export default function ContestExplorer({
           {/* Dropdown Banca */}
           <div>
             <label htmlFor="banca-select" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-              🏢 Banca Examinadora:
+              <span aria-hidden="true" className="mr-1">🏢</span>
+              <span>Banca Examinadora:</span>
             </label>
             <select
               id="banca-select"
@@ -341,8 +345,9 @@ export default function ContestExplorer({
                 }}
                 className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
               />
-              <span className="text-xs font-bold text-slate-800">
-                🟢 Somente Inscrições Abertas
+              <span className="text-xs font-bold text-slate-800 flex items-center">
+                <span aria-hidden="true" className="mr-1.5">🟢</span>
+                <span>Somente Inscrições Abertas</span>
               </span>
             </label>
           </div>

@@ -14,28 +14,28 @@ interface MobileMenuProps {
 }
 
 const STATUS_LINKS = [
-  { label: '🔥 Inscrições Abertas', href: '/search?q=aberto', color: 'text-emerald-600' },
-  { label: '👀 Editais Previstos', href: '/search?q=previsto', color: '' },
-  { label: '📌 Concursos Encerrados', href: '/search?q=encerrado', color: 'text-slate-500' },
+  { icon: '🔥', label: 'Inscrições Abertas', href: '/search?q=aberto', color: 'text-emerald-600' },
+  { icon: '👀', label: 'Editais Previstos', href: '/search?q=previsto', color: '' },
+  { icon: '📌', label: 'Concursos Encerrados', href: '/search?q=encerrado', color: 'text-slate-500' },
 ];
 
 const CAREER_LINKS = [
-  { label: '👮 Policial & Segurança', href: '/categoria/seguranca' },
-  { label: '⚖️ Tribunais & Jurídica', href: '/categoria/judiciario' },
-  { label: '💰 Fiscal & Contábil', href: '/categoria/fiscal' },
-  { label: '🏥 Saúde & Enfermagem', href: '/categoria/saude' },
-  { label: '📚 Educação & Professores', href: '/categoria/educacao' },
-  { label: '🏦 Bancária & Financeira', href: '/categoria/financas' },
-  { label: '💼 Administrativa', href: '/categoria/administracao' },
+  { icon: '👮', label: 'Policial & Segurança', href: '/categoria/seguranca' },
+  { icon: '⚖️', label: 'Tribunais & Jurídica', href: '/categoria/judiciario' },
+  { icon: '💰', label: 'Fiscal & Contábil', href: '/categoria/fiscal' },
+  { icon: '🏥', label: 'Saúde & Enfermagem', href: '/categoria/saude' },
+  { icon: '📚', label: 'Educação & Professores', href: '/categoria/educacao' },
+  { icon: '🏦', label: 'Bancária & Financeira', href: '/categoria/financas' },
+  { icon: '💼', label: 'Administrativa', href: '/categoria/administracao' },
 ];
 
 const REGION_LINKS = [
-  { label: '🇧🇷 Nacional / Federal', href: '/categoria/nacional' },
-  { label: '🏢 Sudeste (SP, RJ, MG, ES)', href: '/categoria/sudeste' },
-  { label: '🌾 Sul (PR, RS, SC)', href: '/categoria/sul' },
-  { label: '☀️ Nordeste (BA, PE, CE...)', href: '/categoria/nordeste' },
-  { label: '🌲 Norte (AM, PA, RO...)', href: '/categoria/norte' },
-  { label: '🏛️ Centro-Oeste (DF, GO...)', href: '/categoria/centro-oeste' },
+  { icon: '🇧🇷', label: 'Nacional / Federal', href: '/categoria/nacional' },
+  { icon: '🏢', label: 'Sudeste (SP, RJ, MG, ES)', href: '/categoria/sudeste' },
+  { icon: '🌾', label: 'Sul (PR, RS, SC)', href: '/categoria/sul' },
+  { icon: '☀️', label: 'Nordeste (BA, PE, CE...)', href: '/categoria/nordeste' },
+  { icon: '🌲', label: 'Norte (AM, PA, RO...)', href: '/categoria/norte' },
+  { icon: '🏛️', label: 'Centro-Oeste (DF, GO...)', href: '/categoria/centro-oeste' },
 ];
 
 const STATE_LINKS = [
@@ -73,7 +73,7 @@ function SectionToggle({
   children,
   defaultOpen = false,
 }: {
-  title: string;
+  title: React.ReactNode;
   children: React.ReactNode;
   defaultOpen?: boolean;
 }) {
@@ -189,7 +189,7 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
             className="flex items-center justify-between p-3 rounded-2xl bg-blue-600 hover:bg-blue-700 active:scale-98 text-white font-black text-xs sm:text-sm shadow-md shadow-blue-500/25 transition-all"
           >
             <div className="flex items-center gap-2">
-              <span className="text-base">🔍</span>
+              <span className="text-base" aria-hidden="true">🔍</span>
               <span>Explorar Todas as Vagas</span>
             </div>
             <span className="text-xs bg-blue-500 text-white px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Filtros</span>
@@ -204,7 +204,8 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
             onClick={onClose}
             className="flex items-center gap-2 px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 border-b border-slate-100 transition-colors"
           >
-            🏠 Início
+            <span aria-hidden="true" className="mr-1">🏠</span>
+            <span>Início</span>
           </Link>
 
           {/* Todas as Notícias */}
@@ -213,7 +214,8 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
             onClick={onClose}
             className="flex items-center gap-2 px-4 py-3 text-sm font-semibold text-blue-600 hover:bg-slate-50 border-b border-slate-100 transition-colors"
           >
-            📰 Todas as Notícias
+            <span aria-hidden="true" className="mr-1">📰</span>
+            <span>Todas as Notícias</span>
           </Link>
 
           {/* Status */}
@@ -225,7 +227,8 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
                 onClick={onClose}
                 className={`${linkClass} font-semibold ${link.color}`}
               >
-                {link.label}
+                <span aria-hidden="true" className="mr-2">{link.icon}</span>
+                <span>{link.label}</span>
               </Link>
             ))}
           </SectionToggle>
@@ -234,7 +237,8 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
           <SectionToggle title="Por Carreira / Área">
             {CAREER_LINKS.map((link) => (
               <Link key={link.href} href={link.href} onClick={onClose} className={linkClass}>
-                {link.label}
+                <span aria-hidden="true" className="mr-2">{link.icon}</span>
+                <span>{link.label}</span>
               </Link>
             ))}
           </SectionToggle>
@@ -246,7 +250,8 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
               onClick={onClose}
               className={`${linkClass} font-extrabold text-blue-600 border-b border-slate-100`}
             >
-              🎯 Ver Todos os Hubs
+              <span aria-hidden="true" className="mr-1.5">🎯</span>
+              <span>Ver Todos os Hubs</span>
             </Link>
             {CONTENT_HUBS.map((h) => (
               <Link
@@ -255,8 +260,8 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
                 onClick={onClose}
                 className={linkClass}
               >
-                <span className="mr-1.5">{h.icon}</span>
-                {h.title}
+                <span aria-hidden="true" className="mr-1.5">{h.icon}</span>
+                <span>{h.title}</span>
               </Link>
             ))}
           </SectionToggle>
@@ -265,7 +270,8 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
           <SectionToggle title="Por Região">
             {REGION_LINKS.map((link) => (
               <Link key={link.href} href={link.href} onClick={onClose} className={linkClass}>
-                {link.label}
+                <span aria-hidden="true" className="mr-2">{link.icon}</span>
+                <span>{link.label}</span>
               </Link>
             ))}
           </SectionToggle>
@@ -300,7 +306,16 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
           )}
 
           {/* Redes Sociais Oficiais */}
-          <SectionToggle title="📲 Nossas Redes Sociais" defaultOpen={true}>
+          {/* FIX: Acessibilidade com emoji decorativo aria-hidden - 2026-09-06 */}
+          <SectionToggle
+            title={
+              <span className="flex items-center gap-1.5">
+                <span aria-hidden="true">📲</span>
+                <span>Nossas Redes Sociais</span>
+              </span>
+            }
+            defaultOpen={true}
+          >
             <div className="flex flex-col gap-1.5 px-2 pt-1 pb-2 text-xs font-bold">
               <a href="https://t.me/concursosagorabr" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 p-2.5 rounded-xl bg-sky-500/10 text-sky-600 border border-sky-500/20">
                 <TelegramIcon className="w-4 h-4 shrink-0" />

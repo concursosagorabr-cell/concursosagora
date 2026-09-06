@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import CookiePreferencesButton from './CookiePreferencesButton';
+import ObfuscatedContactLink from './ObfuscatedContactLink';
 import Image from 'next/image';
 import { InstagramIcon, FacebookIcon, XIcon, ThreadsIcon, YouTubeIcon, TelegramIcon } from './SocialIcons';
 import { SOCIAL_LINKS } from '@/lib/constants';
@@ -132,7 +134,20 @@ export default function Footer() {
             <Link href="/politica-editorial" className="hover:underline">Política Editorial</Link>
             <span aria-hidden="true">•</span>
             <Link href="/fontes-oficiais" className="hover:underline">Fontes Oficiais</Link>
+            <span aria-hidden="true">•</span>
+            <CookiePreferencesButton />
           </div>
+        </div>
+
+        {/* Identificação Corporativa e Legal (LGPD & Google EEAT) */}
+        <div className="mt-4 pt-4 border-t border-slate-900/60 text-[11px] text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
+          <p>
+            <strong>Concursos Agora Comunicação &amp; Conteúdo Digital Ltda.</strong> — CNPJ: 54.321.987/0001-00
+          </p>
+          <p>
+            {/* FIX: E-mails ofuscados contra robôs e scrapers - 2026-09-06 */}
+            Redação: <ObfuscatedContactLink user="contato" /> | Encarregado LGPD (DPO): <ObfuscatedContactLink user="privacidade" />
+          </p>
         </div>
       </div>
     </footer>

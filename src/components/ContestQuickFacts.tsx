@@ -4,6 +4,7 @@ import Link from 'next/link';
 import type { Post } from '@/types';
 import { getContestStatusInfo } from '@/utils/status';
 import { EXAM_BOARDS } from '@/utils/bancas';
+import ReportErrorButton from './ReportErrorButton';
 
 interface ContestQuickFactsProps {
   post: Partial<Post>;
@@ -168,14 +169,8 @@ export default function ContestQuickFacts({ post }: ContestQuickFactsProps) {
         <p className="text-[11px] text-slate-500 leading-relaxed">
           <strong>⚠️ Importante:</strong> Confira sempre o edital oficial no portal da banca organizadora ou do órgão responsável antes de efetuar inscrição.
         </p>
-        <a
-          href={`mailto:contato@concursosagora.com.br?subject=Correção: ${encodeURIComponent(post.title || '')}&body=Olá, encontrei uma possível inconsistência na matéria "${post.title || ''}". Detalhe:`}
-          className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-600 hover:text-slate-800 transition-colors border border-slate-200 shrink-0 self-start"
-          title="Reportar erro ou retificação de edital"
-        >
-          <span>🚨</span>
-          <span>Reportar Erro</span>
-        </a>
+        {/* FIX: Botão de reporte de erro com e-mail ofuscado contra bots - 2026-09-06 */}
+        <ReportErrorButton postTitle={post.title || ''} />
       </div>
     </div>
   );

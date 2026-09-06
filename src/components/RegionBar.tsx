@@ -151,20 +151,35 @@ export default function RegionBar() {
             Regiões:
           </span>
 
-          {/* Principais Estados (Mais buscados) */}
-          {FEATURED_SHORTCUTS.map((item) => (
-            <Link
-              key={item.label}
-              href={`/categoria/${item.query.toLowerCase()}`}
-              className={`px-2 py-0.5 rounded text-[11px] font-bold tracking-wide shrink-0 transition-all ${
-                item.highlight
-                  ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-xs'
-                  : 'bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800'
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {/* FIX: Acessibilidade nos filtros de região com aria-label e aria-hidden - 2026-09-06 */}
+          {FEATURED_SHORTCUTS.map((item) => {
+            if (item.query === 'nacional') {
+              return (
+                <Link
+                  key={item.label}
+                  href={`/categoria/${item.query.toLowerCase()}`}
+                  aria-label="Concursos Nacionais"
+                  className="px-2 py-0.5 rounded text-[11px] font-bold tracking-wide shrink-0 transition-all bg-blue-600 hover:bg-blue-500 text-white shadow-xs"
+                >
+                  <span aria-hidden="true" className="mr-1">🇧🇷</span>
+                  <span>NACIONAL</span>
+                </Link>
+              );
+            }
+            return (
+              <Link
+                key={item.label}
+                href={`/categoria/${item.query.toLowerCase()}`}
+                className={`px-2 py-0.5 rounded text-[11px] font-bold tracking-wide shrink-0 transition-all ${
+                  item.highlight
+                    ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-xs'
+                    : 'bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800'
+                }`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
 
           {/* Botão Menu Toggle: abre e fecha o painel de estados */}
           <button
@@ -251,7 +266,7 @@ export default function RegionBar() {
             <div className="flex items-center justify-between pb-2 mb-3 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-black uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
-                  <span>📍</span> Todos os Estados por Região
+                  <span aria-hidden="true">📍</span> Todos os Estados por Região
                 </span>
                 <span className="text-[10px] text-slate-400 hidden sm:inline-block">
                   (Clique na sigla para filtrar os editais abertos do seu estado)
@@ -314,8 +329,10 @@ export default function RegionBar() {
                   href="/categoria/nacional"
                   onClick={() => setIsOpen(false)}
                   className="text-blue-400 hover:text-blue-300 font-bold hover:underline"
+                  aria-label="Concursos Federais e Nacionais"
                 >
-                  🇧🇷 Concursos Federais & Nacionais (CNU, CEF, Correios...)
+                  <span aria-hidden="true" className="mr-1">🇧🇷</span>
+                  <span>Concursos Federais &amp; Nacionais (CNU, CEF, Correios...)</span>
                 </Link>
               </div>
               <Link

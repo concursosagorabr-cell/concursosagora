@@ -125,6 +125,17 @@ export default function CookieBanner() {
     }
   }, []);
 
+  useEffect(() => {
+    const handleOpenPreferences = () => {
+      const saved = getConsentCookie();
+      if (saved) setChoices(saved);
+      setBannerVisible(false);
+      setModalOpen(true);
+    };
+    window.addEventListener('open-cookie-preferences', handleOpenPreferences);
+    return () => window.removeEventListener('open-cookie-preferences', handleOpenPreferences);
+  }, []);
+
   const save = (c: ConsentChoices, closeModalAfter = false) => {
     setConsentCookie(c);
     updateGtagConsent(c);

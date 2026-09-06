@@ -11,22 +11,22 @@ interface NavbarProps {
 }
 
 const CAREERS = [
-  { label: '👮 Policial & Segurança', href: '/categoria/seguranca' },
-  { label: '⚖️ Tribunais & Jurídica', href: '/categoria/judiciario' },
-  { label: '💰 Fiscal & Contábil', href: '/categoria/fiscal' },
-  { label: '🏥 Saúde & Enfermagem', href: '/categoria/saude' },
-  { label: '📚 Educação & Professores', href: '/categoria/educacao' },
-  { label: '🏦 Bancária & Financeira', href: '/categoria/financas' },
-  { label: '💼 Administrativa', href: '/categoria/administracao' },
+  { icon: '👮', label: 'Policial & Segurança', href: '/categoria/seguranca' },
+  { icon: '⚖️', label: 'Tribunais & Jurídica', href: '/categoria/judiciario' },
+  { icon: '💰', label: 'Fiscal & Contábil', href: '/categoria/fiscal' },
+  { icon: '🏥', label: 'Saúde & Enfermagem', href: '/categoria/saude' },
+  { icon: '📚', label: 'Educação & Professores', href: '/categoria/educacao' },
+  { icon: '🏦', label: 'Bancária & Financeira', href: '/categoria/financas' },
+  { icon: '💼', label: 'Administrativa', href: '/categoria/administracao' },
 ];
 
 const REGIONS = [
-  { label: '🇧🇷 Concursos Nacionais', href: '/categoria/nacional' },
-  { label: '🏢 Sudeste (SP, RJ, MG, ES)', href: '/categoria/sudeste' },
-  { label: '🌾 Sul (PR, RS, SC)', href: '/categoria/sul' },
-  { label: '☀️ Nordeste (BA, PE, CE...)', href: '/categoria/nordeste' },
-  { label: '🌲 Norte (AM, PA, RO...)', href: '/categoria/norte' },
-  { label: '🏛️ Centro-Oeste (DF, GO...)', href: '/categoria/centro-oeste' },
+  { icon: '🇧🇷', label: 'Concursos Nacionais', href: '/categoria/nacional' },
+  { icon: '🏢', label: 'Sudeste (SP, RJ, MG, ES)', href: '/categoria/sudeste' },
+  { icon: '🌾', label: 'Sul (PR, RS, SC)', href: '/categoria/sul' },
+  { icon: '☀️', label: 'Nordeste (BA, PE, CE...)', href: '/categoria/nordeste' },
+  { icon: '🌲', label: 'Norte (AM, PA, RO...)', href: '/categoria/norte' },
+  { icon: '🏛️', label: 'Centro-Oeste (DF, GO...)', href: '/categoria/centro-oeste' },
 ];
 
 const STATES = [
@@ -154,7 +154,7 @@ export default function Navbar({ categories = [] }: NavbarProps) {
         href="/concursos"
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-extrabold text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-colors whitespace-nowrap shadow-xs"
       >
-        <span>🔍</span>
+        <span aria-hidden="true">🔍</span>
         <span>Explorar Vagas</span>
       </Link>
 
@@ -187,7 +187,8 @@ export default function Navbar({ categories = [] }: NavbarProps) {
       <DropdownMenu label="Regiões" id="regions" active={activeDropdown} onActivate={setActiveDropdown}>
         {REGIONS.map((r) => (
           <Link key={r.href} href={r.href} className={dropdownItemClass}>
-            {r.label}
+            <span aria-hidden="true" className="mr-2">{r.icon}</span>
+            <span>{r.label}</span>
           </Link>
         ))}
       </DropdownMenu>
@@ -208,7 +209,8 @@ export default function Navbar({ categories = [] }: NavbarProps) {
         <div className="max-h-80 overflow-y-auto min-w-[220px]">
           {CAREERS.map((c) => (
             <Link key={c.href} href={c.href} className={dropdownItemClass}>
-              {c.label}
+              <span aria-hidden="true" className="mr-2">{c.icon}</span>
+              <span>{c.label}</span>
             </Link>
           ))}
           {extraCategories.length > 0 && (
@@ -222,7 +224,8 @@ export default function Navbar({ categories = [] }: NavbarProps) {
                   href={`/categoria/${cat.slug || cat._id}`}
                   className={`${dropdownItemClass} text-xs capitalize`}
                 >
-                  📌 {cat.title}
+                  <span aria-hidden="true" className="mr-1.5">📌</span>
+                  <span>{cat.title}</span>
                 </Link>
               ))}
             </>
@@ -234,12 +237,13 @@ export default function Navbar({ categories = [] }: NavbarProps) {
       <DropdownMenu label="Guias de Concursos" id="hubs" active={activeDropdown} onActivate={setActiveDropdown} alignRight>
         <div className="w-64 max-h-80 overflow-y-auto">
           <Link href="/hub" className={`${dropdownItemClass} font-extrabold text-blue-600 border-b border-slate-100`}>
-            🎯 Todos os Guias & Silos
+            <span aria-hidden="true" className="mr-1.5">🎯</span>
+            <span>Todos os Guias &amp; Silos</span>
           </Link>
           {CONTENT_HUBS.map((h) => (
             <Link key={h.slug} href={`/hub/${h.slug}`} className={dropdownItemClass}>
-              <span className="mr-1.5">{h.icon}</span>
-              {h.shortTitle}
+              <span aria-hidden="true" className="mr-1.5">{h.icon}</span>
+              <span>{h.shortTitle}</span>
             </Link>
           ))}
         </div>

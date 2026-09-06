@@ -7,7 +7,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CookieBanner from '@/components/CookieBanner';
 import { getCachedCategories } from '@/lib/sanity';
-import { SITE_CONFIG, SOCIAL_LINKS } from '@/lib/constants';
+import { SITE_CONFIG, SITE_URL, SITE_NAME, SOCIAL_LINKS } from '@/lib/constants';
 import { Category } from '@/types';
 import './globals.css';
 
@@ -17,8 +17,9 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
+// FIX: Padronização canônica de URL com www - 2026-09-06
 export const metadata: Metadata = {
-  metadataBase: new URL('https://concursosagora.com.br'),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'Concursos Agora — Portal de Notícias e Editais de Concursos Públicos',
     template: '%s | Concursos Agora',
@@ -26,20 +27,20 @@ export const metadata: Metadata = {
   description:
     'Notícias em tempo real sobre concursos públicos no Brasil, editais abertos, inscrições, materiais de estudo e dicas para sua aprovação.',
   alternates: {
-    canonical: 'https://concursosagora.com.br',
+    canonical: SITE_URL,
   },
   authors: [{ name: 'Equipe Concursos Agora' }],
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
-    url: 'https://concursosagora.com.br',
-    siteName: 'Concursos Agora',
+    url: SITE_URL,
+    siteName: SITE_NAME,
     title: 'Concursos Agora — Portal de Notícias e Editais',
     description:
       'Notícias em tempo real sobre concursos públicos no Brasil, editais abertos e materiais de estudo.',
     images: [
       {
-        url: 'https://concursosagora.com.br/logo.png',
+        url: `${SITE_URL}/logo.png`,
         width: 1200,
         height: 630,
         alt: 'Concursos Agora — Portal de Notícias e Editais de Concursos Públicos',
@@ -51,7 +52,7 @@ export const metadata: Metadata = {
     title: 'Concursos Agora — Portal de Notícias e Editais',
     description:
       'Notícias em tempo real sobre concursos públicos no Brasil, editais abertos e materiais de estudo.',
-    images: ['https://concursosagora.com.br/logo.png'],
+    images: [`${SITE_URL}/logo.png`],
   },
   robots: {
     index: true,
@@ -113,24 +114,9 @@ export default async function RootLayout({
   return (
     <html lang="pt-BR" className={inter.variable}>
       <head>
-        {/* Google AdSense */}
-        <meta name="google-adsense-account" content="ca-pub-4960443675467685" />
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4960443675467685"
-          crossOrigin="anonymous"
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
-        />
         {/*
-          Google Consent Mode v2 — deve rodar de forma síncrona ANTES do gtag.js
-          para que o GA respeite o consentimento desde o primeiro hit.
+          Google Consent Mode v2 — deve rodar de forma síncrona ANTES de QUALQUER tag de publicidade ou analytics
+          para que o Google AdSense e GA4 respeitem o consentimento desde o primeiro hit.
           Todos os consentimentos começam como 'denied' (padrão LGPD).
         */}
         <script
@@ -150,6 +136,21 @@ export default async function RootLayout({
               });
             `,
           }}
+        />
+        {/* Google AdSense */}
+        <meta name="google-adsense-account" content="ca-pub-4960443675467685" />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4960443675467685"
+          crossOrigin="anonymous"
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
       </head>
       <body className="font-sans bg-slate-50 text-slate-900 min-h-screen flex flex-col antialiased">

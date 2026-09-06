@@ -80,7 +80,7 @@ export default function Header({ categories = [] }: HeaderProps) {
                 href="/concursos"
                 className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl font-black text-xs text-blue-700 bg-blue-50 border border-blue-200/80 active:scale-95 transition-all shadow-xs"
               >
-                <span>🔍</span>
+                <span aria-hidden="true">🔍</span>
                 <span>Vagas</span>
               </Link>
 

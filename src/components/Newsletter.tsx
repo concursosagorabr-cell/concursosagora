@@ -131,14 +131,14 @@ export default function Newsletter() {
               )}
             </button>
 
-            <p className="text-blue-200 text-xs text-center leading-relaxed">
-              Sem spam. Cancele quando quiser.{' '}
+            <p className="text-blue-100 text-[11px] text-center leading-relaxed">
+              Ao cadastrar, você concorda em receber atualizações editoriais de concursos públicos conforme a LGPD (Lei nº 13.709/2018). Seus dados são sigilosos, nunca são comercializados e você pode cancelar a qualquer momento.{' '}
               <Link
                 href="/politica-de-privacidade"
-                className="underline underline-offset-2 hover:text-white transition-colors"
+                className="underline underline-offset-2 hover:text-white font-medium transition-colors"
               >
                 Política de Privacidade
-              </Link>
+              </Link>.
             </p>
           </form>
         )}

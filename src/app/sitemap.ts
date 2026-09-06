@@ -2,9 +2,11 @@ import { MetadataRoute } from 'next';
 import { getCachedAllPostSlugs, getCachedAllCategorySlugs } from '@/lib/sanity';
 import { CONTENT_HUBS } from '@/utils/hubs';
 import { getAllExamBoards } from '@/utils/bancas';
+import { SITE_URL } from '@/lib/constants';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://concursosagora.com.br';
+  // FIX: Padronização canônica de domínio com www - 2026-09-06
+  const baseUrl = SITE_URL;
 
   let postSlugs: string[] = [];
   let categorySlugs: string[] = [];
