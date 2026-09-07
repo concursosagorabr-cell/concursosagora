@@ -9,8 +9,55 @@ interface RouteContext {
 
 const BOT_USER_AGENTS = /bot|spider|crawl|slurp|facebookexternalhit|whatsapp|preview|headless/i;
 
+// Rate limiting por IP: Redis distribuído com fallback em memória por instância serverless
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT_MAX = 60; // Máximo 60 visualizações por minuto por IP real
+const RATE_LIMIT_WINDOW_MS = 60_000;
+
+async function isRateLimited(ip: string): Promise<boolean> {
+  if (!ip || ip === 'unknown' || ip === '127.0.0.1') return false;
+
+  const redis = getRedis();
+  if (redis) {
+    try {
+      const key = `ratelimit:views:${ip}`;
+      const count = await redis.incr(key);
+      if (count === 1) {
+        await redis.expire(key, 60);
+      }
+      return count > RATE_LIMIT_MAX;
+    } catch (err) {
+      console.warn('[views] Erro no rate limit Redis, aplicando fallback em memória:', err);
+    }
+  }
+
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return false;
+  }
+  if (entry.count >= RATE_LIMIT_MAX) return true;
+  entry.count++;
+  return false;
+}
+
 export async function POST(req: NextRequest, context: RouteContext) {
   try {
+    const ip =
+      req.headers.get('x-vercel-forwarded-for')?.split(',')[0].trim() ??
+      req.headers.get('x-forwarded-for')?.split(',')[0].trim() ??
+      req.headers.get('x-real-ip') ??
+      'unknown';
+
+    if (await isRateLimited(ip)) {
+      return NextResponse.json(
+        { error: 'Muitas requisições. Tente novamente mais tarde.', rateLimited: true },
+        { status: 429 }
+      );
+    }
+
     const { slug } = await context.params;
 
     if (!slug || typeof slug !== 'string' || !/^[a-zA-Z0-9-_]+$/.test(slug)) {

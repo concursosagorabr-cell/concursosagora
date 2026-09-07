@@ -19,8 +19,13 @@ interface SearchPageProps {
 
 export async function generateMetadata({ searchParams }: SearchPageProps): Promise<Metadata> {
   const { q } = await searchParams;
+  const sanitizedQ = (q || '')
+    .replace(/[<>"'`;()]/g, '')
+    .trim()
+    .slice(0, 100);
+
   return {
-    title: q ? `Resultado da busca por "${q}"` : 'Pesquisar Concursos',
+    title: sanitizedQ ? `Resultado da busca por "${sanitizedQ}"` : 'Pesquisar Concursos',
   };
 }
 
