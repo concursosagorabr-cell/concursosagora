@@ -1,7 +1,7 @@
 # Frontend — Concursos Agora
 
-Portal público de concursos públicos brasileiros, construído com **Next.js 15** (App Router) e **Tailwind CSS v4**.
-Consome dados do [Sanity CMS](https://sanity.io) via queries GROQ em tempo real e oferece uma experiência moderna, responsiva e otimizada para SEO, LGPD e monitoramento de métricas.
+Portal público de alta performance e diretório programático de concursos públicos brasileiros, construído com **Next.js 15** (App Router) e **Tailwind CSS v4**.
+Consome dados estruturados e factualmente verificados do [Sanity CMS](https://sanity.io) (Dataset `production` / Project ID `wobukj4j`), gerados e auditados pelo pipeline anti-alucinação do `agente-artigos`. Oferece uma experiência moderna, acessível (WCAG AA/AAA), ultra-rápida (Core Web Vitals LCP < 2.5s) e otimizada para SEO Técnico (Google Jobs, JobPosting, Breadcrumbs e FAQs).
 
 ---
 
@@ -204,19 +204,19 @@ Crie o arquivo `frontend/.env.local` (ou configure no painel da Vercel):
 
 ```env
 # Sanity CMS
-NEXT_PUBLIC_SANITY_PROJECT_ID=mcc3s7d2
+NEXT_PUBLIC_SANITY_PROJECT_ID=sua-chave-aqui
 NEXT_PUBLIC_SANITY_DATASET=production
 NEXT_PUBLIC_SANITY_API_VERSION=2026-07-25
-SANITY_API_TOKEN=skESugwi5EBz6Wh...
+SANITY_API_TOKEN=sk...
 
 # Segredo de Revalidação On-Demand (ISR)
 SANITY_REVALIDATE_SECRET=seu_segredo_de_revalidacao_aqui
 
 # Google Analytics 4
-NEXT_PUBLIC_GA_ID=G-YX2KZMH82Y
+sua-chave-aqui
 
 # Brevo (Newsletter & Alertas)
-BREVO_API_KEY=xkeysib-577df478ea259...
+BREVO_API_KEY=xkeysib-...
 ```
 
 ---
