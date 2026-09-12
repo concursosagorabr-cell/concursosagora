@@ -86,6 +86,7 @@ export interface Post {
   title: string;
   slug: string;
   publishedAt: string;
+  enrollmentStartDate?: string;
   enrollmentEndDate?: string;
   examDate?: string;
   isExpired?: boolean;

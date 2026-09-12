@@ -70,7 +70,7 @@ export default function ContestQuickFacts({ post }: ContestQuickFactsProps) {
     {
       icon: '👥',
       label: 'Vagas',
-      value: post.vacanciesTotal ? `${post.vacanciesTotal.toLocaleString('pt-BR')} vagas` : null,
+      value: (!post.vacanciesTotal && statusInfo.label === 'Edital Previsto') ? 'Aguardando definição' : post.vacanciesTotal ? `${post.vacanciesTotal.toLocaleString('pt-BR')} vagas` : null,
     },
     {
       icon: '🎓',
@@ -87,7 +87,7 @@ export default function ContestQuickFacts({ post }: ContestQuickFactsProps) {
     {
       icon: '🏢',
       label: 'Banca Organizadora',
-      value: post.banca || null,
+      value: (!post.banca && statusInfo.label === 'Edital Previsto') ? 'A definir por licitação' : post.banca || null,
     },
     {
       icon: '📅',
@@ -97,7 +97,7 @@ export default function ContestQuickFacts({ post }: ContestQuickFactsProps) {
     {
       icon: '📝',
       label: 'Prazo de Inscrição',
-      value: post.enrollmentEndDate ? `Até ${formatDate(post.enrollmentEndDate)}` : 'Consultar edital',
+      value: post.enrollmentEndDate ? `Até ${formatDate(post.enrollmentEndDate)}` : 'Aguardando publicação do edital',
     },
     {
       icon: '💳',

@@ -8,6 +8,7 @@ import { getImageUrl } from '@/lib/image';
 import { getDescriptiveImageAlt } from '@/utils/imageAlt';
 import { BRAZIL_STATES } from '@/utils/states';
 import { getAllExamBoards } from '@/utils/bancas';
+import { getContestStatusInfo } from '@/utils/status';
 
 interface ContestExplorerProps {
   initialPosts: Post[];
@@ -120,11 +121,11 @@ export default function ContestExplorer({
         }
       }
 
-      // 6. Apenas Inscrições Abertas
+      // 6. Apenas Inscrições Abertas (alinhado estritamente com o motor de status e badges)
       if (onlyOpen) {
-        if (post.enrollmentEndDate) {
-          const endDate = new Date(post.enrollmentEndDate);
-          if (endDate < new Date()) return false;
+        const statusInfo = getContestStatusInfo(post);
+        if (statusInfo.isExpired || statusInfo.label !== 'Concurso Aberto' || statusInfo.enrollmentLabel !== 'Inscrições abertas') {
+          return false;
         }
       }
 

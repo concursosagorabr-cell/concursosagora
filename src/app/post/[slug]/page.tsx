@@ -211,9 +211,11 @@ function extractFaqJsonLd(body?: any[]): any | null {
  * Gera Schema.org/JobPosting para inclusão automática e destaque no Google Jobs (Vagas).
  */
 function generateJobPostingJsonLd(post: Post, postUrl: string): any | null {
-  const validThrough =
-    post.enrollmentEndDate ||
-    new Date(new Date(post.publishedAt || Date.now()).getTime() + 180 * 24 * 60 * 60 * 1000).toISOString();
+  if (post.status === 'previsto' || post.status === 'encerrado') return null;
+  if (!post.enrollmentEndDate) return null;
+  if (new Date(post.enrollmentEndDate).getTime() < Date.now()) return null;
+
+  const validThrough = post.enrollmentEndDate;
 
   const hiringName = post.cityName
     ? `Prefeitura Municipal de ${post.cityName}`

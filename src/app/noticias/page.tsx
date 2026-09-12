@@ -65,7 +65,14 @@ export default async function NoticiasPage({ searchParams }: NoticiasPageProps) 
       getCachedCategories(),
     ]);
 
-    posts = fetchedPosts || [];
+    const rawPosts = fetchedPosts || [];
+    const seenSlugs = new Set<string>();
+    posts = rawPosts.filter((p) => {
+      const slugKey = typeof p.slug === 'string' ? p.slug : (p.slug as any)?.current || p._id;
+      if (seenSlugs.has(slugKey)) return false;
+      seenSlugs.add(slugKey);
+      return true;
+    });
     totalPosts = fetchedCount || 0;
     recentPosts = fetchedRecent || [];
     categories = fetchedCategories || [];

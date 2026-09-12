@@ -45,11 +45,20 @@ export function isContestExpired(post: Partial<Post>): boolean {
     return post.isExpired;
   }
 
+  const now = new Date().getTime();
+
+  // REGRA ABSOLUTA: se enrollmentEndDate for futura ou hoje, NUNCA está expirado
+  if (post.enrollmentEndDate) {
+    const edTime = new Date(post.enrollmentEndDate).getTime();
+    if (!isNaN(edTime) && edTime >= now) {
+      return false;
+    }
+  }
+
   if (post.status === 'encerrado') {
     return true;
   }
 
-  const now = new Date().getTime();
   const rawTargetDate = post.enrollmentEndDate || post.examDate;
   const targetDateStr =
     typeof rawTargetDate === 'string' &&
@@ -79,28 +88,74 @@ export function isContestExpired(post: Partial<Post>): boolean {
 }
 
 /**
- * Determina se as inscrições estão abertas, encerradas ou indefinidas.
+ * Determina deterministicamente se as inscrições estão ainda não iniciadas, abertas, encerradas ou indefinidas.
+ * Regra:
+ * hoje < início_inscrições → 'nao_iniciadas'
+ * início <= hoje <= fim   → 'abertas'
+ * hoje > fim              → 'encerradas'
  */
-function getEnrollmentStatus(post: Partial<Post>): 'abertas' | 'encerradas' | null {
-  const edStr = post.enrollmentEndDate;
-  if (!edStr || typeof edStr !== 'string' || edStr.trim().length === 0) {
-    return null;
+function getEnrollmentStatus(post: Partial<Post>): 'nao_iniciadas' | 'abertas' | 'encerradas' | null {
+  const now = new Date().getTime();
+
+  const startStr = post.enrollmentStartDate;
+  let startTime: number | null = null;
+  if (startStr && typeof startStr === 'string' && startStr.trim().length > 0) {
+    const t = new Date(startStr.trim()).getTime();
+    if (!isNaN(t)) startTime = t;
   }
 
-  const now = new Date().getTime();
-  const edTime = new Date(edStr).getTime();
-  if (isNaN(edTime)) return null;
+  const edStr = post.enrollmentEndDate;
+  let edTime: number | null = null;
+  if (edStr && typeof edStr === 'string' && edStr.trim().length > 0) {
+    const t = new Date(edStr.trim()).getTime();
+    if (!isNaN(t)) edTime = t;
+  }
 
-  return edTime < now ? 'encerradas' : 'abertas';
+  // 1. Se tem data de início e hoje < início
+  if (startTime !== null && now < startTime) {
+    return 'nao_iniciadas';
+  }
+
+  // 2. Se tem data de término:
+  if (edTime !== null) {
+    return now <= edTime ? 'abertas' : 'encerradas';
+  }
+
+  // 3. Se só tem data de início e já iniciou
+  if (startTime !== null && now >= startTime) {
+    return 'abertas';
+  }
+
+  return null;
+}
+
+/**
+ * Retorna o rótulo descritivo do status de inscrições respeitando estritamente as datas.
+ * REGRA ABSOLUTA: se registrationEnd >= now, NUNCA retorna "Inscrições encerradas".
+ */
+function resolveEnrollmentLabel(
+  enrollmentStatus: 'nao_iniciadas' | 'abertas' | 'encerradas' | null,
+  cmsStatus?: string
+): string {
+  if (enrollmentStatus === 'nao_iniciadas') return 'Inscrições ainda não iniciadas';
+  if (enrollmentStatus === 'abertas') return 'Inscrições abertas';
+  if (enrollmentStatus === 'encerradas') return 'Inscrições encerradas';
+
+  if (cmsStatus === 'previsto') return 'Aguardando edital';
+  if (cmsStatus === 'encerrado') return 'Inscrições encerradas';
+  if (cmsStatus === 'em_andamento') return 'Inscrições encerradas';
+  return 'Inscrições abertas';
 }
 
 /**
  * Retorna informações completas de status e estilo visual para badges e banners no frontend.
  *
- * Lógica bidimensional (auditoria set/2026):
- * 1. Status CMS explícito tem prioridade máxima.
- * 2. Se status='aberto' mas datas estão expiradas, CORRIGIR automaticamente para 'Em Andamento' ou 'Encerrado'.
- * 3. Nunca inferir "Concurso Aberto" quando enrollmentEndDate estiver no passado.
+ * Lógica bidimensional rigorosa e determinística:
+ * 1. REGRA SUPREMA: Se registrationEnd for futura, o concurso é OBRIGATORIAMENTE "Concurso Aberto"
+ *    com enrollmentLabel "Inscrições abertas", mesmo se cmsStatus for 'em_andamento'.
+ * 2. Se registrationStart for futura, enrollmentLabel é "Inscrições ainda não iniciadas" e label "Edital Previsto".
+ * 3. Se registrationEnd for passada, enrollmentLabel é "Inscrições encerradas" e label "Em Andamento" ou "Concurso Encerrado".
+ * 4. Status CMS explícito 'encerrado' (sem data futura) tem precedência.
  */
 export function getContestStatusInfo(post: Partial<Post>): ContestStatusInfo {
   const now = new Date().getTime();
@@ -126,9 +181,9 @@ export function getContestStatusInfo(post: Partial<Post>): ContestStatusInfo {
     });
   }
 
-  // ─── 1. Encerrado explícito ───
   const cmsStatus = post.status;
 
+  // ─── 1. Status CMS explícito 'encerrado' (cancelado / suspenso / encerrado administrativamente) ───
   if (cmsStatus === 'encerrado') {
     return {
       isExpired: true,
@@ -145,7 +200,63 @@ export function getContestStatusInfo(post: Partial<Post>): ContestStatusInfo {
     };
   }
 
-  // ─── 2. Previsto explícito ou heurístico ───
+  // ─── 2. Inscrições com datas explícitas (Motor Determinístico) ───
+  if (enrollmentStatus === 'nao_iniciadas') {
+    return {
+      isExpired: false,
+      label: 'Edital Previsto',
+      badgeBg: 'bg-amber-600/95 text-white border border-amber-400/30',
+      badgeText: 'text-white',
+      dotColor: 'bg-amber-300 animate-pulse motion-reduce:animate-none',
+      enrollmentLabel: 'Inscrições ainda não iniciadas',
+      formattedTargetDate,
+      formattedExpirationDate,
+      expirationNote: formattedTargetDate
+        ? `Inscrições em breve (até ${formattedTargetDate})`
+        : 'Inscrições ainda não iniciadas',
+    };
+  }
+
+  if (enrollmentStatus === 'abertas') {
+    return {
+      isExpired: false,
+      label: 'Concurso Aberto',
+      badgeBg: 'bg-emerald-600/95 text-white border border-emerald-400/30',
+      badgeText: 'text-white',
+      dotColor: 'bg-emerald-300 animate-pulse motion-reduce:animate-none',
+      enrollmentLabel: 'Inscrições abertas',
+      formattedTargetDate,
+      formattedExpirationDate,
+      expirationNote: formattedTargetDate
+        ? `Inscrições até ${formattedTargetDate}`
+        : 'Inscrições abertas',
+    };
+  }
+
+  if (enrollmentStatus === 'encerradas') {
+    const examPassed = post.examDate && new Date(post.examDate).getTime() < now;
+    const isEncerrado = Boolean(examPassed);
+
+    return {
+      isExpired: isEncerrado,
+      label: isEncerrado ? 'Concurso Encerrado' : 'Em Andamento',
+      badgeBg: isEncerrado
+        ? 'bg-slate-700/90 text-slate-100 border border-slate-600'
+        : 'bg-blue-600/95 text-white border border-blue-400/30',
+      badgeText: isEncerrado ? 'text-slate-100' : 'text-white',
+      dotColor: isEncerrado ? 'bg-red-500' : 'bg-blue-300 animate-pulse motion-reduce:animate-none',
+      enrollmentLabel: 'Inscrições encerradas',
+      formattedTargetDate,
+      formattedExpirationDate,
+      expirationNote: formattedTargetDate
+        ? (isEncerrado ? `Encerrado em ${formattedTargetDate}` : `Inscrições encerradas em ${formattedTargetDate}`)
+        : (isEncerrado ? 'Concurso encerrado' : 'Inscrições encerradas / Em andamento'),
+    };
+  }
+
+  // ─── 3. Posts sem datas de inscrição: análise por CMS Status e Heurísticas ───
+
+  // B. Previsto explícito ou heurístico
   const isExplicitlyPrevisto = cmsStatus === 'previsto';
   const isHeuristicPrevisto = !cmsStatus && !targetDateStr && isPrevistoHeuristic(post.title);
 
@@ -163,34 +274,8 @@ export function getContestStatusInfo(post: Partial<Post>): ContestStatusInfo {
     };
   }
 
-  // ─── 3. Em andamento (inscrições encerradas, certame em curso) ───
-  const isExplicitlyEmAndamento = cmsStatus === 'em_andamento';
-  // REGRA CRÍTICA: Se status CMS é 'aberto' mas inscrições já expiraram, forçar "Em Andamento"
-  const isImplicitlyEmAndamento =
-    (cmsStatus === 'aberto' || !cmsStatus) &&
-    enrollmentStatus === 'encerradas';
-
-  // Verificar se a prova também já aconteceu (certame totalmente encerrado)
-  if (isImplicitlyEmAndamento && post.examDate) {
-    const examTime = new Date(post.examDate).getTime();
-    if (!isNaN(examTime) && examTime < now) {
-      return {
-        isExpired: true,
-        label: 'Concurso Encerrado',
-        badgeBg: 'bg-slate-700/90 text-slate-100 border border-slate-600',
-        badgeText: 'text-slate-100',
-        dotColor: 'bg-red-500',
-        enrollmentLabel: 'Inscrições encerradas',
-        formattedTargetDate,
-        formattedExpirationDate,
-        expirationNote: formattedTargetDate
-          ? `Encerrado em ${formattedTargetDate}`
-          : 'Concurso encerrado',
-      };
-    }
-  }
-
-  if (isExplicitlyEmAndamento || isImplicitlyEmAndamento) {
+  // C. Em andamento explícito
+  if (cmsStatus === 'em_andamento') {
     return {
       isExpired: false,
       label: 'Em Andamento',
@@ -206,7 +291,7 @@ export function getContestStatusInfo(post: Partial<Post>): ContestStatusInfo {
     };
   }
 
-  // ─── 4. Fallback: verificar datas para posts sem status CMS ───
+  // D. Fallback: verificar datas gerais para posts legados
   const expired = isContestExpired(post);
   if (expired) {
     return {
@@ -224,21 +309,16 @@ export function getContestStatusInfo(post: Partial<Post>): ContestStatusInfo {
     };
   }
 
-  // ─── 5. Concurso genuinamente aberto ───
-  let expirationNote = '';
-  if (targetDateStr) {
-    expirationNote = `Inscrições até ${formattedTargetDate}`;
-  }
-
+  // E. Padrão SEGURO: sem datas e sem status = Previsto (não Aberto)
   return {
     isExpired: false,
-    label: 'Concurso Aberto',
-    badgeBg: 'bg-emerald-600/95 text-white border border-emerald-400/30',
+    label: 'Edital Previsto',
+    badgeBg: 'bg-amber-600/95 text-white border border-amber-400/30',
     badgeText: 'text-white',
-    dotColor: 'bg-emerald-300 animate-pulse motion-reduce:animate-none',
-    enrollmentLabel: enrollmentStatus === 'abertas' ? 'Inscrições abertas' : undefined,
+    dotColor: 'bg-amber-300 animate-pulse motion-reduce:animate-none',
+    enrollmentLabel: 'Aguardando edital',
     formattedTargetDate,
     formattedExpirationDate,
-    expirationNote,
+    expirationNote: 'Edital previsto / Em fase preparatória',
   };
 }
