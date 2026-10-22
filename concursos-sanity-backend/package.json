@@ -1,0 +1,35 @@
+{
+  "name": "concursos-sanity-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Studio e automações do CMS Concursos Agora (Sanity)",
+  "type": "module",
+  "scripts": {
+    "dev": "sanity dev",
+    "start": "sanity start",
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "schema:validate": "sanity schema validate",
+    "export:dataset": "node --env-file=.env.local scripts/export-dataset.mjs",
+    "fix:categories": "node --env-file=.env.local scripts/fix-categories.mjs",
+    "normalize:posts": "node --env-file=.env.local scripts/normalize-posts.mjs",
+    "patch:authors": "node --env-file=.env.local scripts/patch-authors.mjs",
+    "seed:settings": "node --env-file=.env.local scripts/seed-site-settings.mjs",
+    "setup:webhook": "node --env-file=.env.local scripts/setup-webhook.mjs",
+    "configure:cors": "node --env-file=.env.local scripts/configure-cors.mjs"
+  },
+  "dependencies": {
+    "@sanity/client": "^7.25.0",
+    "@sanity/vision": "^6.20.0",
+    "react": "^19.2.2",
+    "react-dom": "^19.2.2",
+    "sanity": "^6.20.0",
+    "styled-components": "^6.1.15"
+  },
+  "devDependencies": {
+    "@sanity/cli": "^8.21.0",
+    "@types/node": "^22.18.0",
+    "@types/react": "^19.2.2",
+    "typescript": "^5.9.2"
+  }
+}

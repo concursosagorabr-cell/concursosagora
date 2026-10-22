@@ -1,0 +1,147 @@
+# Fontes oficiais monitoradas pelo pipeline.
+# Apenas sites públicos, sem login, paywall ou CAPTCHA.
+# Somente fontes com tier official_primary/official_secondary e usage article
+# podem gerar rascunhos. Portais de imprensa e agregadores são apenas descoberta
+# manual e não entram neste arquivo.
+sources:
+  - id: inss
+    name: INSS
+    type: govbr_news
+    enabled: true
+    tier: official_primary
+    usage: article
+    start_urls:
+      - https://www.gov.br/inss/pt-br/assuntos/noticias
+    allowed_domains:
+      - www.gov.br
+      - gov.br
+    link_pattern: "/inss/pt-br/assuntos/noticias/"
+    include_keywords:
+      - concurso
+      - vagas
+      - edital
+      - processo-seletivo
+      - nomeacao
+      - convocacao
+      - autoriza
+      - carreira
+      - servidor
+      - cpnu
+      - cargo
+      - analista
+      - tecnico
+    exclude_keywords:
+      - atendimento
+      - calendario
+      - pagamento
+      - beneficio
+      - pericia
+      - prova-de-vida
+      - prevbarco
+      - golpe
+      - fraude
+      - mutirao
+      - agencia
+      - agencias
+      - 13o
+      - salario-maternidade
+      - auxilio
+      - aposentadoria
+      - revisao
+      - emprestimo
+      - consignado
+      - desconto
+      - extrato
+      - declaracao
+      - imposto
+      - inscricao-do-meu
+    default_categories:
+      - nacional
+      - federal
+    default_organ: Instituto Nacional do Seguro Social (INSS)
+    default_sphere: FEDERAL
+    max_candidates: 30
+
+  - id: vunesp
+    name: Fundação Vunesp
+    type: vunesp
+    enabled: true
+    tier: official_primary
+    usage: article
+    start_urls:
+      - https://www.vunesp.com.br/busca/concurso/inscricoes%20abertas
+    allowed_domains:
+      - www.vunesp.com.br
+      - vunesp.com.br
+    link_pattern: "^/[A-Za-z]{2,8}\\d{3,6}$"
+    preferred_keywords:
+      - publico
+      - federal
+      - universidade
+      - prefeitura
+      - tribunal
+      - ministerio
+      - policia
+      - saude
+      - professor
+    default_categories: []
+    max_candidates: 12
+
+  - id: fgv
+    name: FGV Conhecimento
+    type: fgv
+    enabled: true
+    tier: official_primary
+    usage: article
+    start_urls:
+      - https://conhecimento.fgv.br/concursos
+    allowed_domains:
+      - conhecimento.fgv.br
+    preferred_keywords:
+      - policia
+      - tribunal
+      - ministerio
+      - prefeitura
+      - universidade
+      - federal
+      - concurso publico
+    default_categories: []
+    max_candidates: 30
+
+  # O DOU bloqueia todo o site no robots.txt (User-agent: * / Disallow: /).
+  # O adaptador existe para quando houver uma API oficial autorizada, mas fica
+  # desativado por padrão para não violar a restrição da fonte.
+  - id: dou
+    name: Diário Oficial da União
+    type: dou
+    enabled: false
+    tier: official_primary
+    usage: article
+    start_urls:
+      - https://www.in.gov.br/leiturajornal
+    allowed_domains:
+      - www.in.gov.br
+      - in.gov.br
+    section: do3
+    include_keywords:
+      - concurso publico
+      - processo seletivo
+      - selecao publica
+      - provimento de vagas
+      - preenchimento de vagas
+      - abertura de inscricoes
+    exclude_keywords:
+      - licitacao
+      - pregao
+      - contrato
+      - termo aditivo
+      - doacao
+      - convenio
+      - chamada publica
+      - credenciamento
+      - extrato de contrato
+    default_categories:
+      - nacional
+      - federal
+    default_sphere: FEDERAL
+    max_candidates: 40

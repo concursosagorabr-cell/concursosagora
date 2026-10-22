@@ -1,0 +1,75 @@
+# Watchlist do PoC de monitoramento.
+# Copie para watchlist.yaml e ajuste. Somente URLs oficiais e HTTPS.
+# O monitor respeita robots.txt e nunca segue links fora dos padrões abaixo.
+version: 1
+
+defaults:
+  allowed_domains: []
+  text_selectors: []
+  link_patterns:
+    - retifica
+    - errata
+    - edital
+    - aditivo
+    - comunicado
+    - homologa
+  max_links: 30
+
+watches:
+  - id: sesa-2027
+    source_id: vunesp
+    url: https://www.vunesp.com.br/SESA2601
+    allowed_domains:
+      - www.vunesp.com.br
+      - vunesp.com.br
+    text_selectors:
+      - article
+    notes: "SESA/SP 2027; a página oficial já mostra 1.405 vagas após a retificação."
+
+  - id: unifesp-2026-2027
+    source_id: vunesp
+    url: https://www.vunesp.com.br/UFSP2602
+    allowed_domains:
+      - www.vunesp.com.br
+      - vunesp.com.br
+    text_selectors:
+      - article
+    notes: "UNIFESP 2026/2027; total de 606 vagas na página da Vunesp."
+
+  - id: unip-2026
+    source_id: vunesp
+    url: https://www.vunesp.com.br/UNIP2602
+    allowed_domains:
+      - www.vunesp.com.br
+      - vunesp.com.br
+    text_selectors:
+      - article
+    notes: "UNIP 2026; conflito conhecido entre o item 2.4 e o Anexo II sobre o início das inscrições."
+
+  - id: pms-salvador-2026
+    source_id: fgv
+    url: https://conhecimento.fgv.br/concursos/pms2026
+    allowed_domains:
+      - conhecimento.fgv.br
+    text_selectors:
+      - main
+    notes: "Prefeitura de Salvador 2026; 190 vagas; prova em 27/09/2026."
+
+  - id: guarda-salvador-2026
+    source_id: fgv
+    url: https://conhecimento.fgv.br/concursos/pmsguarda2026
+    allowed_domains:
+      - conhecimento.fgv.br
+    text_selectors:
+      - main
+    notes: "Guarda Municipal de Salvador 2026; 50 vagas + cadastro de reserva."
+
+  - id: inss-194-vagas
+    source_id: inss
+    url: https://www.gov.br/inss/pt-br/assuntos/noticias/mgi-autoriza-194-novas-vagas-para-o-inss
+    allowed_domains:
+      - www.gov.br
+      - gov.br
+    text_selectors:
+      - main
+    notes: "Nota oficial do INSS; não usar a expressão 'em todo o país' sem evidência."

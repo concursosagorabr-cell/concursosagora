@@ -1,0 +1,3 @@
+# Instalar em um venv separado, nunca no venv de produção do pipeline.
+# O SDK já inclui Pydantic/LiteLLM; não instale openhands-tools neste PoC.
+openhands-sdk>=1.57,<2

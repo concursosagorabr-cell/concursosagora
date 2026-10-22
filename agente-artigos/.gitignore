@@ -1,0 +1,21 @@
+# Ambiente e segredos
+.env
+.env.local
+.env.*.local
+
+# Dados de execução (snapshots, base local, artefatos)
+data/
+!data/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Sistema
+.DS_Store
+Thumbs.db

@@ -1,0 +1,47 @@
+# Dependências
+**/node_modules/
+**/.pnp
+**/.pnp.js
+
+# Builds e caches
+**/.next/
+**/out/
+**/dist/
+**/coverage/
+**/*.tsbuildinfo
+
+# Python
+**/__pycache__/
+**/*.py[cod]
+**/.venv/
+**/venv/
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+
+# Segredos e ambiente
+**/.env
+**/.env.local
+**/.env.*.local
+**/*.pem
+**/*.key
+**/*.p12
+!**/.env.example
+
+# Dados de execução e backups locais
+agente-artigos/data/*
+!agente-artigos/data/.gitkeep
+concursos-sanity-backend/backups/
+concursos-sanity-backend/.sanity/
+
+# Logs
+**/*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Sistema e editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

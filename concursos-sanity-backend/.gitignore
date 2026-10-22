@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.sanity/
+.env
+.env*.local
+*.log
+.DS_Store
+backups/*.ndjson
+backups/*.json
