@@ -65,3 +65,32 @@ test('Configurações de Dependabot e backup de dataset devem existir', () => {
   assert.equal(fs.existsSync(dependabotRoot), true, 'dependabot.yml na raiz deve existir');
   assert.equal(fs.existsSync(exportScript), true, 'export-dataset.mjs deve existir');
 });
+
+test('URLs absolutas do site devem usar o host canônico com www', () => {
+  const sourceDir = path.join(frontendDir, 'src');
+  const offenders = [];
+
+  function walk(directory) {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const fullPath = path.join(directory, entry.name);
+      if (entry.isDirectory()) {
+        walk(fullPath);
+        continue;
+      }
+      if (!/\.(?:ts|tsx|mjs|js)$/.test(entry.name)) continue;
+      if (entry.name.includes('.test.')) continue;
+      const content = fs.readFileSync(fullPath, 'utf8');
+      if (content.includes('https://concursosagora.com.br')) {
+        offenders.push(path.relative(frontendDir, fullPath));
+      }
+    }
+  }
+
+  walk(sourceDir);
+  assert.deepEqual(
+    offenders,
+    [],
+    `URLs sem www encontradas: ${offenders.join(', ')}. Use https://www.concursosagora.com.br.`
+  );
+});
+

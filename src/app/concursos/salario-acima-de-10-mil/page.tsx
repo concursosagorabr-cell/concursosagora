@@ -11,14 +11,14 @@ export const metadata: Metadata = {
   title: 'Concursos com Salário Acima de R$ 10.000 em 2026: Vagas de Alta Remuneração',
   description:
     'Guia atualizado com todos os concursos públicos com salários acima de R$ 10.000, R$ 15.000 e R$ 20.000 por mês. Oportunidades fiscais, jurídicas, policiais e de controle.',
-  alternates: { canonical: 'https://concursosagora.com.br/concursos/salario-acima-de-10-mil' },
+  alternates: { canonical: 'https://www.concursosagora.com.br/concursos/salario-acima-de-10-mil' },
   keywords:
     'concursos salario alto, concursos acima de 10 mil, concursos fiscais, concursos tribunais, concursos perito policial, salarios concursos 2026',
   openGraph: {
     title: 'Concursos com Salário Acima de R$ 10.000 em 2026 — Concursos Agora',
     description:
       'Confira os melhores editais do Brasil com remunerações acima de R$ 10 mil mensais.',
-    url: 'https://concursosagora.com.br/concursos/salario-acima-de-10-mil',
+    url: 'https://www.concursosagora.com.br/concursos/salario-acima-de-10-mil',
     type: 'website',
     locale: 'pt_BR',
   },
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 
 export default async function HighSalaryContestsPage() {
   const posts = await getCachedHighSalaryPosts();
-  const pageUrl = 'https://concursosagora.com.br/concursos/salario-acima-de-10-mil';
+  const pageUrl = 'https://www.concursosagora.com.br/concursos/salario-acima-de-10-mil';
 
   // JSON-LD
   const jsonLd = {
@@ -39,8 +39,8 @@ export default async function HighSalaryContestsPage() {
     breadcrumb: {
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Início', item: 'https://concursosagora.com.br' },
-        { '@type': 'ListItem', position: 2, name: 'Concursos', item: 'https://concursosagora.com.br/concursos' },
+        { '@type': 'ListItem', position: 1, name: 'Início', item: 'https://www.concursosagora.com.br' },
+        { '@type': 'ListItem', position: 2, name: 'Concursos', item: 'https://www.concursosagora.com.br/concursos' },
         { '@type': 'ListItem', position: 3, name: 'Salários Acima de R$ 10.000', item: pageUrl },
       ],
     },
@@ -50,7 +50,7 @@ export default async function HighSalaryContestsPage() {
         '@type': 'ListItem',
         position: index + 1,
         name: post.title,
-        url: `https://concursosagora.com.br/post/${typeof post.slug === 'string' ? post.slug : (post.slug as any)?.current || post._id}`,
+        url: `https://www.concursosagora.com.br/post/${typeof post.slug === 'string' ? post.slug : (post.slug as any)?.current || post._id}`,
       })),
     },
   };

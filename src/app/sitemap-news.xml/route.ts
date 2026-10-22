@@ -4,7 +4,7 @@ import { getCachedNewsSitemapPosts } from '@/lib/sanity';
 export const revalidate = 300; // Revalida a cada 5 minutos
 
 export async function GET() {
-  const baseUrl = 'https://concursosagora.com.br';
+  const baseUrl = 'https://www.concursosagora.com.br';
 
   // Buscar notícias publicadas nos últimos 2 dias (48 horas)
   const twoDaysAgo = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();

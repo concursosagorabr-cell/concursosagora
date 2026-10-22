@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: HubPageProps): Promise<Metada
     return { title: 'Guia não encontrado' };
   }
 
-  const url = `https://concursosagora.com.br/hub/${hub.slug}`;
+  const url = `https://www.concursosagora.com.br/hub/${hub.slug}`;
 
   return {
     title: `${hub.title} — Guia de Editais & Vagas`,
@@ -80,7 +80,7 @@ export default async function HubDetailPage({ params, searchParams }: HubPagePro
   const uniqueCategories = deduplicateCategories(categories);
   const totalPages = Math.ceil((totalPosts || 0) / itemsPerPage);
   const baseUrl = `/hub/${hub.slug}`;
-  const hubUrl = `https://concursosagora.com.br/hub/${hub.slug}`;
+  const hubUrl = `https://www.concursosagora.com.br/hub/${hub.slug}`;
 
   // Schema.org JSON-LD para CollectionPage
   const collectionJsonLd = {
@@ -99,13 +99,13 @@ export default async function HubDetailPage({ params, searchParams }: HubPagePro
         '@type': 'ListItem',
         position: 1,
         name: 'Início',
-        item: 'https://concursosagora.com.br',
+        item: 'https://www.concursosagora.com.br',
       },
       {
         '@type': 'ListItem',
         position: 2,
         name: 'Guias por Área',
-        item: 'https://concursosagora.com.br/hub',
+        item: 'https://www.concursosagora.com.br/hub',
       },
       {
         '@type': 'ListItem',

@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: BancaPageProps): Promise<Meta
   const currentYear = new Date().getFullYear();
   const title = `Concursos Banca ${banca.name} ${currentYear}: Editais Abertos, Perfil e Vagas`;
   const description = `Guia completo dos concursos organizados pela banca ${banca.name} em ${currentYear}. Editais abertos, histórico de provas, dicas de resolução e vagas.`;
-  const url = `https://concursosagora.com.br/banca/${banca.slug}`;
+  const url = `https://www.concursosagora.com.br/banca/${banca.slug}`;
 
   return {
     title,
@@ -58,7 +58,7 @@ export default async function BancaPage({ params }: BancaPageProps) {
 
   const posts = await getCachedBancaPosts(banca.slug, banca.searchQuery);
   const allBoards = getAllExamBoards();
-  const pageUrl = `https://concursosagora.com.br/banca/${banca.slug}`;
+  const pageUrl = `https://www.concursosagora.com.br/banca/${banca.slug}`;
 
   // JSON-LD
   const jsonLd = {
@@ -72,8 +72,8 @@ export default async function BancaPage({ params }: BancaPageProps) {
         breadcrumb: {
           '@type': 'BreadcrumbList',
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'Início', item: 'https://concursosagora.com.br' },
-            { '@type': 'ListItem', position: 2, name: 'Bancas Organizadoras', item: 'https://concursosagora.com.br/concursos' },
+            { '@type': 'ListItem', position: 1, name: 'Início', item: 'https://www.concursosagora.com.br' },
+            { '@type': 'ListItem', position: 2, name: 'Bancas Organizadoras', item: 'https://www.concursosagora.com.br/concursos' },
             { '@type': 'ListItem', position: 3, name: banca.name, item: pageUrl },
           ],
         },
@@ -83,7 +83,7 @@ export default async function BancaPage({ params }: BancaPageProps) {
             '@type': 'ListItem',
             position: index + 1,
             name: post.title,
-            url: `https://concursosagora.com.br/post/${typeof post.slug === 'string' ? post.slug : (post.slug as any)?.current || post._id}`,
+            url: `https://www.concursosagora.com.br/post/${typeof post.slug === 'string' ? post.slug : (post.slug as any)?.current || post._id}`,
           })),
         },
       },

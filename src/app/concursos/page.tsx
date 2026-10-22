@@ -12,14 +12,14 @@ export const metadata: Metadata = {
   title: 'Diretório de Concursos Públicos 2026: Filtre por Salário, Escolaridade e Estado',
   description:
     'Explore o diretório completo e atualizado de concursos públicos no Brasil. Filtre editais por salário, nível de escolaridade, banca examinadora e estado.',
-  alternates: { canonical: 'https://concursosagora.com.br/concursos' },
+  alternates: { canonical: 'https://www.concursosagora.com.br/concursos' },
   keywords:
     'concursos abertos, diretório de concursos, vagas concursos 2026, concursos nível médio, concursos nível superior, concursos por banca, concurso público salário alto',
   openGraph: {
     title: 'Diretório de Concursos Públicos 2026 — Concursos Agora',
     description:
       'Filtre e encontre seu concurso público ideal por salário, nível de escolaridade, banca organizadora e região.',
-    url: 'https://concursosagora.com.br/concursos',
+    url: 'https://www.concursosagora.com.br/concursos',
     type: 'website',
     locale: 'pt_BR',
   },
@@ -36,12 +36,12 @@ export default async function ConcursosDirectoryPage() {
     name: 'Diretório Completo de Concursos Públicos no Brasil',
     description:
       'Guia interativo com editais abertos, vagas por escolaridade, faixas salariais e bancas organizadoras.',
-    url: 'https://concursosagora.com.br/concursos',
+    url: 'https://www.concursosagora.com.br/concursos',
     breadcrumb: {
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Início', item: 'https://concursosagora.com.br' },
-        { '@type': 'ListItem', position: 2, name: 'Explorador de Concursos', item: 'https://concursosagora.com.br/concursos' },
+        { '@type': 'ListItem', position: 1, name: 'Início', item: 'https://www.concursosagora.com.br' },
+        { '@type': 'ListItem', position: 2, name: 'Explorador de Concursos', item: 'https://www.concursosagora.com.br/concursos' },
       ],
     },
     mainEntity: {
@@ -50,7 +50,7 @@ export default async function ConcursosDirectoryPage() {
         '@type': 'ListItem',
         position: index + 1,
         name: post.title,
-        url: `https://concursosagora.com.br/post/${typeof post.slug === 'string' ? post.slug : (post.slug as any)?.current || post._id}`,
+        url: `https://www.concursosagora.com.br/post/${typeof post.slug === 'string' ? post.slug : (post.slug as any)?.current || post._id}`,
       })),
     },
   };

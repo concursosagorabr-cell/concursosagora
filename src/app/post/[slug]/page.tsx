@@ -67,7 +67,7 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
 
   const imageUrl = getImageUrl(post.mainImage, 1200, 630);
   const slugStr = typeof post.slug === 'string' ? post.slug : (post.slug as any)?.current || post._id;
-  const url = `https://concursosagora.com.br/post/${slugStr}`;
+  const url = `https://www.concursosagora.com.br/post/${slugStr}`;
 
   return {
     title: post.title,
@@ -239,7 +239,7 @@ function generateJobPostingJsonLd(post: Post, postUrl: string): any | null {
     hiringOrganization: {
       '@type': 'Organization',
       name: hiringName,
-      sameAs: 'https://concursosagora.com.br',
+      sameAs: 'https://www.concursosagora.com.br',
     },
     jobLocation: {
       '@type': 'Place',
@@ -308,7 +308,7 @@ export default async function PostPage({ params }: PostPageProps) {
 
   const slugStr = typeof post.slug === 'string' ? post.slug : (post.slug as any)?.current || post._id;
   const mainImageUrl = getImageUrl(post.mainImage, 1200, 675);
-  const postUrl = `https://concursosagora.com.br/post/${slugStr}`;
+  const postUrl = `https://www.concursosagora.com.br/post/${slugStr}`;
   const formattedDate = post.publishedAt
     ? new Date(post.publishedAt).toLocaleDateString('pt-BR', {
         day: '2-digit',
@@ -346,7 +346,7 @@ export default async function PostPage({ params }: PostPageProps) {
       name: 'Concursos Agora',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://concursosagora.com.br/logo.png',
+        url: 'https://www.concursosagora.com.br/logo.png',
       },
     },
     description: post.excerpt || `Confira a matéria completa sobre ${post.title}`,
@@ -395,7 +395,7 @@ export default async function PostPage({ params }: PostPageProps) {
         '@type': 'ListItem',
         position: 1,
         name: 'Início',
-        item: 'https://concursosagora.com.br',
+        item: 'https://www.concursosagora.com.br',
       },
       ...(primaryCategory
         ? [
@@ -403,7 +403,7 @@ export default async function PostPage({ params }: PostPageProps) {
               '@type': 'ListItem',
               position: 2,
               name: primaryCategory.title,
-              item: `https://concursosagora.com.br/categoria/${primaryCategory.slug || primaryCategory._id}`,
+              item: `https://www.concursosagora.com.br/categoria/${primaryCategory.slug || primaryCategory._id}`,
             },
             {
               '@type': 'ListItem',

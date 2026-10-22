@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: EduStatePageProps): Promise<M
   const year = new Date().getFullYear();
   const title = `Concursos ${eduInfo.short} em ${state.name} (${ufUpper}) ${year}: Editais Abertos e Vagas`;
   const description = `Confira a lista de concursos públicos abertos e previstos para ${eduInfo.label} em ${state.name} (${ufUpper}) em ${year}. Vagas em prefeituras, tribunais e segurança pública.`;
-  const url = `https://concursosagora.com.br/concursos/${nivel.toLowerCase()}/${uf.toLowerCase()}`;
+  const url = `https://www.concursosagora.com.br/concursos/${nivel.toLowerCase()}/${uf.toLowerCase()}`;
 
   return {
     title,
@@ -87,7 +87,7 @@ export default async function EducationAndStatePage({ params }: EduStatePageProp
     getCachedRecentPosts(),
   ]);
 
-  const pageUrl = `https://concursosagora.com.br/concursos/${nivelLower}/${ufLower}`;
+  const pageUrl = `https://www.concursosagora.com.br/concursos/${nivelLower}/${ufLower}`;
 
   // JSON-LD Schemas (CollectionPage + ItemList + FAQPage)
   const jsonLd = {
@@ -101,8 +101,8 @@ export default async function EducationAndStatePage({ params }: EduStatePageProp
         breadcrumb: {
           '@type': 'BreadcrumbList',
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'Início', item: 'https://concursosagora.com.br' },
-            { '@type': 'ListItem', position: 2, name: 'Concursos', item: 'https://concursosagora.com.br/concursos' },
+            { '@type': 'ListItem', position: 1, name: 'Início', item: 'https://www.concursosagora.com.br' },
+            { '@type': 'ListItem', position: 2, name: 'Concursos', item: 'https://www.concursosagora.com.br/concursos' },
             { '@type': 'ListItem', position: 3, name: `${eduInfo.short} em ${ufUpper}`, item: pageUrl },
           ],
         },
@@ -112,7 +112,7 @@ export default async function EducationAndStatePage({ params }: EduStatePageProp
             '@type': 'ListItem',
             position: index + 1,
             name: post.title,
-            url: `https://concursosagora.com.br/post/${typeof post.slug === 'string' ? post.slug : (post.slug as any)?.current || post._id}`,
+            url: `https://www.concursosagora.com.br/post/${typeof post.slug === 'string' ? post.slug : (post.slug as any)?.current || post._id}`,
           })),
         },
       },

@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: 'Política Editorial e de Correções | Concursos Agora',
   description: 'Conheça a nossa política editorial, processos de checagem, metodologia de atualização e correções do Concursos Agora.',
   alternates: {
-    canonical: 'https://concursosagora.com.br/politica-editorial',
+    canonical: 'https://www.concursosagora.com.br/politica-editorial',
   },
 };
 

@@ -25,7 +25,7 @@ export async function generateMetadata({ searchParams }: NoticiasPageProps): Pro
   const { page } = await searchParams;
   const pageNum = parseInt(page || '1', 10);
   const pageSuffix = pageNum > 1 ? ` — Página ${pageNum}` : '';
-  const url = pageNum > 1 ? `https://concursosagora.com.br/noticias?page=${pageNum}` : 'https://concursosagora.com.br/noticias';
+  const url = pageNum > 1 ? `https://www.concursosagora.com.br/noticias?page=${pageNum}` : 'https://www.concursosagora.com.br/noticias';
 
   return {
     title: `Todas as Notícias de Concursos Públicos e Editais${pageSuffix}`,
@@ -91,13 +91,13 @@ export default async function NoticiasPage({ searchParams }: NoticiasPageProps) 
         '@type': 'ListItem',
         position: 1,
         name: 'Início',
-        item: 'https://concursosagora.com.br',
+        item: 'https://www.concursosagora.com.br',
       },
       {
         '@type': 'ListItem',
         position: 2,
         name: 'Notícias',
-        item: 'https://concursosagora.com.br/noticias',
+        item: 'https://www.concursosagora.com.br/noticias',
       },
     ],
   };
@@ -106,7 +106,7 @@ export default async function NoticiasPage({ searchParams }: NoticiasPageProps) 
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: 'Arquivo de Notícias e Editais de Concursos Públicos',
-    url: 'https://concursosagora.com.br/noticias',
+    url: 'https://www.concursosagora.com.br/noticias',
     description: 'Lista completa de notícias sobre concursos públicos em todo o Brasil.',
     numberOfItems: totalPosts,
   };

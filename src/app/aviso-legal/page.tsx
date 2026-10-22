@@ -4,7 +4,7 @@ export const metadata: Metadata = {
   title: 'Aviso Legal — Concursos Agora',
   description: 'Confira o aviso legal e os termos de isenção de responsabilidade sobre o conteúdo publicado no portal Concursos Agora.',
   alternates: {
-    canonical: 'https://concursosagora.com.br/aviso-legal',
+    canonical: 'https://www.concursosagora.com.br/aviso-legal',
   },
 };
 

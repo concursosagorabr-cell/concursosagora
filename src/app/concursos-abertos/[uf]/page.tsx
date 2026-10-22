@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: StatePageProps): Promise<Meta
   const currentYear = new Date().getFullYear();
   const title = `Concursos Abertos em ${state.name} (${ufUpper}) ${currentYear}: Vagas e Editais`;
   const description = `Confira a lista atualizada de concursos públicos abertos e previstos em ${state.name} (${ufUpper}) em ${currentYear}. Vagas para prefeituras, tribunais, polícias e órgãos estaduais.`;
-  const url = `https://concursosagora.com.br/concursos-abertos/${ufLower}`;
+  const url = `https://www.concursosagora.com.br/concursos-abertos/${ufLower}`;
 
   return {
     title,
@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: StatePageProps): Promise<Meta
       locale: 'pt_BR',
       images: [
         {
-          url: 'https://concursosagora.com.br/logo.png',
+          url: 'https://www.concursosagora.com.br/logo.png',
           width: 1200,
           height: 630,
           alt: `Concursos Abertos em ${state.name} - Concursos Agora`,
@@ -94,7 +94,7 @@ export default async function StateContestsPage({ params }: StatePageProps) {
     console.error(`Erro ao buscar concursos de ${stateName}:`, error);
   }
 
-  const pageUrl = `https://concursosagora.com.br/concursos-abertos/${ufLower}`;
+  const pageUrl = `https://www.concursosagora.com.br/concursos-abertos/${ufLower}`;
 
   // JSON-LD Schema
   const jsonLd = {
@@ -110,13 +110,13 @@ export default async function StateContestsPage({ params }: StatePageProps) {
           '@type': 'ListItem',
           position: 1,
           name: 'Início',
-          item: 'https://concursosagora.com.br',
+          item: 'https://www.concursosagora.com.br',
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: 'Concursos Abertos',
-          item: 'https://concursosagora.com.br/concursos-abertos/sp',
+          item: 'https://www.concursosagora.com.br/concursos-abertos/sp',
         },
         {
           '@type': 'ListItem',
@@ -132,7 +132,7 @@ export default async function StateContestsPage({ params }: StatePageProps) {
         '@type': 'ListItem',
         position: index + 1,
         name: post.title,
-        url: `https://concursosagora.com.br/post/${typeof post.slug === 'string' ? post.slug : (post.slug as any)?.current || post._id}`,
+        url: `https://www.concursosagora.com.br/post/${typeof post.slug === 'string' ? post.slug : (post.slug as any)?.current || post._id}`,
       })),
     },
   };

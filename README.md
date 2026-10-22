@@ -14,8 +14,9 @@ frontend/
 │   │   ├── layout.tsx              # Layout raiz (GA4, Consent Mode v2, Speed Insights, Vercel Analytics, Header, Footer)
 │   │   ├── page.tsx                # Home — Carrossel de destaques + grid de concursos paginados (10 em 10)
 │   │   ├── globals.css             # Estilos globais + Tailwind CSS v4
-│   │   ├── icon.png                # Ícone do aplicativo / Favicon (192x192)
-│   │   ├── apple-icon.png          # Ícone Apple Touch (192x192)
+│   │   ├── favicon.ico             # Favicon multi-resolução (16–256 px)
+│   │   ├── icon.png                # Ícone do aplicativo (192x192)
+│   │   ├── apple-icon.png          # Ícone Apple Touch (180x180)
 │   │   ├── concursos/              # Diretório Central de Concursos (Explorador com Filtros Vivos) 🏛️
 │   │   │   ├── page.tsx            # Página do Explorador com busca facetada e CollectionPage Schema
 │   │   │   ├── [nivel]/[uf]/       # Rotas Programáticas por Escolaridade + Estado (ex: /concursos/nivel-medio/sp) 🎯

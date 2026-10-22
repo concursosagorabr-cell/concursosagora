@@ -4,7 +4,7 @@ export const metadata: Metadata = {
   title: 'Fontes Oficiais e Metodologia | Concursos Agora',
   description: 'Conheça a metodologia e as principais fontes oficiais monitoradas pelo Concursos Agora, garantindo informações precisas sobre os certames.',
   alternates: {
-    canonical: 'https://concursosagora.com.br/fontes-oficiais',
+    canonical: 'https://www.concursosagora.com.br/fontes-oficiais',
   },
 };
 

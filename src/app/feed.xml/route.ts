@@ -5,7 +5,7 @@ import { getImageUrl } from '@/lib/image';
 export const revalidate = 300; // Revalida a cada 5 minutos
 
 export async function GET() {
-  const baseUrl = 'https://concursosagora.com.br';
+  const baseUrl = 'https://www.concursosagora.com.br';
 
   let posts: any[] = [];
   try {

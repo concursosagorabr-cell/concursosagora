@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: 'Termos de Uso | Concursos Agora',
   description: 'Leia nossos Termos de Uso. Saiba mais sobre as regras de utilização, escopo dos serviços, direitos autorais e isenção de responsabilidade do Concursos Agora.',
   alternates: {
-    canonical: 'https://concursosagora.com.br/termos-de-uso',
+    canonical: 'https://www.concursosagora.com.br/termos-de-uso',
   },
 };
 

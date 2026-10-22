@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: 'Guias de Concursos por Área — Editais, Carreiras e Notícias',
   description:
     'Nossos guias especializados organizam concursos por áreas específicas (Policiais, Tribunais, Bancários, Fiscais, Saúde, Educação e Municipais).',
-  alternates: { canonical: 'https://concursosagora.com.br/hub' },
+  alternates: { canonical: 'https://www.concursosagora.com.br/hub' },
 };
 
 export const revalidate = 60;
