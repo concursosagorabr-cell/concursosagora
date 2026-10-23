@@ -14,6 +14,10 @@ Monorepo com o frontend público, o Sanity Studio e o agente editorial do Concur
 - Frontend standalone: <https://github.com/concursosagorabr-cell/concursosagora>
 - Projeto completo: <https://github.com/concursosagorabr-cell/concursosagoraprojetocompleto>
 
+## Documentação de replicação
+
+O `MANUAL-DE-REPLICACAO-EDITORIAL.md` descreve as skills, ferramentas, repositórios, fontes, travas de qualidade, rotina diária e procedimentos de backup necessários para reproduzir a produção editorial com o mesmo nível de verificação.
+
 ## Configuração
 
 Cada subprojeto possui seu próprio `README.md` e `.env.example`. Crie os arquivos `.env.local` localmente a partir dos exemplos; eles não são versionados.

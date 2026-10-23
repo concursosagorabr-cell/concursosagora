@@ -211,7 +211,7 @@ def parse_br_date(value: str | None) -> str | None:
         except ValueError:
             return None
 
-    short = re.search(r"\b(\d{1,2})/(\d{1,2})/(\d{2,4})\b", raw)
+    short = re.search(r"\b(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})\b", raw)
     if short:
         day, month, year = (int(short.group(1)), int(short.group(2)), int(short.group(3)))
         if year < 100:

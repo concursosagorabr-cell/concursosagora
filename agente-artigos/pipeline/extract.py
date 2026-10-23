@@ -4,12 +4,20 @@ import hashlib
 import json
 import logging
 import re
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
 from typing import Any
 from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup, Tag
 
+from pipeline.dou_open_data import (
+    DouArticle,
+    DouOpenDataError,
+    find_dou_archive,
+    import_help,
+    parse_dou_archive,
+)
 from pipeline.models import Candidate, ExtractedArticle, SourceConfig
 from pipeline.scrape import Scraper, domain_allowed
 from pipeline.verification import build_fact_evidence
@@ -151,6 +159,7 @@ def discover(
     source: SourceConfig,
     limit: int = 10,
     dou_date: date | None = None,
+    dou_file: Path | str | None = None,
 ) -> list[Candidate]:
     if source.type == "govbr_news":
         return _discover_govbr(scraper, source, limit)
@@ -158,6 +167,8 @@ def discover(
         return _discover_vunesp(scraper, source, limit)
     if source.type == "fgv":
         return _discover_fgv(scraper, source, limit)
+    if source.type in {"dou_inlabs", "dou_open_data"}:
+        return _discover_dou_open_data(scraper, source, limit, dou_date, dou_file)
     if source.type == "dou":
         return _discover_dou(scraper, source, limit, dou_date)
     raise ValueError(f"Tipo de fonte não suportado: {source.type}")
@@ -380,6 +391,78 @@ def _discover_dou(
     return candidates[:limit]
 
 
+def _discover_dou_open_data(
+    scraper: Scraper,
+    source: SourceConfig,
+    limit: int,
+    dou_date: date | None,
+    dou_file: Path | str | None,
+) -> list[Candidate]:
+    """Descobre matérias em XML/ZIP oficial, sem acessar o HTML do DOU.
+
+    O arquivo pode ser indicado por ``--dou-file`` ou estar na pasta
+    configurada em ``DOU_IMPORT_DIR``. O operador baixa o pacote oficial no
+    Portal de Dados Abertos/INLABS; o pipeline não faz login nem contorna o
+    robots.txt de ``in.gov.br``.
+    """
+    if limit <= 0:
+        return []
+
+    target_date = _dou_date_from_arg(dou_date) if dou_date else None
+    if dou_file:
+        archive = Path(dou_file).expanduser()
+    else:
+        settings = getattr(scraper, "settings", None)
+        import_dir = getattr(settings, "dou_import_dir", Path("data") / "dou")
+        try:
+            archive = find_dou_archive(
+                import_dir,
+                target_date=target_date,
+                section=source.section,
+            )
+        except DouOpenDataError as exc:
+            raise DouOpenDataError(f"{exc} {import_help(import_dir)}") from exc
+
+    articles = parse_dou_archive(
+        archive,
+        section=source.section,
+        edition_date=target_date,
+        target_date=target_date,
+    )
+
+    candidates: list[Candidate] = []
+    for article in articles:
+        item = {
+            "title": article.title,
+            "artType": article.art_type,
+            "content": article.body_text,
+            "hierarchyStr": article.hierarchy,
+        }
+        score = _dou_candidate_score(item, source)
+        if score <= 0:
+            continue
+        candidates.append(
+            Candidate(
+                url=article.url,
+                source_id=source.id,
+                title=article.title or None,
+                published_at=parse_iso_datetime(article.published_at),
+                summary=article.summary[:400] or None,
+                score=score,
+                metadata={
+                    "dou_article": article.to_dict(),
+                    "edition_date": article.edition_date,
+                    "art_type": article.art_type,
+                    "hierarchy": article.hierarchy,
+                    "source_file": article.source_file,
+                },
+            )
+        )
+
+    candidates.sort(key=lambda item: (-item.score, item.url))
+    return candidates[:limit]
+
+
 # ---------------------------------------------------------------------------
 # Extração de artigo
 # ---------------------------------------------------------------------------
@@ -392,6 +475,8 @@ def extract_article(scraper: Scraper, source: SourceConfig, candidate: Candidate
         article = _extract_vunesp(scraper, source, candidate)
     elif source.type == "fgv":
         article = _extract_fgv(scraper, source, candidate)
+    elif source.type in {"dou_inlabs", "dou_open_data"}:
+        article = _extract_dou_open_data(scraper, source, candidate)
     elif source.type == "dou":
         article = _extract_dou(scraper, source, candidate)
     else:
@@ -655,6 +740,75 @@ def _fgv_organ_from_title(title: str, page_title: str) -> str | None:
     )[0]
     organ = re.sub(r"^(?:a|o|as|os)\s+", "", organ, flags=re.I).strip(" .-")
     return organ[:180] or None
+
+
+def _extract_dou_open_data(
+    scraper: Scraper, source: SourceConfig, candidate: Candidate
+) -> ExtractedArticle:
+    """Extrai uma matéria já importada do XML oficial do DOU.
+
+    Não há requisição HTTP: o candidato carrega o texto do pacote XML/ZIP.
+    """
+    raw = candidate.metadata.get("dou_article")
+    if not raw:
+        raise ValueError(
+            "Candidato do DOU sem o XML importado. Use discover/run com --dou-file; "
+            "não tente extrair a matéria pelo HTML do in.gov.br."
+        )
+    try:
+        article = raw if isinstance(raw, DouArticle) else DouArticle.from_dict(dict(raw))
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"Metadados do DOU inválidos em {candidate.url}") from exc
+
+    title = clean_whitespace(article.title) or clean_whitespace(candidate.title or "")
+    if not title:
+        raise ValueError(f"Matéria do DOU sem título: {candidate.url}")
+    body = _strip_noise(article.body_text)
+    if not body:
+        raise ValueError(f"Matéria do DOU sem texto: {candidate.url}")
+
+    hierarchy = clean_whitespace(article.hierarchy)
+    organ = clean_whitespace(source.default_organ or "")
+    if not organ and hierarchy:
+        organ = clean_whitespace(hierarchy.split("/")[-1])
+    facts = extract_facts(
+        title=title + (" " + hierarchy if hierarchy else ""),
+        text=body,
+        organ_hint=organ or None,
+        source_id=source.id,
+        default_sphere=source.default_sphere,
+    )
+    facts["art_type"] = clean_whitespace(article.art_type)
+    facts["hierarchy"] = hierarchy
+
+    summary = clean_whitespace(article.summary)
+    if not summary:
+        summary = clean_whitespace(body)[:400]
+    published_at = parse_iso_datetime(article.published_at) or candidate.published_at
+
+    return ExtractedArticle(
+        source_id=source.id,
+        source_name=source.name,
+        url=candidate.url,
+        canonical_url=article.url or candidate.url,
+        title=title,
+        published_at=published_at,
+        summary=summary,
+        body_text=body,
+        image_url=None,
+        image_alt=None,
+        facts=facts,
+        text_hash=_hash_article(title, body),
+        fetched_at=datetime.now(timezone.utc).isoformat(),
+        metadata={
+            "type": "dou_open_data",
+            "art_type": article.art_type,
+            "hierarchy": hierarchy,
+            "section": article.section,
+            "edition_date": article.edition_date,
+            "source_file": article.source_file,
+        },
+    )
 
 
 def _extract_dou(

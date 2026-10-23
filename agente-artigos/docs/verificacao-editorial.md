@@ -37,27 +37,36 @@ A publicação continua manual: todo documento nasce como `drafts.*` com
 O campo `sourceUrls` do Sanity registra `kind`, `usage` e o trecho de
 evidência. A ficha completa fica em `factSheet`.
 
-## Situação dos 10 portais sugeridos
+## Situação das fontes sugeridas
 
-Verificação feita em 21/10/2026 apenas em `robots.txt` e na página inicial,
-sem burlar proteções.
+Verificação feita em **22/10/2026** em `robots.txt`, página inicial e termos de
+uso, sem burlar proteções. O registro executável está em
+`pipeline/source_policy.py`; a matriz completa está em
+`docs/fontes-de-dados.md`.
 
-| Portal | `robots.txt` observado | Decisão |
+| Portal | Observação | Decisão |
 |---|---|---|
-| PCI Concursos | Permite grande parte; bloqueia `/pdf/`, `/ct/`, painéis e downloads | Apenas descoberta; abrir a fonte oficial |
-| Concursos no Brasil | WordPress; bloqueia `wp-admin`, login e busca | Apenas descoberta |
-| JC Concursos | `Allow: /` | Apenas descoberta; conferir termos |
-| Folha Dirigida / QConcursos | Permite leitura; bloqueia JSON/JS e CDN | Apenas descoberta; atenção a paywall |
-| Ache Concursos | Permite conteúdo; bloqueia área premium, fórum e downloads | Apenas descoberta |
-| G1 Concursos | Sem regra `User-agent: *` explícita na consulta | Apenas descoberta; termos Globo |
-| Correio Braziliense | `Allow: *`; bloqueia `/busca/` | Apenas descoberta; atenção a paywall |
-| DOU / in.gov.br | `User-agent: *` + `Disallow: /` | **Desativado**; não coletar |
+| PCI Concursos | Permite grande parte; bloqueia `/pdf/`, `/ct/`, painéis e downloads; sem licença específica localizada | Apenas descoberta; abrir a fonte oficial |
+| Concursos no Brasil | Termos proíbem cópia, reprodução, distribuição e banco de dados sem consentimento | **Manual apenas**; não integrar |
+| JC Concursos | `Allow: /`; sem licença de reprodução localizada | Apenas descoberta; confirmar no oficial |
+| Folha Dirigida / QConcursos | Termos retornaram 403 via Cloudflare; conteúdo protegido | Apenas metadados de sitemap; não contornar |
+| Ache Concursos | Termos vedam uso comercial/publicação sem autorização; exceção restrita a pessoal/acadêmico | **Manual apenas**; não integrar |
+| G1 Concursos | Sem regra `User-agent: *` explícita na consulta; termos Globo | Apenas descoberta |
+| Correio Braziliense | `Allow: *`; bloqueia `/busca/`; atenção a paywall | Apenas descoberta |
+| DOU / in.gov.br | `User-agent: *` + `Disallow: /`; INLABS legado 404 em 22/10/2026 | **Importação local de XML/ZIP oficial**; não ler o HTML |
 | Concursos em Pauta | DNS não resolveu na verificação | **Não usar** até revisão |
-| Notícias Concursos | WordPress; bloqueia admin, login, busca e XML-RPC | Apenas descoberta |
+| Notícias Concursos | Termos vedam uso comercial; robots bloqueia `ClaudeBot`, `anthropic-ai`, `CCBot`, `Scrapy` e outros | **Manual apenas**; não colocar no pipeline |
+| Mega Concursos | Sem licença específica localizada; robots bloqueia área administrativa, uploads, busca e pagamento | Apenas descoberta |
+| ISCOM Radar de Concursos | Sem licença específica localizada; robots permite o site | Apenas descoberta |
 
 Consequência prática: os portais acima não entram como `usage: article`.
 Eles podem ser usados por um editor para localizar uma URL oficial, mas a
-extração e a redação partem do órgão ou da banca.
+extração e a redação partem do órgão, da banca ou do diário oficial. O DOU é a
+exceção operacional: é fonte primária, mas só entra por XML/ZIP oficial
+importado manualmente, nunca por scraping do HTML.
+
+O portal Concursos Agora é `internal`: serve para índice e histórico, não é
+verificação independente.
 
 ## Fluxo
 
@@ -99,6 +108,12 @@ python -m pipeline verify --source inss --url https://www.gov.br/inss/... --json
 
 # Testes offline
 python -m unittest discover -s tests -v
+
+# Registro de políticas das fontes
+python -m pipeline sources --registry
+
+# DOU: importação de XML/ZIP oficial, sem scraping
+python -m pipeline discover --source dou --dou-file data/dou/DO3-2026-10-22.zip --date 22-10-2026
 ```
 
 ## Revisão humana no Studio
@@ -121,6 +136,8 @@ O pipeline não aprova nem publica. `reviewStatus` só muda por decisão humana.
   só existe no PDF, o fato fica sem evidência e o rascunho é bloqueado.
 - A descoberta automática a partir dos portais secundários ainda não está
   habilitada; eles estão classificados e documentados para uso manual.
+- O conector do DOU importa XML/ZIP oficial local. O INLABS legado está
+  indisponível e o catálogo novo de dados abertos pode exigir login gov.br.
 - O Studio hospedado foi reimplantado em 21/10/2026 e já exibe os campos de
   verificação. Os dados antigos que não têm esses campos continuam válidos para
   leitura, mas aparecem sem a ficha de evidências.

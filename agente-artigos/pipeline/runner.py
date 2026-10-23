@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from pipeline.config import Settings, load_sources
-from pipeline.dedupe import find_duplicate, normalize_slug_candidate
+from pipeline.dedupe import contest_key_from_url, find_duplicate, normalize_slug_candidate
 from pipeline.editorial import generate_article
 from pipeline.extract import discover, extract_article, infer_source_from_url
 from pipeline.groq import GroqClient
@@ -145,11 +145,24 @@ def _build_document(
     *,
     allow_uploads: bool,
     used_image_refs: set[str],
+    contest_key: str | None = None,
+    requested_categories: list[str] | None = None,
 ) -> dict[str, Any]:
     author = sanity.resolve_author(context)
     if not author:
         raise RuntimeError("Nenhum autor cadastrado no Sanity; não é possível criar o rascunho.")
-    category_slugs = _category_candidates(context, source, article, generated)
+    if requested_categories is not None:
+        # Caminho manual: as categorias declaradas pelo autor são soberanas e
+        # não devem ser misturadas com as inferidas pelo texto.
+        category_slugs = []
+        for value in dedupe_preserve_order(requested_categories):
+            category = context.category_by_slug(value)
+            if category and category.get("slug"):
+                category_slugs.append(str(category["slug"]))
+        if not category_slugs:
+            raise RuntimeError("Nenhuma categoria válida declarada para o rascunho manual.")
+    else:
+        category_slugs = _category_candidates(context, source, article, generated)
     category_refs = sanity.resolve_categories(context, category_slugs)
     if not category_refs:
         raise RuntimeError("Nenhuma categoria válida encontrada no Sanity.")
@@ -264,15 +277,17 @@ def _build_document(
         document["location"] = location[:160]
     if education:
         document["educationLevel"] = education
-    for field in (
-        "vacanciesTotal",
-        "salaryMin",
-        "salaryMax",
-        "registrationFee",
+    for field, source_field in (
+        ("vacanciesTotal", "vacancies_total"),
+        ("salaryMin", "salary_min"),
+        ("salaryMax", "salary_max"),
+        ("registrationFee", "registration_fee"),
     ):
-        value = article.facts.get(field)
-        if isinstance(value, (int, float)) and value >= 0:
+        value = article.facts.get(source_field)
+        if isinstance(value, (int, float)) and not isinstance(value, bool) and value >= 0:
             document[field] = value
+    if contest_key:
+        document["contestKey"] = contest_key
     for field, source_field in (
         ("enrollmentStartDate", "enrollment_start_date"),
         ("enrollmentEndDate", "enrollment_end_date"),
@@ -311,6 +326,7 @@ class PipelineRunner:
         urls: list[str] | None = None,
         limit: int | None = None,
         dou_date=None,
+        dou_file: Path | str | None = None,
         dry_run: bool = False,
     ) -> RunStats:
         settings = self.settings
@@ -325,6 +341,11 @@ class PipelineRunner:
                         + ", ".join(sorted(self.sources))
                     )
                 source = self.sources[resolved]
+                if source.type in {"dou_inlabs", "dou_open_data"}:
+                    raise ValueError(
+                        "O DOU deve ser importado pelo XML/ZIP oficial: use --source dou "
+                        "com --dou-file. Não use --url, que tentaria ler o HTML bloqueado."
+                    )
                 if not source.enabled:
                     raise ValueError(
                         f"A fonte '{resolved}' está desativada em sources.yaml e não será coletada."
@@ -339,12 +360,19 @@ class PipelineRunner:
                 if source_id not in self.sources:
                     raise ValueError(f"Fonte desconhecida: {source_id}")
                 selected = [self.sources[source_id]]
-                if not selected[0].enabled:
+                local_dou_import = selected[0].type in {"dou_inlabs", "dou_open_data"} and dou_file
+                if not selected[0].enabled and not local_dou_import:
                     raise ValueError(
                         f"A fonte '{source_id}' está desativada em sources.yaml e não será coletada."
                     )
             for source in selected:
-                candidates = discover(self.scraper, source, limit=limit, dou_date=dou_date)
+                candidates = discover(
+                    self.scraper,
+                    source,
+                    limit=limit,
+                    dou_date=dou_date,
+                    dou_file=dou_file,
+                )
                 targets.append((source, candidates))
 
         run_id = _new_run_id()
@@ -396,6 +424,7 @@ class PipelineRunner:
                                     "slug": document.get("slug", {}).get("current"),
                                     "contentHash": document.get("contentHash"),
                                     "sourceUrls": document.get("sourceUrls"),
+                                    "contestKey": document.get("contestKey"),
                                 }
                             )
                     elif result.status in {"duplicate", "exists"}:
@@ -515,14 +544,17 @@ class PipelineRunner:
             self.state.record(result, run_id, article.text_hash)
             return result, None
 
+        contest_key = contest_key_from_url(article.canonical_url or article.url)
         provisional_slug = slugify(article.title, 96) or f"concurso-{article.text_hash[:10]}"
         duplicate, reason, matched = find_duplicate(
             context.posts,
             article,
             article.title,
             provisional_slug,
+            contest_key=contest_key,
+            cooldown_days=self.settings.contest_cooldown_days,
         )
-        if duplicate and reason.startswith(("URL", "hash", "slug")):
+        if duplicate and reason.startswith(("URL", "hash", "slug", "mesmo concurso")):
             result = ItemResult(
                 url=candidate.url,
                 source_id=source.id,
@@ -606,7 +638,14 @@ class PipelineRunner:
             )
             return result, None
         slug = normalize_slug_candidate(generated.slug, context.existing_slugs)
-        duplicate, reason, matched = find_duplicate(context.posts, article, generated.title, slug)
+        duplicate, reason, matched = find_duplicate(
+            context.posts,
+            article,
+            generated.title,
+            slug,
+            contest_key=contest_key,
+            cooldown_days=self.settings.contest_cooldown_days,
+        )
         if duplicate:
             result = ItemResult(
                 url=candidate.url,
@@ -635,6 +674,7 @@ class PipelineRunner:
             run_id,
             allow_uploads=not dry_run,
             used_image_refs=used_image_refs,
+            contest_key=contest_key,
         )
         document["_id"] = f"drafts.{slug}"
         document["slug"] = {"_type": "slug", "current": slug}

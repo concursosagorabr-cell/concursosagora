@@ -44,6 +44,7 @@ class Settings:
     require_fact_evidence: bool = True
     block_on_fact_conflict: bool = True
     verification_min_score: int = 95
+    contest_cooldown_days: int = 15
     scrape_interval_hours: int = 2
     fetch_timeout: int = 60
     request_delay: float = 1.0
@@ -51,6 +52,7 @@ class Settings:
     max_source_chars: int = 14000
     data_dir: Path = field(default_factory=lambda: PROJECT_DIR / "data")
     sources_file: Path = field(default_factory=lambda: DEFAULT_SOURCES_FILE)
+    dou_import_dir: Path = field(default_factory=lambda: PROJECT_DIR / "data" / "dou")
     env: dict[str, str] = field(default_factory=dict)
 
     @property
@@ -159,6 +161,7 @@ def load_settings(env_files: list[Path] | None = None, sources_file: Path | None
         require_fact_evidence=_as_bool(env.get("REQUIRE_FACT_EVIDENCE"), True),
         block_on_fact_conflict=_as_bool(env.get("BLOCK_ON_FACT_CONFLICT"), True),
         verification_min_score=_as_int(env.get("VERIFICATION_MIN_SCORE"), 95),
+        contest_cooldown_days=_as_int(env.get("CONTEST_COOLDOWN_DAYS"), 15),
         scrape_interval_hours=_as_int(env.get("SCRAPE_INTERVAL_HOURS"), 2),
         fetch_timeout=_as_int(env.get("PIPELINE_FETCH_TIMEOUT"), 60),
         request_delay=_as_float(env.get("PIPELINE_REQUEST_DELAY"), 1.0),
@@ -166,6 +169,7 @@ def load_settings(env_files: list[Path] | None = None, sources_file: Path | None
         max_source_chars=_as_int(env.get("PIPELINE_MAX_SOURCE_CHARS"), 14000),
         data_dir=data_dir,
         sources_file=sources_file or DEFAULT_SOURCES_FILE,
+        dou_import_dir=Path(env.get("DOU_IMPORT_DIR") or (data_dir / "dou")).expanduser(),
         env=env,
     )
 

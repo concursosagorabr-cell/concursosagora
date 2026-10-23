@@ -412,6 +412,15 @@ export default defineType({
       group: 'editorial',
       readOnly: true,
     }),
+    defineField({
+      name: 'contestKey',
+      title: 'Chave do concurso (deduplicação)',
+      type: 'string',
+      group: 'editorial',
+      readOnly: true,
+      description:
+        'Identificador estável do certame (ex.: fgv:tjap26). Usado para impedir nova matéria sobre o mesmo concurso antes do intervalo mínimo.',
+    }),
 
     defineField({
       name: 'verificationStatus',

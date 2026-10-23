@@ -137,13 +137,20 @@ class SanityClient:
         query = """{
           "posts": *[_type == "post"] | order(publishedAt desc) {
             _id,
+            _createdAt,
+            _updatedAt,
             title,
             "slug": slug.current,
             contentHash,
             sourceUrls,
             publishedAt,
             reviewStatus,
-            status
+            status,
+            organ,
+            banca,
+            stateUf,
+            cityName,
+            contestKey
           },
           "authors": *[_type == "author"] | order(name asc) {
             _id,

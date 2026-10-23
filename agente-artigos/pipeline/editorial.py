@@ -350,6 +350,8 @@ def _normalize_generated(
     warnings: list[str],
     score: int,
     usage: dict[str, Any],
+    *,
+    model: str | None = None,
 ) -> GeneratedArticle:
     title = _as_text(data.get("title"), limit=160)
     if len(title) < 8:
@@ -386,7 +388,7 @@ def _normalize_generated(
         banca=banca,
         state_uf=state_uf,
         city_name=city_name,
-        model=settings.groq_model,
+        model=model or settings.groq_model,
         usage=usage,
         warnings=warnings,
         score=score,
@@ -405,6 +407,71 @@ def _target_word_range(article: ExtractedArticle, settings: Settings) -> tuple[i
         min_words = min(settings.min_content_words, 180)
         return min_words, min(420, min_words + 100)
     return settings.min_content_words, 700
+
+
+def finalize_generated_article(
+    data: dict[str, Any],
+    article: ExtractedArticle,
+    settings: Settings,
+    category_slugs: list[str],
+    *,
+    usage: dict[str, Any] | None = None,
+    model: str | None = None,
+    min_words: int | None = None,
+    extra_warnings: list[str] | None = None,
+) -> GeneratedArticle:
+    """Valida uma matéria já escrita e aplica fatos determinísticos.
+
+    Reutilizado pelo caminho automático (Groq) e pelo caminho manual, para que
+    as duas rotas tenham exatamente as mesmas regras editoriais e de evidência.
+    """
+    warnings, score = validate_output(
+        data,
+        article,
+        settings,
+        category_slugs,
+        min_words=min_words,
+    )
+    for warning in extra_warnings or []:
+        if warning not in warnings:
+            warnings.append(warning)
+    generated = _normalize_generated(
+        data,
+        article,
+        settings,
+        category_slugs,
+        warnings,
+        score,
+        usage or {},
+        model=model,
+    )
+
+    # Fatos determinísticos têm precedência sobre campos inferidos pelo modelo.
+    if article.facts.get("status") in VALID_STATUS:
+        generated.status = str(article.facts["status"])
+    if article.facts.get("education_level"):
+        generated.education_level = [
+            str(x).lower()
+            for x in article.facts["education_level"]
+            if str(x).lower() in VALID_EDUCATION
+        ]
+    if article.facts.get("organ"):
+        generated.organ = str(article.facts["organ"])
+    if article.facts.get("banca"):
+        generated.banca = str(article.facts["banca"])
+    if article.facts.get("state_uf"):
+        generated.state_uf = str(article.facts["state_uf"])
+    if article.facts.get("city_name"):
+        generated.city_name = str(article.facts["city_name"])
+    if not generated.category_slugs and article.facts.get("source_categories"):
+        generated.category_slugs = [str(x) for x in article.facts["source_categories"]]
+    verification = verify_article(article, generated, settings)
+    generated.verification = verification
+    generated.blocking = list(verification.get("blocking") or [])
+    for warning in verification.get("warnings") or []:
+        if warning not in generated.warnings:
+            generated.warnings.append(warning)
+    return generated
 
 
 def generate_article(
@@ -473,39 +540,13 @@ def generate_article(
             warnings.append("reparo automático não melhorou a validação; mantida a primeira versão")
             break
 
-    generated = _normalize_generated(
+    notes = [warning for warning in warnings if warning.startswith("reparo automático")]
+    return finalize_generated_article(
         data,
         article,
         settings,
         category_slugs,
-        warnings,
-        score,
-        current_usage,
+        usage=current_usage,
+        min_words=min_words,
+        extra_warnings=notes,
     )
-
-    # Fatos determinísticos têm precedência sobre campos inferidos pelo modelo.
-    if article.facts.get("status") in VALID_STATUS:
-        generated.status = str(article.facts["status"])
-    if article.facts.get("education_level"):
-        generated.education_level = [
-            str(x).lower()
-            for x in article.facts["education_level"]
-            if str(x).lower() in VALID_EDUCATION
-        ]
-    if article.facts.get("organ"):
-        generated.organ = str(article.facts["organ"])
-    if article.facts.get("banca"):
-        generated.banca = str(article.facts["banca"])
-    if article.facts.get("state_uf"):
-        generated.state_uf = str(article.facts["state_uf"])
-    if article.facts.get("city_name"):
-        generated.city_name = str(article.facts["city_name"])
-    if not generated.category_slugs and article.facts.get("source_categories"):
-        generated.category_slugs = [str(x) for x in article.facts["source_categories"]]
-    verification = verify_article(article, generated, settings)
-    generated.verification = verification
-    generated.blocking = list(verification.get("blocking") or [])
-    for warning in verification.get("warnings") or []:
-        if warning not in generated.warnings:
-            generated.warnings.append(warning)
-    return generated

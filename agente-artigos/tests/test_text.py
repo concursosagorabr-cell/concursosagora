@@ -25,6 +25,7 @@ class TextHelpersTest(unittest.TestCase):
 
     def test_parse_dates(self):
         self.assertEqual(parse_br_date("07/10/2026"), "2026-10-07")
+        self.assertEqual(parse_br_date("22-10-2026"), "2026-10-22")
         self.assertEqual(parse_br_date("9 de julho de 2026"), "2026-07-09")
         self.assertEqual(parse_br_date("2026-10-07"), "2026-10-07")
         self.assertEqual(parse_iso_datetime("2026-07-31T15:29:00"), "2026-07-31T15:29:00")

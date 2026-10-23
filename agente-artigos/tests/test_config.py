@@ -16,7 +16,9 @@ class SourcesConfigTest(unittest.TestCase):
         self.assertTrue(sources["fgv"].enabled)
         self.assertFalse(sources["dou"].enabled)
         self.assertEqual(sources["fgv"].start_urls, ["https://conhecimento.fgv.br/concursos"])
-        self.assertEqual(sources["dou"].start_urls, ["https://www.in.gov.br/leiturajornal"])
+        self.assertEqual(sources["dou"].type, "dou_inlabs")
+        self.assertEqual(sources["dou"].start_urls, [])
+        self.assertEqual(sources["dou"].options.get("import_dir"), "data/dou")
 
 
 if __name__ == "__main__":

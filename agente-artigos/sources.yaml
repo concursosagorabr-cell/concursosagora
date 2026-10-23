@@ -109,19 +109,20 @@ sources:
     max_candidates: 30
 
   # O DOU bloqueia todo o site no robots.txt (User-agent: * / Disallow: /).
-  # O adaptador existe para quando houver uma API oficial autorizada, mas fica
-  # desativado por padrão para não violar a restrição da fonte.
+  # O conector lê XML/ZIP oficial baixado manualmente (Portal de Dados Abertos/
+  # INLABS). Ele não faz login, não raspa o HTML e fica desativado por padrão.
   - id: dou
     name: Diário Oficial da União
-    type: dou
+    type: dou_inlabs
     enabled: false
     tier: official_primary
     usage: article
-    start_urls:
-      - https://www.in.gov.br/leiturajornal
+    start_urls: []
     allowed_domains:
       - www.in.gov.br
       - in.gov.br
+      - inlabs.in.gov.br
+      - dados.gov.br
     section: do3
     include_keywords:
       - concurso publico
@@ -145,3 +146,9 @@ sources:
       - federal
     default_sphere: FEDERAL
     max_candidates: 40
+    options:
+      import_dir: data/dou
+      open_data_page: https://www.in.gov.br/acesso-a-informacao/dados-abertos/base-de-dados
+      note: >-
+        Baixe o XML/ZIP oficial no Portal de Dados Abertos ou no INLABS e use
+        discover/run com --dou-file. Não coletar o HTML do in.gov.br.
