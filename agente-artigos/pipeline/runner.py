@@ -373,6 +373,8 @@ class PipelineRunner:
                     dou_date=dou_date,
                     dou_file=dou_file,
                 )
+                # Remove URLs already processed in previous runs
+                candidates = [c for c in candidates if not self.state.processed(c.url)]
                 targets.append((source, candidates))
 
         run_id = _new_run_id()

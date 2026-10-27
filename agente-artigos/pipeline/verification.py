@@ -144,9 +144,20 @@ def _number_variants(value: Any) -> list[str]:
         return []
     if float(value).is_integer():
         number = int(value)
-        return [str(number), f"{number:,}".replace(",", ".")]
+        return [str(number), f"{number:,}".replace(",", "."), f"{number:,}"]
     raw = f"{float(value):.2f}"
-    return [raw, raw.replace(".", ",")]
+    # Inclui formatos com separador de milhar usados em páginas oficiais
+    # (pt-BR: 6.397,19; en-US: 6,397.19) e sem separador.
+    ptbr = f"{float(value):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    enus = f"{float(value):,.2f}"
+    variants = [raw, raw.replace(".", ","), ptbr, enus]
+    seen: set[str] = set()
+    unique: list[str] = []
+    for item in variants:
+        if item not in seen:
+            seen.add(item)
+            unique.append(item)
+    return unique
 
 
 def _number_snippet(text: str, value: Any, *, context: str = "") -> tuple[str | None, str]:

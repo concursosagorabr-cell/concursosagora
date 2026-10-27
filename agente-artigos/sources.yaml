@@ -1,8 +1,8 @@
-# Fontes oficiais monitoradas pelo pipeline.
+# Fontes monitoradas pelo pipeline.
 # Apenas sites públicos, sem login, paywall ou CAPTCHA.
 # Somente fontes com tier official_primary/official_secondary e usage article
-# podem gerar rascunhos. Portais de imprensa e agregadores são apenas descoberta
-# manual e não entram neste arquivo.
+# podem gerar rascunhos. Fontes de imprensa/agregadores entram como
+# tier: journalism e usage: discovery (apenas descoberta, sem geração de artigo).
 sources:
   - id: inss
     name: INSS
@@ -108,6 +108,60 @@ sources:
     default_categories: []
     max_candidates: 30
 
+  # Fonte genérica para notícias oficiais de prefeituras, institutos federais
+  # e universidades que publicam concursos em páginas próprias. Serve para
+  # URLs diretas informadas via --url; a descoberta automática depende de
+  # start_urls.
+  - id: govbr_municipal
+    name: Órgãos Públicos — Notícias Oficiais
+    type: govbr_news
+    enabled: true
+    tier: official_primary
+    usage: article
+    start_urls: []
+    allowed_domains:
+      - holambra.sp.gov.br
+      - aparecida.sp.gov.br
+      - veracruz.sp.gov.br
+      - saojoaquimdabarra.sp.gov.br
+      - saojoaquim.sc.gov.br
+      - barrabonita.sp.gov.br
+      - contagem.mg.gov.br
+      - bariri.sp.gov.br
+      - promissao.sp.gov.br
+      - ariranha.sp.gov.br
+      - itapecerica.sp.gov.br
+      - etecpolivalente.cps.sp.gov.br
+      - piedade.sp.gov.br
+      - curitiba.pr.gov.br
+      - maua.sp.gov.br
+      - paulodefrontin.rj.gov.br
+      - casabranca.sp.gov.br
+      - morroreuter.rs.gov.br
+      - macaubal.sp.gov.br
+      - ciop.sp.gov.br
+      - salto.sp.gov.br
+      - saomiguelarcanjo.sp.gov.br
+      - ifsp.edu.br
+      - ifmg.edu.br
+      - ifsuldeminas.edu.br
+      - ifap.edu.br
+      - univasf.edu.br
+      - ifsc.edu.br
+      - ufnt.edu.br
+    include_keywords:
+      - concurso
+      - edital
+      - vagas
+      - inscricoes
+      - processo seletivo
+    exclude_keywords:
+      - licitacao
+      - pregao
+      - contrato
+    default_categories: []
+    max_candidates: 20
+
   # O DOU bloqueia todo o site no robots.txt (User-agent: * / Disallow: /).
   # O conector lê XML/ZIP oficial baixado manualmente (Portal de Dados Abertos/
   # INLABS). Ele não faz login, não raspa o HTML e fica desativado por padrão.
@@ -152,3 +206,200 @@ sources:
       note: >-
         Baixe o XML/ZIP oficial no Portal de Dados Abertos ou no INLABS e use
         discover/run com --dou-file. Não coletar o HTML do in.gov.br.
+
+  # Novas fontes de notícias (journalism / discovery)
+  - id: pci_concursos
+    name: PCI Concursos
+    type: govbr_news
+    enabled: true
+    tier: journalism
+    usage: discovery
+    start_urls:
+      - https://www.pciconcursos.com.br/
+    allowed_domains:
+      - pciconcursos.com.br
+    link_pattern: "/noticias/"
+    include_keywords:
+      - concurso
+      - edital
+      - vagas
+      - "processo seletivo"
+    exclude_keywords:
+      - ".pdf"
+      - ".doc"
+      - "ebook"
+    max_candidates: 30
+
+  - id: folha_dirigida
+    name: Folha Dirigida (Qconcursos)
+    type: govbr_news
+    enabled: true
+    tier: journalism
+    usage: discovery
+    start_urls:
+      - https://folha.qconcursos.com/
+    allowed_domains:
+      - folha.qconcursos.com
+    link_pattern: "/noticia/"
+    include_keywords:
+      - concurso
+      - edital
+      - vagas
+      - "processo seletivo"
+    exclude_keywords:
+      - ".pdf"
+      - ".doc"
+    max_candidates: 30
+
+  - id: concursos_no_brasil
+    name: Concursos no Brasil
+    type: govbr_news
+    enabled: true
+    tier: journalism
+    usage: discovery
+    start_urls:
+      - https://concursosnobrasil.com/
+    allowed_domains:
+      - concursosnobrasil.com
+    link_pattern: "/concursos/"
+    include_keywords:
+      - concurso
+      - edital
+      - vagas
+      - "processo seletivo"
+    exclude_keywords:
+      - ".pdf"
+    max_candidates: 30
+
+  - id: estrategia_blog
+    name: Blog do Estratégia Concursos
+    type: govbr_news
+    enabled: true
+    tier: journalism
+    usage: discovery
+    start_urls:
+      - https://estrategiaconcursos.com.br/blog/
+    allowed_domains:
+      - estrategiaconcursos.com.br
+    link_pattern: "/blog/"
+    include_keywords:
+      - concurso
+      - edital
+      - vagas
+    exclude_keywords:
+      - ".pdf"
+    max_candidates: 30
+
+  - id: gran_cursos_blog
+    name: Blog do Gran Cursos Online
+    type: govbr_news
+    enabled: true
+    tier: journalism
+    usage: discovery
+    start_urls:
+      - https://blog.grancursosonline.com.br/
+    allowed_domains:
+      - blog.grancursosonline.com.br
+    link_pattern: "/blog/"
+    include_keywords:
+      - concurso
+      - edital
+      - vagas
+    exclude_keywords:
+      - ".pdf"
+    max_candidates: 30
+
+  - id: jc_concursos
+    name: JC Concursos
+    type: govbr_news
+    enabled: true
+    tier: journalism
+    usage: discovery
+    start_urls:
+      - https://jcconcursos.com.br/
+    allowed_domains:
+      - jcconcursos.com.br
+    link_pattern: "/concursos/"
+    include_keywords:
+      - concurso
+      - edital
+      - vagas
+    exclude_keywords:
+      - ".pdf"
+    max_candidates: 30
+
+  - id: ache_concursos
+    name: Ache Concursos
+    type: govbr_news
+    enabled: true
+    tier: journalism
+    usage: discovery
+    start_urls:
+      - https://www.acheconcursos.com.br/
+    allowed_domains:
+      - acheconcursos.com.br
+    link_pattern: "/concursos/"
+    include_keywords:
+      - concurso
+      - edital
+      - vagas
+    exclude_keywords:
+      - ".pdf"
+    max_candidates: 30
+
+  - id: edital_concursos_brasil
+    name: Edital Concursos Brasil
+    type: govbr_news
+    enabled: true
+    tier: journalism
+    usage: discovery
+    start_urls:
+      - https://editalconcursosbrasil.com.br/
+    allowed_domains:
+      - editalconcursosbrasil.com.br
+    link_pattern: "/edital/"
+    include_keywords:
+      - concurso
+      - edital
+      - vagas
+    exclude_keywords:
+      - ".pdf"
+    max_candidates: 30
+
+  - id: g1_concursos
+    name: G1 – Concursos e Emprego
+    type: govbr_news
+    enabled: true
+    tier: journalism
+    usage: discovery
+    start_urls:
+      - https://g1.globo.com/economia/concursos-e-emprego/
+    allowed_domains:
+      - g1.globo.com
+    link_pattern: "/concursos-e-emprego/"
+    include_keywords:
+      - concurso
+      - edital
+      - vagas
+    exclude_keywords:
+      - ".pdf"
+    max_candidates: 30
+
+  - id: pncp
+    name: PNCP (Portal Nacional de Contratações Públicas)
+    type: govbr_news
+    enabled: true
+    tier: journalism
+    usage: discovery
+    start_urls:
+      - https://www.pncp.gov.br/
+    allowed_domains:
+      - pncp.gov.br
+    link_pattern: "/licitacoes/"
+    include_keywords:
+      - concurso
+      - edital
+      - vagas
+    exclude_keywords:
+      - ".pdf"
+    max_candidates: 30

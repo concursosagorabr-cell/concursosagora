@@ -179,6 +179,14 @@ python -m pipeline run --source inss --limit 1
 python -m pipeline run --source vunesp --limit 1
 python -m pipeline run --source fgv --limit 1
 
+# Cria múltiplos artigos usando a IA (Groq)
+# 3 artigos:
+python -m pipeline run --source all --limit 3
+# 6 artigos:
+python -m pipeline run --source all --limit 6
+# 9 artigos:
+python -m pipeline run --source all --limit 9
+
 # Estado local
 python -m pipeline stats
 

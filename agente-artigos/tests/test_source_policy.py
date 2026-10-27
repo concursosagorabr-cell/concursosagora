@@ -90,9 +90,13 @@ class SourcePolicyTest(unittest.TestCase):
 
     def test_all_article_sources_in_config_are_official(self):
         for source in load_sources(PROJECT_DIR / "sources.yaml"):
-            self.assertIn(source.tier, {"official_primary", "official_secondary"})
-            self.assertEqual(source.usage, "article")
-            self.assertTrue(source.can_generate_article)
+            if source.usage == "article":
+                self.assertIn(source.tier, {"official_primary", "official_secondary"})
+                self.assertTrue(source.can_generate_article)
+            else:
+                self.assertIn(source.tier, {"journalism", "aggregator"})
+                self.assertEqual(source.usage, "discovery")
+                self.assertFalse(source.can_generate_article)
 
 
 if __name__ == "__main__":
