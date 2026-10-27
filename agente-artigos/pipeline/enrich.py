@@ -108,7 +108,6 @@ def build_enrichment_markdown(post: dict[str, Any]) -> str:
         lines.extend(source_lines)
         lines.append("")
 
-    lines.append("_Seção adicionada pelo agente de enriquecimento. Revisão humana obrigatória._")
     return "\n".join(lines).strip()
 
 
