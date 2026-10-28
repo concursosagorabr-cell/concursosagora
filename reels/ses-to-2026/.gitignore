@@ -1,0 +1,7 @@
+# HiperFrames: artefatos de máquina
+.hyperframes/
+snapshot-review*.json
+
+# Logs locais
+check*.log
+render.log

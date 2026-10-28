@@ -13,7 +13,8 @@ Use este agente para ampliar rascunhos recentes do Sanity com informações comp
 - Nunca publicar automaticamente.
 - Operar somente em `drafts.*`.
 - Não alterar o texto original da matéria.
-- Adicionar apenas uma seção `## Informações complementares`.
+- Adicionar apenas uma seção `## Informações complementares (editorial - não publicar)`.
+- **A seção de enriquecimento NÃO é publicada no site** — é filtrada automaticamente no frontend. Só fica visível no Sanity Studio (reviewStatus=pending).
 - Toda informação factual nova deve vir de fonte oficial e ter evidência literal.
 - Dicas de estudo devem ser genéricas e marcadas como orientação editorial.
 - Não inventar datas, vagas, salários, cargos, etapas ou cronogramas.
@@ -34,4 +35,5 @@ python -m pipeline enrich --limit 10 --apply
 - Rascunhos com `reviewStatus=pending`.
 - Relatório de enriquecimento gerado.
 - Revisão humana obrigatória antes da publicação.
+- **Verificar se a seção de enriquecimento NÃO vazou para o site público** (testar em homologação).
 PY

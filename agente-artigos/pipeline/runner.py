@@ -546,6 +546,36 @@ class PipelineRunner:
             self.state.record(result, run_id, article.text_hash)
             return result, None
 
+        # REJEITA NOTÍCIAS VELHAS REPUBLICADAS COMO NOVAS
+        if self.settings.reject_stale_news and article.published_at:
+            try:
+                pub_date = datetime.fromisoformat(article.published_at.replace("Z", "+00:00"))
+                age_days = (datetime.now(timezone.utc) - pub_date).days
+                if age_days > self.settings.max_news_age_days:
+                    # Verifica se o texto usa tempo presente para fatos passados
+                    present_patterns = [
+                        r"\b(abre|abriu|lança|lançou|publica|publicou|divulga|divulgou)\b",
+                        r"\binscri[cç][oõ]es abertas\b",
+                        r"\bper[ií]odo de inscri[cç][aã]o\b",
+                    ]
+                    text_check = article.title + " " + article.body_text
+                    uses_present = any(re.search(p, text_check, flags=re.I) for p in present_patterns)
+                    if uses_present:
+                        result = ItemResult(
+                            url=candidate.url,
+                            source_id=source.id,
+                            status="skipped",
+                            message=f"notícia com {age_days} dias usa tempo presente para fatos passados (máx {self.settings.max_news_age_days} dias)",
+                            article_title=article.title,
+                            content_hash=article.text_hash,
+                            facts=article.facts,
+                        )
+                        self.state.record(result, run_id, article.text_hash)
+                        log.warning("Notícia velha rejeitada: %s (%s dias)", candidate.url, age_days)
+                        return result, None
+            except (ValueError, TypeError):
+                pass  # Se não conseguir parsear a data, continua
+
         contest_key = contest_key_from_url(article.canonical_url or article.url)
         provisional_slug = slugify(article.title, 96) or f"concurso-{article.text_hash[:10]}"
         duplicate, reason, matched = find_duplicate(

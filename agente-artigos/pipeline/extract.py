@@ -898,6 +898,9 @@ def _strip_noise(text: str) -> str:
             continue
         if re.fullmatch(r"(Compartilhe|Compartilhe por.*|Categoria|Publicado em.*|ASCOM|Ascom)", stripped, flags=re.I):
             continue
+        # Remove banners de cookies/LGPD/privacidade
+        if re.search(r"\b(cookie|cookies|lgpd|pol[ií]tica de privacidade|termo de uso|aceitar (todos|cookies)|banner|consentimento)\b", stripped, flags=re.I):
+            continue
         lines.append(stripped)
     return "\n\n".join(lines)
 

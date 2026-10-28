@@ -35,21 +35,25 @@ class Settings:
     groq_model: str
     frontend_url: str
     auto_publish: bool = False
-    min_content_words: int = 200
+    min_content_words: int = 300  # Aumentado para garantir conteúdo substancial
     max_articles_per_run: int = 10
-    fact_check_min_score: int = 90
+    fact_check_min_score: int = 92  # Mais rigoroso
     fact_check_two_source_rule: bool = True
     fact_check_max_repair_attempts: int = 2
     require_official_source: bool = True
     require_fact_evidence: bool = True
     block_on_fact_conflict: bool = True
-    verification_min_score: int = 95
+    verification_min_score: int = 97  # Mais rigoroso
     contest_cooldown_days: int = 15
     scrape_interval_hours: int = 2
     fetch_timeout: int = 60
     request_delay: float = 1.0
     respect_robots: bool = True
     max_source_chars: int = 14000
+    # Novas configurações de qualidade
+    strict_cross_validation: bool = True  # Validação cruzada ficha técnica vs corpo
+    reject_stale_news: bool = True  # Rejeita notícias velhas republicadas no presente
+    max_news_age_days: int = 30  # Notícias mais velhas que isso precisam revisão manual
     data_dir: Path = field(default_factory=lambda: PROJECT_DIR / "data")
     sources_file: Path = field(default_factory=lambda: DEFAULT_SOURCES_FILE)
     dou_import_dir: Path = field(default_factory=lambda: PROJECT_DIR / "data" / "dou")

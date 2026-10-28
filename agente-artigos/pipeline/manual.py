@@ -38,7 +38,6 @@ VALID_PHASES = {
     "aguardando_autorizacao",
     "autorizado",
     "comissao_formada",
-    "ato_intermediario",
     "edital_publicado",
     "inscricoes_abertas",
     "provas_aplicadas",

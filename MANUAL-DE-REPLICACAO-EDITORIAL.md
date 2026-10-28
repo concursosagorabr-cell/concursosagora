@@ -608,8 +608,19 @@ No Studio (<https://concursos-agora.sanity.studio/>), o revisor deve:
 4. conferir `verificationStatus` (`verified`);
 5. abrir a URL oficial e confirmar que o trecho existe;
 6. conferir título, resumo, corpo, status, órgão, banca, UF, cidade, categorias, imagem e SEO;
-7. alterar `reviewStatus` para `approved` somente depois da conferência;
-8. publicar manualmente.
+7. **NOVOS CHECKS OBRIGATÓRIOS (previnem erros recorrentes):**
+   - [ ] **Seção de enriquecimento NÃO vazou**: buscar "Informações complementares" no corpo — deve aparecer só no Studio, não no site público
+   - [ ] **Status condiz com datas**: se edital publicado há >30 dias e inscrições encerradas, status NÃO pode ser "previsto" nem "aberto" — use "em_andamento" ou "encerrado"
+   - [ ] **Banca organizadora tem fonte explícita**: não inferir banca por histórico (ex: "Polícia Penal SP usa FGV" → só escreva FGV se estiver na fonte)
+   - [ ] **Vagas/salários não misturam editais**: se a fonte é de um cargo específico (ex: Guarda), não trazer salários de médicos do edital geral da prefeitura
+   - [ ] **Terminologia correta**: NUNCA usar "ato intermediário", "fase de ato intermediário" — use apenas: autorização, comissão formada, termo de referência, contratação de banca, edital publicado
+   - [ ] **Sem placeholders genéricos**: "todas as informações acima são extraídas do dossiê factual", "fonte 1, fonte 2", "dossiê factual disponível" são metainformação, não conteúdo
+   - [ ] **Datas no corpo = ficha técnica**: data de inscrição, prova, taxa no texto devem bater com `enrollmentEndDate`, `examDate`, `registrationFee` estruturados
+   - [ ] **Notícia velha no presente**: se a matéria tem >30 dias e usa verbos no presente ("abre", "lança"), rejeitar — republicar só no passado com status correto
+   - [ ] **Ficha técnica vs Corpo**: conferir se `vacanciesTotal`, `salaryMin/Max`, `enrollmentEndDate`, `examDate`, `registrationFee` no corpo batem com os campos estruturados
+   - [ ] **Scraping limpo**: verificar se "cookies", "LGPD", "banner", "política de privacidade" não vazaram para o campo "Órgão" ou corpo
+8. alterar `reviewStatus` para `approved` somente depois da conferência completa;
+9. publicar manualmente.
 
 Se algo estiver errado, marcar `rejected` e registrar o motivo. Não publicar para corrigir depois.
 

@@ -1,61 +1,1457 @@
 <!doctype html>
-<html lang="en" data-resolution="portrait">
+<html
+  lang="pt-BR"
+  data-resolution="portrait"
+  data-composition-variables='[{"id":"edition","type":"string","label":"Edição","default":"SES-TO 2026"}]'
+>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1080, height=1920" />
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <title>Concursos Agora — Reel SES-TO 5.124 vagas</title>
+    <script src="assets/vendor/gsap.min.js"></script>
     <style>
-      /* Placeholders: replace all three with the film's own palette and display face. */
       :root {
-        --ground: #6b6b6b;
-        --ink: #ffffff;
-        --font-display: sans-serif;
+        --ground: #061826;
+        --surface: #0c2a43;
+        --ink: #f7f3e8;
+        --muted: #9fb3c6;
+        --gold: #f0c24b;
+        --gold-deep: #c58a05;
+        --red: #e45745;
+        --black: #030c14;
+        --display: "Archivo Black";
+        --mono: "IBM Plex Mono";
       }
+
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
+
       html,
       body {
-        margin: 0;
         width: 1080px;
         height: 1920px;
         overflow: hidden;
         background: var(--ground);
       }
+
+      body {
+        color: var(--ink);
+        font-family: var(--mono);
+        -webkit-font-smoothing: antialiased;
+      }
+
       #root {
-        width: 100%;
-        height: 100%;
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--ground);
+      }
+
+      .stage {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background: var(--ground);
+      }
+
+      .grid {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 590px;
+        z-index: 0;
+        background-image: radial-gradient(rgba(240, 194, 75, 0.13) 1px, transparent 1px);
+        background-size: 72px 72px;
+        opacity: 0.55;
+      }
+
+      .band {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 590px;
+        z-index: 1;
+        background: var(--black);
+        border-top: 1px solid rgba(240, 194, 75, 0.4);
+      }
+
+      .barcode {
+        position: absolute;
+        left: 84px;
+        right: 96px;
+        bottom: 54px;
+        height: 138px;
+        z-index: 1;
+        opacity: 0.13;
+        background: repeating-linear-gradient(
+          90deg,
+          var(--gold) 0 2px,
+          transparent 2px 9px,
+          var(--gold) 9px 11px,
+          transparent 11px 24px,
+          var(--gold) 24px 25px,
+          transparent 25px 34px
+        );
+      }
+
+      .rail {
+        position: absolute;
+        top: 190px;
+        bottom: 110px;
+        width: 1px;
+        z-index: 2;
+        background: linear-gradient(
+          180deg,
+          rgba(240, 194, 75, 0.42),
+          rgba(240, 194, 75, 0.06)
+        );
+      }
+
+      .rail.left {
+        left: 60px;
+      }
+
+      .rail.right {
+        right: 60px;
+      }
+
+      .hairline {
+        position: absolute;
+        left: 60px;
+        right: 60px;
+        top: 268px;
+        height: 1px;
+        z-index: 2;
+        background: rgba(240, 194, 75, 0.16);
+      }
+
+      .topbar {
+        position: absolute;
+        top: 190px;
+        left: 84px;
+        right: 84px;
+        height: 56px;
+        z-index: 90;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .brand-plate {
+        width: 48px;
+        height: 48px;
+        padding: 5px;
+        background: var(--ink);
+        border: 1px solid var(--gold);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-family: var(--font-display);
       }
-      #title {
+
+      .brand-plate img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+      }
+
+      .brand-title {
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.13em;
         color: var(--ink);
-        font-size: 72px;
-        font-weight: 600;
+      }
+
+      .brand-edition {
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.13em;
+        color: var(--gold);
+      }
+
+      .scene {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        z-index: 10;
+      }
+
+      .scene-2 {
+        z-index: 20;
+      }
+      .scene-3 {
+        z-index: 30;
+      }
+      .scene-4 {
+        z-index: 40;
+      }
+      .scene-5 {
+        z-index: 50;
+      }
+      .scene-6 {
+        z-index: 60;
+      }
+
+      .kicker {
+        position: absolute;
+        top: 290px;
+        left: 84px;
+        right: 84px;
+        color: var(--gold);
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 1.2;
+        letter-spacing: 0.14em;
+      }
+
+      .kicker.red {
+        color: var(--red);
+      }
+
+      .rule {
+        position: absolute;
+        left: 84px;
+        width: 912px;
+        height: 4px;
+        background: var(--gold);
+        transform-origin: left center;
+      }
+
+      /* SCENE 1 */
+
+      .s1-number {
+        position: absolute;
+        top: 326px;
+        left: 74px;
+        color: var(--ink);
+        font-family: var(--display);
+        font-size: 300px;
+        font-weight: 400;
+        line-height: 0.82;
+        letter-spacing: -0.08em;
+        font-variant-numeric: tabular-nums;
+        transform-origin: left bottom;
+      }
+
+      .s1-word {
+        position: absolute;
+        top: 588px;
+        left: 84px;
+        color: var(--ink);
+        font-family: var(--display);
+        font-size: 110px;
+        font-weight: 400;
+        line-height: 0.92;
         letter-spacing: -0.03em;
+      }
+
+      .s1-sub {
+        position: absolute;
+        top: 712px;
+        left: 84px;
+        width: 912px;
+        color: var(--muted);
+        font-size: 34px;
+        font-weight: 400;
+        line-height: 1.3;
+      }
+
+      .s1-rule {
+        top: 780px;
+      }
+
+      .s1-photo {
+        position: absolute;
+        top: 820px;
+        left: 84px;
+        width: 912px;
+        height: 360px;
+        border: 3px solid var(--gold);
+        background: var(--surface);
+        overflow: hidden;
+        box-shadow: 14px 14px 0 rgba(240, 194, 75, 0.14);
+      }
+
+      .s1-photo img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center 38%;
+        display: block;
+      }
+
+      .s1-caption {
+        position: absolute;
+        top: 1192px;
+        left: 84px;
+        right: 84px;
+        color: var(--muted);
+        font-size: 28px;
+        line-height: 1.2;
+      }
+
+      .s1-source {
+        position: absolute;
+        top: 1250px;
+        left: 84px;
+        right: 84px;
+        color: var(--muted);
+        font-size: 28px;
+        line-height: 1.2;
+      }
+
+      /* SCENE 2 */
+
+      .s2-lead {
+        position: absolute;
+        top: 342px;
+        left: 84px;
+        color: var(--muted);
+        font-size: 40px;
+        line-height: 1;
+      }
+
+      .s2-money {
+        position: absolute;
+        top: 374px;
+        left: 84px;
+        width: 912px;
+        display: flex;
+        align-items: baseline;
+        gap: 16px;
+        color: var(--gold);
+      }
+
+      .s2-currency {
+        font-size: 58px;
+        font-weight: 400;
+        line-height: 1;
+      }
+
+      .s2-value {
+        font-family: var(--display);
+        font-size: 142px;
+        font-weight: 400;
+        line-height: 0.82;
+        letter-spacing: -0.06em;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .s2-cap {
+        position: absolute;
+        top: 532px;
+        left: 84px;
+        width: 912px;
+        color: var(--muted);
+        font-size: 32px;
+        line-height: 1.25;
+      }
+
+      .s2-rule {
+        top: 598px;
+      }
+
+      .s2-row {
+        position: absolute;
+        left: 84px;
+        width: 912px;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 18px;
+      }
+
+      .s2-row1 {
+        top: 648px;
+      }
+
+      .s2-row2 {
+        top: 826px;
+        align-items: flex-start;
+      }
+
+      .s2-label {
+        max-width: 590px;
+        font-size: 29px;
+        line-height: 1.2;
+        color: var(--ink);
+      }
+
+      .s2-money-small {
+        font-size: 52px;
+        font-weight: 400;
+        line-height: 1;
+        letter-spacing: -0.03em;
+        white-space: nowrap;
+        color: var(--ink);
+      }
+
+      .s2-money-small.gold {
+        color: var(--gold);
+      }
+
+      .bar-track {
+        position: absolute;
+        left: 84px;
+        width: 912px;
+        height: 18px;
+        overflow: hidden;
+        background: rgba(247, 243, 232, 0.09);
+      }
+
+      .bar1 {
+        top: 726px;
+      }
+
+      .bar2 {
+        top: 916px;
+      }
+
+      .bar-fill {
+        height: 100%;
+        transform-origin: left center;
+      }
+
+      .bar-fill.low {
+        width: 9.8%;
+        background: var(--muted);
+      }
+
+      .bar-fill.high {
+        width: 100%;
+        background: var(--gold);
+      }
+
+      .bar-label {
+        position: absolute;
+        left: 84px;
+        color: var(--muted);
+        font-size: 28px;
+        line-height: 1;
+        letter-spacing: 0.08em;
+      }
+
+      .bar-label.low {
+        top: 756px;
+      }
+
+      .bar-label.high {
+        top: 946px;
+        color: var(--gold);
+      }
+
+      .s2-note {
+        position: absolute;
+        top: 992px;
+        left: 84px;
+        width: 912px;
+        color: var(--muted);
+        font-size: 28px;
+        line-height: 1.3;
+      }
+
+      /* SCENE 3 */
+
+      .s3-nine {
+        position: absolute;
+        top: 318px;
+        left: 74px;
+        color: var(--gold);
+        font-family: var(--display);
+        font-size: 300px;
+        font-weight: 400;
+        line-height: 0.82;
+        letter-spacing: -0.08em;
+        font-variant-numeric: tabular-nums;
+        transform-origin: left bottom;
+      }
+
+      .s3-word {
+        position: absolute;
+        top: 556px;
+        left: 84px;
+        color: var(--ink);
+        font-family: var(--display);
+        font-size: 86px;
+        font-weight: 400;
+        line-height: 0.95;
+        letter-spacing: -0.03em;
+      }
+
+      .s3-sub {
+        position: absolute;
+        top: 660px;
+        left: 84px;
+        width: 912px;
+        color: var(--muted);
+        font-size: 30px;
+        line-height: 1.35;
+      }
+
+      .s3-grid {
+        position: absolute;
+        top: 780px;
+        left: 84px;
+        width: 912px;
+        display: grid;
+        grid-template-columns: repeat(3, 304px);
+        grid-auto-rows: 153px;
+      }
+
+      .city {
+        padding: 18px 20px 14px;
+        border-top: 1px solid rgba(240, 194, 75, 0.28);
+        border-left: 1px solid rgba(240, 194, 75, 0.16);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+      }
+
+      .city:nth-child(3n) {
+        border-right: 1px solid rgba(240, 194, 75, 0.16);
+      }
+
+      .city:nth-child(n + 7) {
+        border-bottom: 1px solid rgba(240, 194, 75, 0.16);
+      }
+
+      .city-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--gold);
+        margin-bottom: 12px;
+      }
+
+      .city-name {
+        color: var(--ink);
+        font-size: 30px;
+        line-height: 1.2;
+      }
+
+      .s3-note {
+        position: absolute;
+        top: 1250px;
+        left: 84px;
+        width: 912px;
+        color: var(--muted);
+        font-size: 28px;
+        line-height: 1.2;
+      }
+
+      /* SCENE 4 */
+
+      .stamp {
+        position: absolute;
+        top: 336px;
+        left: 84px;
+        width: 912px;
+        height: 400px;
+        padding: 0 44px;
+        border: 6px solid var(--red);
+        box-shadow: 16px 16px 0 rgba(228, 87, 69, 0.12);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        transform-origin: center center;
+      }
+
+      .stamp-small {
+        color: var(--red);
+        font-family: var(--display);
+        font-size: 76px;
+        font-weight: 400;
+        line-height: 1;
+        letter-spacing: 0.02em;
+      }
+
+      .stamp-big {
+        color: var(--red);
+        font-family: var(--display);
+        font-size: 104px;
+        font-weight: 400;
+        line-height: 0.95;
+        letter-spacing: -0.02em;
+        margin-top: 6px;
+      }
+
+      .stamp-rule {
+        width: 100%;
+        height: 4px;
+        background: var(--red);
+        opacity: 0.85;
+        margin: 22px 0 18px;
+      }
+
+      .stamp-date {
+        color: var(--red);
+        font-size: 64px;
+        font-weight: 400;
+        line-height: 1;
+        letter-spacing: 0.05em;
+      }
+
+      .s4-taxa {
+        position: absolute;
+        top: 786px;
+        left: 84px;
+        width: 912px;
+        color: var(--ink);
+        font-size: 30px;
+        line-height: 1.3;
+      }
+
+      .s4-homolog {
+        position: absolute;
+        top: 846px;
+        left: 84px;
+        width: 912px;
+        color: var(--muted);
+        font-size: 30px;
+        line-height: 1.3;
+      }
+
+      .s4-status {
+        position: absolute;
+        top: 908px;
+        left: 84px;
+        width: 912px;
+        font-size: 30px;
+        line-height: 1.3;
+      }
+
+      .s4-status .gold {
+        color: var(--gold);
+        font-weight: 700;
+      }
+
+      .s4-status .muted {
+        color: var(--muted);
+      }
+
+      .s4-note {
+        position: absolute;
+        top: 968px;
+        left: 84px;
+        width: 912px;
+        color: var(--muted);
+        font-size: 28px;
+        line-height: 1.3;
+      }
+
+      .s4-source {
+        position: absolute;
+        top: 1032px;
+        left: 84px;
+        width: 912px;
+        color: var(--muted);
+        font-size: 28px;
+        line-height: 1.3;
+      }
+
+      /* SCENE 5 */
+
+      .s5-title {
+        position: absolute;
+        top: 330px;
+        left: 84px;
+        color: var(--ink);
+        font-family: var(--display);
+        font-size: 96px;
+        font-weight: 400;
+        line-height: 0.94;
+        letter-spacing: -0.04em;
+      }
+
+      .phone {
+        position: absolute;
+        top: 470px;
+        left: 84px;
+        width: 404px;
+        height: 848px;
+        padding: 0;
+        border: 12px solid var(--black);
+        border-radius: 48px;
+        outline: 2px solid rgba(240, 194, 75, 0.8);
+        background: var(--black);
+        box-shadow: 16px 16px 0 rgba(240, 194, 75, 0.12);
+        overflow: hidden;
+      }
+
+      .phone-screen {
+        width: 100%;
+        height: 100%;
+        border-radius: 36px;
+        overflow: hidden;
+        background: #ffffff;
+      }
+
+      .phone-screen img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top center;
+        display: block;
+        transform-origin: center top;
+      }
+
+      .s5-col {
+        position: absolute;
+        top: 486px;
+        left: 540px;
+        width: 456px;
+      }
+
+      .s5-date {
+        color: var(--gold);
+        font-family: var(--display);
+        font-size: 96px;
+        font-weight: 400;
+        line-height: 0.82;
+        letter-spacing: -0.06em;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .s5-caption {
+        margin-top: 22px;
+        color: var(--ink);
+        font-size: 30px;
+        line-height: 1.3;
+      }
+
+      .s5-source {
+        margin-top: 10px;
+        color: var(--gold);
+        font-size: 28px;
+        line-height: 1.2;
+        letter-spacing: 0.08em;
+      }
+
+      .s5-rule {
+        position: absolute;
+        top: 760px;
+        left: 540px;
+        width: 456px;
+        height: 2px;
+        background: rgba(240, 194, 75, 0.5);
+        transform-origin: left center;
+      }
+
+      .s5-body {
+        position: absolute;
+        top: 792px;
+        left: 540px;
+        width: 456px;
+        color: var(--muted);
+        font-size: 30px;
+        line-height: 1.35;
+      }
+
+      .s5-cta {
+        position: absolute;
+        top: 914px;
+        left: 540px;
+        width: 456px;
+        color: var(--ink);
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+
+      .s5-url {
+        position: absolute;
+        top: 972px;
+        left: 540px;
+        width: 456px;
+        color: var(--gold);
+        font-size: 28px;
+        line-height: 1.2;
+        letter-spacing: 0.02em;
+      }
+
+      /* SCENE 6 */
+
+      .s6-logo {
+        position: absolute;
+        top: 300px;
+        left: 84px;
+        width: 120px;
+        height: 120px;
+        padding: 10px;
+        background: var(--ink);
+        border: 2px solid var(--gold);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform-origin: left center;
+      }
+
+      .s6-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+      }
+
+      .s6-brand {
+        position: absolute;
+        top: 322px;
+        left: 230px;
+        color: var(--ink);
+        font-family: var(--display);
+        font-size: 44px;
+        font-weight: 400;
+        line-height: 1;
+        letter-spacing: 0.01em;
+      }
+
+      .s6-tag {
+        position: absolute;
+        top: 384px;
+        left: 230px;
+        color: var(--muted);
+        font-size: 28px;
+        line-height: 1;
+        letter-spacing: 0.1em;
+      }
+
+      .s6-head1 {
+        position: absolute;
+        top: 480px;
+        left: 84px;
+        color: var(--ink);
+        font-family: var(--display);
+        font-size: 96px;
+        font-weight: 400;
+        line-height: 0.94;
+        letter-spacing: -0.04em;
+      }
+
+      .s6-head2 {
+        position: absolute;
+        top: 574px;
+        left: 84px;
+        color: var(--gold);
+        font-family: var(--display);
+        font-size: 96px;
+        font-weight: 400;
+        line-height: 0.94;
+        letter-spacing: -0.04em;
+      }
+
+      .s6-url {
+        position: absolute;
+        top: 800px;
+        left: 84px;
+        width: 912px;
+        height: 124px;
+        background: var(--gold);
+        color: var(--black);
+        font-family: var(--display);
+        font-size: 58px;
+        font-weight: 400;
+        line-height: 1;
+        letter-spacing: -0.03em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform-origin: center center;
+      }
+
+      .s6-search {
+        position: absolute;
+        top: 960px;
+        left: 84px;
+        width: 912px;
+        color: var(--ink);
+        font-size: 30px;
+        line-height: 1.2;
+      }
+
+      .s6-source {
+        position: absolute;
+        top: 1020px;
+        left: 84px;
+        width: 912px;
+        color: var(--muted);
+        font-size: 28px;
+        line-height: 1.3;
+      }
+
+      .s6-social {
+        position: absolute;
+        left: 84px;
+        width: 912px;
+        color: var(--muted);
+        font-size: 28px;
+        line-height: 1.2;
+      }
+
+      .s6-social1 {
+        top: 1080px;
+      }
+
+      .s6-social2 {
+        top: 1116px;
+      }
+
+      .s6-sign {
+        position: absolute;
+        top: 1216px;
+        left: 84px;
+        width: 912px;
+        color: var(--gold);
+        font-size: 30px;
+        font-weight: 700;
+        line-height: 1.2;
+        letter-spacing: 0.08em;
+      }
+
+      .s6-final-rule {
+        position: absolute;
+        top: 1268px;
+        left: 84px;
+        width: 912px;
+        height: 4px;
+        background: var(--gold);
+        transform-origin: left center;
       }
     </style>
   </head>
+
   <body>
     <div
       id="root"
       data-composition-id="main"
       data-start="0"
-      data-duration="10"
+      data-duration="29"
       data-width="1080"
       data-height="1920"
     >
-      <h1 id="title" class="clip" data-start="0" data-duration="10" data-track-index="0">Title</h1>
+      <div class="stage">
+        <div class="grid"></div>
+        <div class="band"></div>
+        <div class="barcode"></div>
+        <div class="rail left"></div>
+        <div class="rail right"></div>
+        <div class="hairline"></div>
+      </div>
+
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-plate">
+            <img src="assets/raw/logo.png" alt="Concursos Agora" />
+          </span>
+          <span class="brand-title">CONCURSOS AGORA</span>
+        </div>
+        <span class="brand-edition">SES-TO</span>
+      </header>
+
+      <!-- 1. O número -->
+      <section id="scene-1" class="clip scene scene-1" data-start="0" data-duration="4.2" data-track-index="10">
+        <div class="kicker">CONCURSO • SAÚDE DO TOCANTINS</div>
+        <div class="s1-number">5.124</div>
+        <div class="s1-word">VAGAS</div>
+        <div class="s1-sub">em cargos de nível médio e superior</div>
+        <div class="s1-rule rule"></div>
+        <div class="s1-photo">
+          <img
+            src="assets/raw/ses-to-hero.jpg"
+            alt="Imagem ilustrativa sobre saúde e concurso público"
+          />
+        </div>
+        <div class="s1-caption">Imagem ilustrativa · Pexels / Unsplash Curado</div>
+        <div class="s1-source">Fonte: edital SES-TO / FGV</div>
+      </section>
+
+      <!-- 2. O salário -->
+      <section id="scene-2" class="clip scene scene-2" data-start="4.2" data-duration="4.8" data-track-index="11">
+        <div class="kicker">REMUNERAÇÃO INICIAL</div>
+        <div class="s2-lead">Até</div>
+        <div class="s2-money">
+          <span class="s2-currency">R$</span>
+          <span class="s2-value">17.727,63</span>
+        </div>
+        <div class="s2-cap">no maior vencimento inicial do edital</div>
+        <div class="s2-rule rule"></div>
+
+        <div class="s2-row s2-row1">
+          <span class="s2-label">Assistente de serviços de saúde</span>
+          <span class="s2-money-small">R$ 1.735,55</span>
+        </div>
+        <div class="bar-track bar1">
+          <div class="bar-fill low"></div>
+        </div>
+        <div class="bar-label low">PISO</div>
+
+        <div class="s2-row s2-row2">
+          <span class="s2-label">Médico com registro de qualificação de especialista</span>
+          <span class="s2-money-small gold">R$ 17.727,63</span>
+        </div>
+        <div class="bar-track bar2">
+          <div class="bar-fill high"></div>
+        </div>
+        <div class="bar-label high">TETO</div>
+
+        <div class="s2-note">Vencimentos iniciais previstos no edital.</div>
+      </section>
+
+      <!-- 3. As cidades -->
+      <section id="scene-3" class="clip scene scene-3" data-start="9" data-duration="5.4" data-track-index="12">
+        <div class="kicker">PROVA OBJETIVA ÚNICA</div>
+        <div class="s3-nine">9</div>
+        <div class="s3-word">cidades de prova</div>
+        <div class="s3-sub">
+          Conhecimentos gerais e específicos, com caráter eliminatório e classificatório.
+        </div>
+
+        <div class="s3-grid" data-hold>
+          <div class="city"><span class="city-dot"></span><span class="city-name">Araguaína</span></div>
+          <div class="city"><span class="city-dot"></span><span class="city-name">Araguatins</span></div>
+          <div class="city">
+            <span class="city-dot"></span><span class="city-name">Augustinópolis</span>
+          </div>
+          <div class="city"><span class="city-dot"></span><span class="city-name">Palmas</span></div>
+          <div class="city">
+            <span class="city-dot"></span><span class="city-name">Paraíso do Tocantins</span>
+          </div>
+          <div class="city">
+            <span class="city-dot"></span><span class="city-name">Porto Nacional</span>
+          </div>
+          <div class="city"><span class="city-dot"></span><span class="city-name">Gurupi</span></div>
+          <div class="city"><span class="city-dot"></span><span class="city-name">Arraias</span></div>
+          <div class="city"><span class="city-dot"></span><span class="city-name">Dianópolis</span></div>
+        </div>
+
+        <div class="s3-note">Provas previstas para as nove cidades listadas no edital.</div>
+      </section>
+
+      <!-- 4. O carimbo -->
+      <section id="scene-4" class="clip scene scene-4" data-start="14.4" data-duration="4.8" data-track-index="13">
+        <div class="kicker red">PRAZO ENCERRADO</div>
+        <div class="stamp">
+          <div class="stamp-small">INSCRIÇÕES</div>
+          <div class="stamp-big">ENCERRADAS</div>
+          <div class="stamp-rule"></div>
+          <div class="stamp-date">17 SET 2026</div>
+        </div>
+
+        <div class="s4-taxa">
+          Taxa: R$ 100 (nível médio) e R$ 150 (nível superior).
+        </div>
+        <div class="s4-homolog">
+          Resultado definitivo da homologação das inscrições em 14/10/2026.
+        </div>
+        <div class="s4-status">
+          <span class="gold">EM ANDAMENTO</span>
+          <span class="muted"> · o concurso continua</span>
+        </div>
+        <div class="s4-note">Acompanhe os comunicados da FGV e o guia no site.</div>
+        <div class="s4-source">Fonte: edital SES-TO / FGV</div>
+      </section>
+
+      <!-- 5. A prova -->
+      <section id="scene-5" class="clip scene scene-5" data-start="19.2" data-duration="4.8" data-track-index="14">
+        <div class="kicker">A MATÉRIA COMPLETA</div>
+        <div class="s5-title">Leia no site</div>
+
+        <div class="phone">
+          <div class="phone-screen" data-layout-allow-overflow>
+            <img
+              src="assets/raw/article-mobile.png"
+              alt="Matéria do Concursos Agora sobre o concurso SES-TO"
+            />
+          </div>
+        </div>
+
+        <div class="s5-col">
+          <div class="s5-date">14/10</div>
+          <div class="s5-caption">Homologação das inscrições</div>
+          <div class="s5-source">RESULTADO DEFINITIVO</div>
+        </div>
+
+        <div class="s5-rule"></div>
+
+        <div class="s5-body">Guia completo, fontes e próximos passos do concurso.</div>
+        <div class="s5-cta">Leia a matéria</div>
+        <div class="s5-url">concursosagora.com.br</div>
+      </section>
+
+      <!-- 6. O convite -->
+      <section id="scene-6" class="clip scene scene-6" data-start="24" data-duration="5" data-track-index="15">
+        <div class="s6-logo">
+          <img src="assets/raw/logo-end.png" alt="Concursos Agora" />
+        </div>
+        <div class="s6-brand">CONCURSOS AGORA</div>
+        <div class="s6-tag">NOTÍCIA VERIFICADA • SEM BOATO</div>
+
+        <div class="s6-head1">Leia o guia</div>
+        <div class="s6-head2">completo</div>
+
+        <div class="s6-url">concursosagora.com.br</div>
+        <div class="s6-search">Busque por SES-TO no site</div>
+        <div class="s6-source">Fonte: edital SES-TO / FGV · matéria de 23/10/2026</div>
+        <div class="s6-social s6-social1">Instagram @concursosagora_</div>
+        <div class="s6-social s6-social2">Telegram t.me/concursosagorabr</div>
+        <div class="s6-sign">CONCURSO SES-TO · 5.124 VAGAS</div>
+        <div class="s6-final-rule"></div>
+      </section>
+
+      <!-- SFX -->
+      <audio
+        id="sfx-open"
+        src=".media/audio/sfx/sfx_001.mp3"
+        preload="auto"
+        data-start="0"
+        data-duration="2.116"
+        data-volume="0.55"
+        data-fade-out="1.2"
+        data-track-index="30"
+      ></audio>
+
+      <audio
+        id="sfx-whoosh-1"
+        src=".media/audio/sfx/sfx_002.mp3"
+        preload="auto"
+        data-start="4.1"
+        data-duration="0.575"
+        data-volume="0.3"
+        data-track-index="31"
+      ></audio>
+
+      <audio
+        id="sfx-whoosh-2"
+        src=".media/audio/sfx/sfx_002.mp3"
+        preload="auto"
+        data-start="8.9"
+        data-duration="0.575"
+        data-volume="0.3"
+        data-track-index="32"
+      ></audio>
+
+      <audio
+        id="sfx-pop-1"
+        src=".media/audio/sfx/sfx_003.mp3"
+        preload="auto"
+        data-start="9.45"
+        data-duration="0.72"
+        data-volume="0.12"
+        data-track-index=40
+      ></audio>
+      <audio
+        id="sfx-pop-2"
+        src=".media/audio/sfx/sfx_003.mp3"
+        preload="auto"
+        data-start="9.56"
+        data-duration="0.72"
+        data-volume="0.12"
+        data-track-index=41
+      ></audio>
+      <audio
+        id="sfx-pop-3"
+        src=".media/audio/sfx/sfx_003.mp3"
+        preload="auto"
+        data-start="9.67"
+        data-duration="0.72"
+        data-volume="0.12"
+        data-track-index=42
+      ></audio>
+      <audio
+        id="sfx-pop-4"
+        src=".media/audio/sfx/sfx_003.mp3"
+        preload="auto"
+        data-start="9.78"
+        data-duration="0.72"
+        data-volume="0.12"
+        data-track-index=43
+      ></audio>
+      <audio
+        id="sfx-pop-5"
+        src=".media/audio/sfx/sfx_003.mp3"
+        preload="auto"
+        data-start="9.89"
+        data-duration="0.72"
+        data-volume="0.12"
+        data-track-index=44
+      ></audio>
+      <audio
+        id="sfx-pop-6"
+        src=".media/audio/sfx/sfx_003.mp3"
+        preload="auto"
+        data-start="10"
+        data-duration="0.72"
+        data-volume="0.12"
+        data-track-index=45
+      ></audio>
+      <audio
+        id="sfx-pop-7"
+        src=".media/audio/sfx/sfx_003.mp3"
+        preload="auto"
+        data-start="10.11"
+        data-duration="0.72"
+        data-volume="0.12"
+        data-track-index=46
+      ></audio>
+      <audio
+        id="sfx-pop-8"
+        src=".media/audio/sfx/sfx_003.mp3"
+        preload="auto"
+        data-start="10.22"
+        data-duration="0.72"
+        data-volume="0.12"
+        data-track-index=47
+      ></audio>
+      <audio
+        id="sfx-pop-9"
+        src=".media/audio/sfx/sfx_003.mp3"
+        preload="auto"
+        data-start="10.33"
+        data-duration="0.72"
+        data-volume="0.12"
+        data-track-index=48
+      ></audio>
+
+      <audio
+        id="sfx-stamp"
+        src=".media/audio/sfx/sfx_001.mp3"
+        preload="auto"
+        data-start="14.7"
+        data-duration="2.116"
+        data-volume="0.45"
+        data-fade-out="1.0"
+        data-track-index="34"
+      ></audio>
+
+      <audio
+        id="sfx-whoosh-3"
+        src=".media/audio/sfx/sfx_002.mp3"
+        preload="auto"
+        data-start="19.1"
+        data-duration="0.575"
+        data-volume="0.3"
+        data-track-index="35"
+      ></audio>
+
+      <audio
+        id="sfx-chime"
+        src=".media/audio/sfx/sfx_004.mp3"
+        preload="auto"
+        data-start="24.1"
+        data-duration="2.5"
+        data-volume="0.22"
+        data-fade-out="1.0"
+        data-track-index="36"
+      ></audio>
+
+      <audio
+        id="sfx-key"
+        src=".media/audio/sfx/sfx_005.mp3"
+        preload="auto"
+        data-start="24.72"
+        data-duration="0.4"
+        data-volume="0.18"
+        data-track-index="37"
+      ></audio>
     </div>
+
     <script>
-      const tl = gsap.timeline({ paused: true });
-      // Example: tl.fromTo("#title", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.18, ease: "power4.out" }, 0);
+      const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+
+      // 1 — o número
+      tl.fromTo(
+        ".s1-number",
+        { scale: 0.94, y: 12 },
+        { scale: 1, y: 0, duration: 0.45 },
+        0.02
+      );
+      tl.fromTo(".s1-word", { y: 20 }, { y: 0, duration: 0.45 }, 0.08);
+      tl.fromTo(".s1-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.5 }, 0.25);
+      tl.fromTo(
+        ".s1-sub",
+        { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, duration: 0.4 },
+        0.45
+      );
+      tl.fromTo(
+        ".s1-photo",
+        { opacity: 0, y: 24 },
+        { opacity: 1, y: 0, duration: 0.5 },
+        0.65
+      );
+      tl.fromTo(".s1-caption", { opacity: 0 }, { opacity: 1, duration: 0.35 }, 0.95);
+      tl.fromTo(".s1-source", { opacity: 0 }, { opacity: 1, duration: 0.35 }, 1.05);
+
+      // 2 — o salário
+      tl.fromTo(
+        ".s2-lead",
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.35 },
+        4.28
+      );
+      tl.fromTo(
+        ".s2-money",
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.45 },
+        4.4
+      );
+      tl.fromTo(".s2-cap", { opacity: 0 }, { opacity: 1, duration: 0.35 }, 4.65);
+      tl.fromTo(".s2-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.5 }, 4.78);
+      tl.fromTo(
+        ".s2-row1",
+        { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, duration: 0.4 },
+        4.9
+      );
+      tl.fromTo(".bar-fill.low", { scaleX: 0 }, { scaleX: 1, duration: 0.6 }, 5.05);
+      tl.fromTo(
+        ".s2-row2",
+        { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, duration: 0.4 },
+        5.2
+      );
+      tl.fromTo(".bar-fill.high", { scaleX: 0 }, { scaleX: 1, duration: 0.7 }, 5.35);
+      tl.fromTo(".s2-note", { opacity: 0 }, { opacity: 1, duration: 0.35 }, 5.85);
+
+      // 3 — as cidades
+      tl.fromTo(".s3-nine", { scale: 0.9 }, { scale: 1, duration: 0.45 }, 9.05);
+      tl.fromTo(
+        ".s3-word",
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.45 },
+        9.15
+      );
+      tl.fromTo(".s3-sub", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 9.4);
+      tl.fromTo(
+        ".city",
+        { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.35, stagger: 0.11 },
+        9.55
+      );
+      tl.fromTo(".s3-note", { opacity: 0 }, { opacity: 1, duration: 0.35 }, 10.55);
+
+      // 4 — o carimbo
+      tl.fromTo(
+        ".stamp",
+        { scale: 1.28, rotation: -8, opacity: 0 },
+        {
+          scale: 1.02,
+          rotation: -2,
+          opacity: 1,
+          duration: 0.18,
+          ease: "power4.in",
+        },
+        14.55
+      );
+      tl.to(".stamp", { scale: 1, duration: 0.08, ease: "power2.out" }, 14.73);
+      tl.fromTo(
+        ".s4-taxa",
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.35 },
+        14.95
+      );
+      tl.fromTo(".s4-homolog", { opacity: 0 }, { opacity: 1, duration: 0.35 }, 15.1);
+      tl.fromTo(".s4-status", { opacity: 0 }, { opacity: 1, duration: 0.35 }, 15.3);
+      tl.fromTo(".s4-note", { opacity: 0 }, { opacity: 1, duration: 0.35 }, 15.5);
+      tl.fromTo(".s4-source", { opacity: 0 }, { opacity: 1, duration: 0.35 }, 15.7);
+
+      // 5 — a prova
+      tl.fromTo(
+        ".s5-title",
+        { opacity: 0, y: 22 },
+        { opacity: 1, y: 0, duration: 0.5 },
+        19.3
+      );
+      tl.fromTo(
+        ".phone",
+        { opacity: 0, y: 36 },
+        { opacity: 1, y: 0, duration: 0.55 },
+        19.55
+      );
+      tl.fromTo(
+        ".phone-screen img",
+        { scale: 1.04 },
+        { scale: 1, duration: 4.5, ease: "none" },
+        19.55
+      );
+      tl.fromTo(
+        ".s5-date",
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.4 },
+        19.7
+      );
+      tl.fromTo(".s5-caption", { opacity: 0 }, { opacity: 1, duration: 0.35 }, 19.85);
+      tl.fromTo(".s5-source", { opacity: 0 }, { opacity: 1, duration: 0.35 }, 20.0);
+      tl.fromTo(".s5-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.45 }, 20.1);
+      tl.fromTo(".s5-body", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 20.25);
+      tl.fromTo(
+        ".s5-cta",
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.35 },
+        20.5
+      );
+      tl.fromTo(".s5-url", { opacity: 0 }, { opacity: 1, duration: 0.35 }, 20.65);
+
+      // 6 — o convite
+      tl.to(".topbar", { opacity: 0, duration: 0.25 }, 23.9);
+      tl.fromTo(".s6-logo", { scale: 1.05 }, { scale: 1, duration: 0.35 }, 24.02);
+      tl.fromTo(
+        ".s6-brand",
+        { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, duration: 0.35 },
+        24.05
+      );
+      tl.fromTo(".s6-tag", { opacity: 0 }, { opacity: 1, duration: 0.35 }, 24.2);
+      tl.fromTo(
+        ".s6-head1",
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.45 },
+        24.28
+      );
+      tl.fromTo(
+        ".s6-head2",
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.45 },
+        24.38
+      );
+      tl.fromTo(
+        ".s6-url",
+        { opacity: 0, scale: 0.96 },
+        { opacity: 1, scale: 1, duration: 0.4 },
+        24.65
+      );
+      tl.fromTo(".s6-search", { opacity: 0 }, { opacity: 1, duration: 0.35 }, 24.85);
+      tl.fromTo(".s6-source", { opacity: 0 }, { opacity: 1, duration: 0.35 }, 24.95);
+      tl.fromTo(
+        ".s6-social",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.4, stagger: 0.1 },
+        25.05
+      );
+      tl.fromTo(".s6-sign", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 25.3);
+      tl.fromTo(
+        ".s6-final-rule",
+        { scaleX: 0 },
+        { scaleX: 1, duration: 0.5 },
+        27.2
+      );
+
+      window.__timelines = window.__timelines || {};
       window.__timelines["main"] = tl;
-      tl.seek(0);
     </script>
   </body>
 </html>

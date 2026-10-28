@@ -171,6 +171,21 @@ def validate_output(
                 warnings.append("texto menciona salário/remuneração sem valor na fonte")
                 score -= 6
 
+    # Banca organizadora só pode aparecer se estiver na fonte/fatos.
+    if re.search(r"banca organizadora|organizadora|banca:", normalize(editorial_text)):
+        fact_banca = str(article.facts.get("banca") or "").lower()
+        if fact_banca:
+            # Verifica se a banca mencionada no texto bate com o fato
+            mentioned_bancas = re.findall(r"banca organizadora[^:\n]*[:\-]\s*([^\n.]+)", editorial_text, flags=re.I)
+            mentioned_bancas += re.findall(r"organizadora[^:\n]*[:\-]\s*([^\n.]+)", editorial_text, flags=re.I)
+            for mb in mentioned_bancas:
+                if not _entity_matches(mb.strip(), fact_banca):
+                    warnings.append(f"banca organizadora diverge do fato extraído: {mb.strip()}")
+                    score -= 10
+        else:
+            warnings.append("texto menciona banca organizadora sem respaldo na fonte")
+            score -= 10
+
     if settings.fact_check_two_source_rule and article.source_tier not in {"official_primary", "official_secondary"}:
         warnings.append("fonte não oficial: uma fonte independente adicional é obrigatória")
         score -= 12
@@ -239,6 +254,85 @@ def validate_output(
         warnings.append("texto contradiz vagas efetivas com cadastro de reserva exclusivo")
         score -= 15
 
+    # CROSS-VALIDAÇÃO: Ficha técnica (campos estruturados) vs Corpo do texto
+    # Vagas totais
+    fact_vacancies = article.facts.get("vacancies_total")
+    if isinstance(fact_vacancies, (int, float)) and fact_vacancies > 0:
+        # Procura menções de vagas no corpo
+        body_vacancies = re.findall(r"\b(\d{1,3}(?:\.\d{3})*|\d+)\s+(?:vagas|postos|oportunidades)\b", body, flags=re.I)
+        for bv in body_vacancies:
+            try:
+                bv_num = int(bv.replace(".", ""))
+                if abs(bv_num - fact_vacancies) > 0 and bv_num != fact_vacancies:
+                    # Permite pequena variação se for "até X vagas" mas bloqueia contradição gritante
+                    if not re.search(rf"at[ée]\s+{bv_num}\s+vagas", body, flags=re.I):
+                        warnings.append(f"vagas no corpo ({bv_num}) diverge da ficha técnica ({fact_vacancies})")
+                        score -= 15
+            except ValueError:
+                pass
+
+    # Salários - não misturar faixas de cargos diferentes
+    fact_salary_min = article.facts.get("salary_min")
+    fact_salary_max = article.facts.get("salary_max")
+    if fact_salary_min or fact_salary_max:
+        # Se menciona salário no corpo, deve ser compatível com os fatos
+        salary_mentions = re.findall(r"R\$\s*([\d.]+,\d{2})", body)
+        for sm in salary_mentions:
+            try:
+                val = float(sm.replace(".", "").replace(",", "."))
+                if fact_salary_min and fact_salary_max:
+                    if not (fact_salary_min * 0.5 <= val <= fact_salary_max * 1.5):
+                        warnings.append(f"salário no corpo (R$ {sm}) fora da faixa da ficha técnica (R$ {fact_salary_min:,.2f}–{fact_salary_max:,.2f})".replace(",", "X").replace(".", ",").replace("X", "."))
+                        score -= 10
+                elif fact_salary_max and val > fact_salary_max * 1.5:
+                    warnings.append(f"salário no corpo (R$ {sm}) excede máximo da ficha técnica (R$ {fact_salary_max:,.2f})".replace(",", "X").replace(".", ",").replace("X", "."))
+                    score -= 10
+            except ValueError:
+                pass
+
+    # Data de inscrição - validar contra enrollmentEndDate
+    fact_enrollment_end = article.facts.get("enrollment_end_date")
+    if fact_enrollment_end:
+        # Procura datas de inscrição no corpo
+        date_mentions = re.findall(r"\b(\d{1,2}/\d{1,2}/\d{4})\b", body)
+        for dm in date_mentions:
+            parsed = parse_br_date(dm)
+            if parsed and parsed != fact_enrollment_end:
+                # Verifica se o contexto é de inscrição
+                ctx_start = max(0, body.find(dm) - 100)
+                ctx_end = min(len(body), body.find(dm) + 100)
+                context = body[ctx_start:ctx_end].lower()
+                if "inscri" in context or "prazo" in context:
+                    warnings.append(f"data de inscrição no corpo ({dm}) diverge da ficha técnica ({fact_enrollment_end})")
+                    score -= 15
+
+    # Data de prova - validar contra exam_date
+    fact_exam = article.facts.get("exam_date")
+    if fact_exam:
+        date_mentions = re.findall(r"\b(\d{1,2}/\d{1,2}/\d{4})\b", body)
+        for dm in date_mentions:
+            parsed = parse_br_date(dm)
+            if parsed and parsed != fact_exam:
+                ctx_start = max(0, body.find(dm) - 100)
+                ctx_end = min(len(body), body.find(dm) + 100)
+                context = body[ctx_start:ctx_end].lower()
+                if "prova" in context or "avalia" in context:
+                    warnings.append(f"data de prova no corpo ({dm}) diverge da ficha técnica ({fact_exam})")
+                    score -= 15
+
+    # Taxa de inscrição
+    fact_fee = article.facts.get("registration_fee")
+    if fact_fee is not None:
+        fee_mentions = re.findall(r"taxa.{0,20}R\$\s*([\d.]+,\d{2})", body, flags=re.I)
+        for fm in fee_mentions:
+            try:
+                val = float(fm.replace(".", "").replace(",", "."))
+                if abs(val - fact_fee) > 0.01:
+                    warnings.append(f"taxa no corpo (R$ {fm}) diverge da ficha técnica (R$ {fact_fee:,.2f})".replace(",", "X").replace(".", ",").replace("X", "."))
+                    score -= 10
+            except ValueError:
+                pass
+
     # Requisitos, especialidades e atribuições ao edital são alegações de alto
     # risco: só podem aparecer se estiverem no texto-fonte.
     source_normalized = normalize(article.full_text + " " + facts_json)
@@ -285,6 +379,25 @@ def validate_output(
         (
             "etapas futuras",
             r"\bproximas etapas\b|\bfuturas etapas\b|\bproximas fases\b|\bproximos passos\b",
+            True,
+        ),
+        (
+            "placeholder ou template genérico",
+            r"todas as informa[cç][oõ]es acima s[aã]o extra[ií]das do dossi[eê] factual|"
+            r"fonte\(s\)\s*\|?\s*fonte\s*\d+|"
+            r"dossi[eê] factual dispon[ií]vel|"
+            r"refer[eê]ncias?\s*[:\|]?\s*fonte\s*\d+|"
+            r"\[fonte\s*\d+\]",
+            True,
+        ),
+        (
+            "terminologia administrativa inexistente",
+            r"\bato intermedi[aá]rio\b|\bfase de ato intermedi[aá]rio\b|\bato preparat[oó]rio\b",
+            True,
+        ),
+        (
+            "status desatualizado (notícia velha no presente)",
+            r"\b(abre|abriu|lança|lançou|publica|publicou)\b.{0,50}\b(inscri[cç][aã]o|edital)\b.{0,50}\b(j[aá]|fevereiro|mar[cç]o|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro)\b.{0,20}\b(202[0-9])\b",
             True,
         ),
     ]

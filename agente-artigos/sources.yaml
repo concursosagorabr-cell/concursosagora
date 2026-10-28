@@ -159,8 +159,17 @@ sources:
       - licitacao
       - pregao
       - contrato
+      - cookie
+      - cookies
+      - lgpd
+      - politica de privacidade
+      - termo de uso
+      - banner
+      - consentimento
     default_categories: []
     max_candidates: 20
+    options:
+      strict_extraction: true
 
   # O DOU bloqueia todo o site no robots.txt (User-agent: * / Disallow: /).
   # O conector lê XML/ZIP oficial baixado manualmente (Portal de Dados Abertos/

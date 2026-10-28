@@ -12,7 +12,7 @@ from pipeline.text import clean_whitespace
 
 log = logging.getLogger(__name__)
 
-ENRICHMENT_MARKER = "## Informações complementares"
+ENRICHMENT_MARKER = "## Informações complementares (editorial - não publicar)"
 
 
 def _now() -> str:

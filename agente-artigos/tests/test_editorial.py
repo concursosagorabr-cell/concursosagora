@@ -233,6 +233,209 @@ class EditorialValidationTest(unittest.TestCase):
         )
         self.assertTrue(any("opini\u00e3o" in warning for warning in warnings))
 
+    def test_placeholder_generico_bloqueia(self):
+        article = make_article(
+            facts={"status": "previsto", "organ": "INSS"},
+            title="INSS tem vagas previstas",
+            body_text="O MGI autorizou novas vagas para o INSS.",
+        )
+        warnings, score = validate_output(
+            _data(
+                title="INSS tem vagas previstas",
+                body_markdown="Todas as informações acima são extraídas do dossiê factual disponível. " + long_body() * 3,
+            ),
+            article,
+            make_settings(),
+            [],
+            min_words=80,
+        )
+        self.assertTrue(any("placeholder" in warning or "template genérico" in warning for warning in warnings))
+        self.assertLess(score, 90)
+
+    def test_fonte_placeholder_bloqueia(self):
+        article = make_article(
+            facts={"status": "previsto", "organ": "INSS"},
+            title="INSS tem vagas previstas",
+            body_text="O MGI autorizou novas vagas para o INSS.",
+        )
+        warnings, score = validate_output(
+            _data(
+                title="INSS tem vagas previstas para analista",
+                body_markdown="Referências: Fonte 1, Fonte 2. " + long_body() * 3,
+                excerpt="Resumo adequado do artigo.",
+            ),
+            article,
+            make_settings(),
+            [],
+            min_words=80,
+        )
+        self.assertTrue(any("placeholder" in warning or "template genérico" in warning for warning in warnings))
+        self.assertLess(score, 90)
+
+    def test_terminologia_inexistente_ato_intermediario_bloqueia(self):
+        article = make_article(
+            facts={"status": "previsto", "organ": "INSS"},
+            title="INSS tem vagas previstas",
+            body_text="O MGI autorizou novas vagas para o INSS.",
+        )
+        warnings, score = validate_output(
+            _data(
+                title="INSS avança para fase de ato intermediário",
+                body_markdown="O concurso avançou para a fase de ato intermediário. " + long_body() * 3,
+            ),
+            article,
+            make_settings(),
+            [],
+            min_words=80,
+        )
+        self.assertTrue(any("terminologia administrativa inexistente" in warning or "ato intermediário" in warning for warning in warnings))
+        self.assertLess(score, 90)
+
+    def test_noticia_velha_no_presente_bloqueia(self):
+        article = make_article(
+            facts={"status": "encerrado", "organ": "Prefeitura de Campina Grande"},
+            title="Guarda de Campina Grande abre 40 vagas",
+            body_text="A prefeitura publicou edital em maio, inscrições encerraram em julho, provas em janeiro.",
+        )
+        warnings, score = validate_output(
+            _data(
+                title="Prefeitura de Campina Grande abre concurso com 40 vagas",
+                body_markdown="A prefeitura de Campina Grande abre inscrições para 40 vagas de guarda municipal em outubro. " + long_body() * 3,
+                status="previsto",
+                excerpt="Resumo adequado do artigo.",
+            ),
+            article,
+            make_settings(),
+            [],
+            min_words=80,
+        )
+        # Deve bloquear por: status diverge + afirma inscrições abertas com status encerrado
+        self.assertTrue(any("status" in warning and "diverge" in warning for warning in warnings))
+        self.assertTrue(any("inscrições abertas" in warning and "encerrado" in warning for warning in warnings))
+        self.assertLess(score, 90)
+
+    def test_cross_validacao_vagas_diverge_ficha_tecnica(self):
+        article = make_article(
+            facts={"status": "aberto", "vacancies_total": 40},
+            title="Guarda de Campina Grande abre 40 vagas",
+            body_text="O edital prevê 40 vagas para guarda municipal.",
+        )
+        warnings, score = validate_output(
+            _data(
+                title="Guarda de Campina Grande abre 30 vagas",
+                body_markdown="O certame abre 30 vagas para guarda municipal. " + long_body() * 3,
+                status="aberto",
+            ),
+            article,
+            make_settings(),
+            [],
+            min_words=80,
+        )
+        self.assertTrue(any("vagas no corpo" in warning and "diverge da ficha técnica" in warning for warning in warnings))
+        self.assertLess(score, 90)
+
+    def test_cross_validacao_data_inscricao_diverge(self):
+        article = make_article(
+            facts={"status": "aberto", "enrollment_end_date": "2026-11-16"},
+            title="Concurso com inscrições até 16/11",
+            body_text="As inscrições vão até 16 de novembro.",
+        )
+        warnings, score = validate_output(
+            _data(
+                title="Concurso com inscrições até 17/11",
+                body_markdown="O prazo de inscrição encerra em 17/11/2026. " + long_body() * 3,
+                status="aberto",
+            ),
+            article,
+            make_settings(),
+            [],
+            min_words=80,
+        )
+        self.assertTrue(any("data de inscrição" in warning and "diverge da ficha técnica" in warning for warning in warnings))
+        self.assertLess(score, 90)
+
+    def test_cross_validacao_data_prova_diverge(self):
+        article = make_article(
+            facts={"status": "aberto", "exam_date": "2027-01-23"},
+            title="Concurso com prova em 23/01",
+            body_text="A prova será aplicada em 23 de janeiro.",
+        )
+        warnings, score = validate_output(
+            _data(
+                title="Concurso com prova em 24/01",
+                body_markdown="A prova objetiva será em 24/01/2027. " + long_body() * 3,
+                status="aberto",
+            ),
+            article,
+            make_settings(),
+            [],
+            min_words=80,
+        )
+        self.assertTrue(any("data de prova" in warning and "diverge da ficha técnica" in warning for warning in warnings))
+        self.assertLess(score, 90)
+
+    def test_cross_validacao_taxa_diverge(self):
+        article = make_article(
+            facts={"status": "aberto", "registration_fee": 100.0},
+            title="Concurso com taxa de R$ 100,00",
+            body_text="A taxa de inscrição é de R$ 100,00.",
+        )
+        warnings, score = validate_output(
+            _data(
+                title="Concurso com taxa diferente",
+                body_markdown="A taxa de inscrição custa R$ 120,00. " + long_body() * 3,
+                status="aberto",
+            ),
+            article,
+            make_settings(),
+            [],
+            min_words=80,
+        )
+        self.assertTrue(any("taxa no corpo" in warning and "diverge da ficha técnica" in warning for warning in warnings))
+        self.assertLess(score, 90)
+
+    def test_banca_nao_inferida_sem_fonte(self):
+        article = make_article(
+            facts={"status": "previsto", "organ": "Polícia Penal SP", "banca": None},
+            title="Polícia Penal SP terá concurso",
+            body_text="A Polícia Penal de São Paulo autorizou novo concurso.",
+        )
+        warnings, score = validate_output(
+            _data(
+                title="Polícia Penal SP abre 700 vagas com banca Planejar Concursos",
+                body_markdown="A banca organizadora será a Planejar Concursos. " + long_body() * 3,
+                status="previsto",
+                banca="Planejar Concursos",
+            ),
+            article,
+            make_settings(),
+            [],
+            min_words=80,
+        )
+        self.assertTrue(any("banca organizadora diverge" in warning or "banca organizadora sem respaldo" in warning for warning in warnings))
+        self.assertLess(score, 90)
+
+    def test_salario_mistura_editais_diferentes(self):
+        article = make_article(
+            facts={"status": "aberto", "salary_min": 1535.84, "salary_max": 1535.84, "organ": "Prefeitura de Campina Grande", "city_name": "Campina Grande"},
+            title="Guarda de Campina Grande - salário inicial",
+            body_text="O salário inicial para guarda municipal é de R$ 1.535,84.",
+        )
+        warnings, score = validate_output(
+            _data(
+                title="Guarda de Campina Grande tem salários de até R$ 9.652,80",
+                body_markdown="O certame terá vagas de nível médio, técnico e superior com salário de até R$ 9.652,80. " + long_body() * 3,
+                status="aberto",
+            ),
+            article,
+            make_settings(),
+            [],
+            min_words=80,
+        )
+        # O salário 9652.80 é muito maior que o máximo de 1535.84
+        self.assertTrue(any("salário no corpo" in warning and "fora da faixa" in warning for warning in warnings))
+        self.assertLess(score, 90)
+
 
 if __name__ == "__main__":
     unittest.main()
