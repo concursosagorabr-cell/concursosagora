@@ -146,6 +146,7 @@ class SanityClient:
             publishedAt,
             reviewStatus,
             status,
+            "author": author->{_id, name, "slug": slug.current},
             organ,
             banca,
             stateUf,
@@ -160,7 +161,8 @@ class SanityClient:
           "categories": *[_type == "category"] | order(title asc) {
             _id,
             title,
-            "slug": slug.current
+            "slug": slug.current,
+            group
           },
           "images": *[_type == "imageLibrary" && active != false] {
             _id,
@@ -393,10 +395,52 @@ class SanityClient:
             )
         return {"id": created_id, "response": response}
 
-    def patch_document(self, document_id: str, fields: dict[str, Any]) -> dict[str, Any]:
-        if not str(document_id).startswith("drafts."):
+    def create_or_replace(
+        self,
+        document: dict[str, Any],
+        *,
+        allow_published: bool = False,
+    ) -> dict[str, Any]:
+        """Cria ou substitui um documento do tipo post.
+
+        O pipeline editorial normal usa apenas ``create_draft``. Este método é
+        exclusivo do postador de artigos escritos pelo usuário e só aceita
+        documentos ``_type == "post"``. Para sobrescrever um documento
+        publicado é preciso passar ``allow_published=True`` explicitamente.
+        """
+        if document.get("_type") != "post":
             raise SanityError(
-                f"Por segurança, patch_document só aceita IDs 'drafts.*'; recebido: {document_id!r}"
+                f"create_or_replace só aceita documentos _type='post'; recebido: {document.get('_type')!r}"
+            )
+        document_id = str(document.get("_id") or "")
+        if not document_id:
+            raise SanityError("create_or_replace exige um _id.")
+        if not document_id.startswith("drafts.") and not allow_published:
+            raise SanityError(
+                "create_or_replace recusou sobrescrever um documento publicado; "
+                "use allow_published=True somente quando a substituição for intencional."
+            )
+        url = f"{self.data_url}/mutate/{self.dataset}?returnIds=true"
+        payload = json.dumps({"mutations": [{"createOrReplace": document}]}).encode("utf-8")
+        response = self._request("POST", url, body=payload)
+        results = response.get("results") or []
+        if results and isinstance(results[0], dict) and results[0].get("id"):
+            saved_id = str(results[0]["id"])
+        else:
+            saved_id = document_id
+        return {"id": saved_id, "response": response}
+
+    def patch_document(
+        self,
+        document_id: str,
+        fields: dict[str, Any],
+        *,
+        allow_published: bool = False,
+    ) -> dict[str, Any]:
+        if not str(document_id).startswith("drafts.") and not allow_published:
+            raise SanityError(
+                "Por segurança, patch_document só aceita IDs 'drafts.*'; "
+                f"para publicados, use allow_published=True. Recebido: {document_id!r}"
             )
         url = f"{self.data_url}/mutate/{self.dataset}"
         payload = json.dumps(

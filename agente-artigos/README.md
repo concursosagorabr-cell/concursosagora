@@ -11,6 +11,10 @@ pautas — não redige e não publica.
 > **Modo seguro:** `AUTO_PUBLISH` é ignorado pelo runner. Nenhum documento é
 > publicado automaticamente; o pipeline cria somente IDs `drafts.<slug>` com
 > `reviewStatus = "pending"`.
+>
+> O postador de artigos do usuário (`postar.py`) é uma exceção controlada: sem
+> `--publish`, ele só valida ou cria rascunhos; a publicação exige a flag
+> explícita.
 
 ## Regra de verificação (obrigatória)
 
@@ -27,7 +31,8 @@ Detalhes e a avaliação dos 10 portais sugeridos: `docs/verificacao-editorial.m
 
 ## O que o pipeline faz
 
-1. Descobre concursos e notícias nas fontes oficiais configuradas.
+1. Descobre concursos e notícias nas fontes oficiais configuradas e, quando
+   solicitado, nos portais de descoberta.
 2. Verifica `robots.txt` e respeita as restrições de acesso.
 3. Extrai título, datas, órgão, banca, vagas, salários, taxa, UF e demais fatos
    por regras determinísticas.
@@ -41,14 +46,96 @@ Detalhes e a avaliação dos 10 portais sugeridos: `docs/verificacao-editorial.m
 8. Cria o rascunho no Sanity com `reviewStatus = "pending"` e registra a
    execução no SQLite local.
 
-## Fontes do MVP
+## Fontes de coleta
 
-| Fonte | Situação | Página inicial |
+A lista operacional fica em `sources.yaml` e é validada por `pipeline/config.py`.
+Cada entrada declara `tier`, `usage`, `type`, domínios permitidos, palavras-chave
+e limite de candidatos. O projeto tem **15 fontes configuradas**: 5 oficiais e
+10 de descoberta.
+
+### Fontes oficiais (podem gerar rascunho)
+
+Só entram aqui fontes com `tier: official_primary` (ou `official_secondary`) e
+`usage: article`. São as únicas que podem originar matéria.
+
+| ID | Fonte | Tipo | Situação | Página inicial |
+| --- | --- | --- | --- | --- |
+| `inss` | INSS | `govbr_news` | ativa | `https://www.gov.br/inss/pt-br/assuntos/noticias` |
+| `vunesp` | Fundação Vunesp | `vunesp` | ativa | `https://www.vunesp.com.br/busca/concurso/inscricoes%20abertas` |
+| `fgv` | FGV Conhecimento | `fgv` | ativa | `https://conhecimento.fgv.br/concursos` |
+| `govbr_municipal` | Órgãos públicos — notícias oficiais | `govbr_news` | ativa para URL direta | sem `start_urls`; 29 domínios permitidos |
+| `dou` | Diário Oficial da União | `dou_inlabs` | desativada por padrão | XML/ZIP oficial em `data/dou/` |
+
+`govbr_municipal` não tem `start_urls`: ele não participa da descoberta
+automática. Use `--source govbr_municipal --url <url oficial>` para extrair uma
+página de prefeitura, instituto federal ou universidade. Domínios cobertos:
+
+- **Prefeituras:** `holambra.sp.gov.br`, `aparecida.sp.gov.br`,
+  `veracruz.sp.gov.br`, `saojoaquimdabarra.sp.gov.br`,
+  `saojoaquim.sc.gov.br`, `barrabonita.sp.gov.br`, `contagem.mg.gov.br`,
+  `bariri.sp.gov.br`, `promissao.sp.gov.br`, `ariranha.sp.gov.br`,
+  `itapecerica.sp.gov.br`, `etecpolivalente.cps.sp.gov.br`,
+  `piedade.sp.gov.br`, `curitiba.pr.gov.br`, `maua.sp.gov.br`,
+  `paulodefrontin.rj.gov.br`, `casabranca.sp.gov.br`,
+  `morroreuter.rs.gov.br`, `macaubal.sp.gov.br`, `ciop.sp.gov.br`,
+  `salto.sp.gov.br`, `saomiguelarcanjo.sp.gov.br`.
+- **Institutos federais e universidades:** `ifsp.edu.br`, `ifmg.edu.br`,
+  `ifsuldeminas.edu.br`, `ifap.edu.br`, `univasf.edu.br`, `ifsc.edu.br`,
+  `ufnt.edu.br`.
+
+### Fontes de descoberta (nunca geram artigo)
+
+Entram como `tier: journalism` e `usage: discovery`. Servem para localizar
+pauta; não confirmam número, data, salário ou status. O runner extrai o item,
+mas o marca como `skipped` antes de chamar o Groq.
+
+| ID | Fonte | Página inicial |
 | --- | --- | --- |
-| INSS | ativa | `https://www.gov.br/inss/pt-br/assuntos/noticias` |
-| Vunesp | ativa | `https://www.vunesp.com.br/busca/concurso/inscricoes%20abertas` |
-| FGV Conhecimento | ativa | `https://conhecimento.fgv.br/concursos` |
-| DOU | importação local (desativada por padrão) | XML/ZIP oficial em `data/dou/` |
+| `pci_concursos` | PCI Concursos | `https://www.pciconcursos.com.br/` |
+| `folha_dirigida` | Folha Dirigida (Qconcursos) | `https://folha.qconcursos.com/` |
+| `concursos_no_brasil` | Concursos no Brasil | `https://concursosnobrasil.com/` |
+| `estrategia_blog` | Blog do Estratégia Concursos | `https://estrategiaconcursos.com.br/blog/` |
+| `gran_cursos_blog` | Blog do Gran Cursos Online | `https://blog.grancursosonline.com.br/` |
+| `jc_concursos` | JC Concursos | `https://jcconcursos.com.br/` |
+| `ache_concursos` | Ache Concursos | `https://www.acheconcursos.com.br/` |
+| `edital_concursos_brasil` | Edital Concursos Brasil | `https://editalconcursosbrasil.com.br/` |
+| `g1_concursos` | G1 — Concursos e Emprego | `https://g1.globo.com/economia/concursos-e-emprego/` |
+| `pncp` | PNCP — Portal Nacional de Contratações Públicas | `https://www.pncp.gov.br/` |
+
+> O `pncp` está configurado para varrer `/licitacoes/` com as palavras
+> `concurso`, `edital` e `vagas`. Como é um portal de contratações públicas, ele
+> pode não render pauta de concurso; mantenha apenas como varredura auxiliar.
+
+### Registro de políticas
+
+`pipeline/source_policy.py` guarda a classificação de termos e automação das
+fontes analisadas. Consulte com:
+
+```powershell
+python -m pipeline sources --registry
+```
+
+| ID | Fonte | Tier | Uso | Automação |
+| --- | --- | --- | --- | --- |
+| `dou` | Diário Oficial da União | `official_primary` | `verification` | `official_open_data` |
+| `concursos_agora` | Concursos Agora | `internal` | `internal` | `internal` |
+| `pci_concursos` | PCI Concursos | `aggregator` | `discovery` | `sitemap_only` |
+| `concursos_no_brasil` | Concursos no Brasil | `aggregator` | `discovery` | `manual_only` |
+| `ache_concursos` | Ache Concursos | `aggregator` | `discovery` | `manual_only` |
+| `jc_concursos` | JC Concursos | `journalism` | `discovery` | `sitemap_only` |
+| `noticias_concursos` | Notícias Concursos | `journalism` | `discovery` | `manual_only` |
+| `mega_concursos` | Mega Concursos | `aggregator` | `discovery` | `sitemap_only` |
+| `qconcursos_folha` | Qconcursos / Folha Dirigida | `journalism` | `discovery` | `sitemap_only` |
+| `iscom_radar` | ISCOM Radar de Concursos | `journalism` | `discovery` | `sitemap_only` |
+| `g1` | G1 Concursos | `journalism` | `discovery` | `manual_only` |
+| `correio_braziliense` | Correio Braziliense | `journalism` | `discovery` | `sitemap_only` |
+| `concursos_em_pauta` | Concursos em Pauta | `journalism` | `discovery` | `disabled` |
+
+O registro é informativo e **não substitui** o `enabled` de `sources.yaml`.
+Algumas fontes do registro não estão no pipeline (Notícias Concursos, Mega
+Concursos, ISCOM, Correio Braziliense, Concursos em Pauta) e algumas fontes do
+`sources.yaml` não têm política específica (PNCP, blogs Estratégia e Gran).
+Antes de ativar uma nova fonte, confira os termos de uso e o `robots.txt`.
 
 ### DOU: arquivo oficial, não scraping
 
@@ -71,18 +158,24 @@ o pacote no Portal de Dados Abertos com a conta gov.br e apontar o arquivo com
 `--dou-file`. A fonte continua `enabled: false` em `sources.yaml` para não
 entrar em `run --source all` sem um arquivo explícito.
 
-A FGV entrou como terceira fonte do MVP porque a listagem de concursos em
-andamento é estática, pública e permitida pelo `robots.txt`. Cebraspe e IDECAN
-não são usados porque dependem de JavaScript/Cloudflare.
+A FGV é fonte oficial porque a listagem de concursos em andamento é estática,
+pública e permitida pelo `robots.txt`. Cebraspe e IDECAN aparecem no registro
+de bancas reconhecidas, mas não têm adaptador de coleta; os sites dependem de
+JavaScript/Cloudflare. Outras bancas (`cesgranrio`, `fcc`, `ibfc`, `aocp`,
+`quadrix`, `consulplan`, `iades`, `selecon`, `fepese`, `fundatec`, `legalle`,
+`objetivas`, `ibade`, `idib`, `funcern`) são reconhecidas para classificação de
+URL, mas não são raspadas diretamente.
 
 ## Estrutura
 
 ```text
+postar.py          atalho leve para o postador (não carrega Scrapling)
 pipeline/
-  cli.py           comandos doctor, sources, discover, verify, run, daily, manual, stats, delete-draft
+  cli.py           comandos doctor, sources, discover, verify, run, daily, manual, post, categories, stats, delete-draft
   config.py        leitura de .env, sources.yaml e Settings
   daily.py         fila editorial diária sem Groq e sem gravar no Sanity
   manual.py        validação de bundle escrito manualmente e criação de rascunhos
+  postador.py      postagem de artigos já escritos (sem fact-check)
   scrape.py        Scrapling, robots.txt, atraso entre requisições e decodificação
   extract.py       descoberta e extração por fonte; fatos determinísticos
   dou_open_data.py importação local de XML/ZIP oficial do DOU
@@ -95,10 +188,10 @@ pipeline/
   dedupe.py        deduplicação por URL, hash, slug e título
   state.py         estado local em SQLite
   runner.py        orquestração de uma execução
-sources.yaml       fontes oficiais, domínios, palavras-chave e limites
+sources.yaml       fontes oficiais e de descoberta, domínios, palavras-chave e limites
 tests/             testes unitários sem rede
 scripts/           rotina diária e agendamento no Windows
-docs/              políticas, fontes e rotina editorial
+docs/              políticas, fontes, rotina editorial e postador
 data/              runs, fila diária, SQLite, cache e XML/ZIP do DOU (ignorado pelo git)
 ```
 
@@ -156,6 +249,14 @@ python -m pipeline discover --source inss --limit 5
 python -m pipeline discover --source vunesp --limit 5
 python -m pipeline discover --source fgv --limit 5
 
+# Descoberta em portais de imprensa/agregadores (não gera artigo)
+python -m pipeline discover --source pci_concursos --limit 5
+python -m pipeline discover --source g1_concursos --limit 5
+
+# Extração de uma URL oficial municipal/IF/universidade
+# (exemplo; substitua pela URL real de um domínio listado em govbr_municipal)
+python -m pipeline verify --source govbr_municipal --url "https://www.aparecida.sp.gov.br/noticia"
+
 # DOU: importa um XML/ZIP oficial baixado manualmente
 python -m pipeline discover --source dou --dou-file data/dou/DO3-2026-10-22.zip --date 22-10-2026 --limit 10
 python -m pipeline run --source dou --dou-file data/dou/DO3-2026-10-22.zip --date 22-10-2026 --limit 1 --dry-run
@@ -196,6 +297,63 @@ python -m pipeline delete-draft --id "drafts.exemplo" --yes
 
 `--url` pode ser repetido. Se a fonte não for informada, o pipeline tenta
 inferi-la pelo domínio. `--json` imprime o resumo estruturado.
+
+`--source all` percorre todas as fontes habilitadas, inclusive as de descoberta;
+elas são extraídas e marcadas como `skipped` sem chamar o Groq. Para ir direto
+às fontes oficiais, use `--source inss`, `--source vunesp` ou `--source fgv`.
+
+## Postador de artigos do usuário
+
+Quando o artigo já está escrito (título, linha fina, corpo, ficha técnica e link
+oficial), use o postador em vez do pipeline de coleta. Ele não faz fact-check,
+não chama Groq e não reescreve a matéria: apenas adapta o texto ao schema
+`post`, preenche os metadados e grava no Sanity.
+
+O caminho mais leve é `postar.py`, que não carrega o Scrapling:
+
+```powershell
+cd agente-artigos
+
+# Lista autores e categorias existentes
+python postar.py --list-categories --json
+
+# Valida o bundle sem gravar
+python postar.py --bundle data/postador/meu-artigo.json --json
+
+# Cria rascunhos (reviewStatus=pending)
+python postar.py --bundle data/postador/meu-artigo.json --apply
+
+# Publica direto (reviewStatus=approved) — somente com pedido explícito
+python postar.py --bundle data/postador/meu-artigo.json --publish
+```
+
+O bundle tem um array `articles` com `title`, `excerpt` e `body_markdown`
+(obrigatórios) e campos opcionais como `status`, `contest_status`, `organ`,
+`banca`, `sphere`, `state_uf`, `vacancies_total`, `salary_min`, `salary_max`,
+`enrollment_start_date`, `exam_date`, `categories`, `source_urls` e `seo`.
+O schema completo e um exemplo estão em `docs/postador.md`.
+
+Regras principais:
+
+- O corpo é Markdown convertido para Portable Text: use `##`/`###`, listas com
+  `-`, negrito e links. **Não use tabelas**; converta a ficha técnica em lista.
+- Só use slugs de categorias e autores retornados por `--list-categories`.
+- Não invente URLs, datas, salários ou categorias. Se o link oficial não tiver
+  URL no texto, omita `source_urls`.
+- O modo padrão é dry-run. `--apply` cria `drafts.<slug>` com
+  `reviewStatus=pending`; `--publish` cria o documento publicado com
+  `reviewStatus=approved`.
+- Se já existir um post com o mesmo título/slug, o item é ignorado
+  (`skipped_duplicate`). Use `--update` para atualizar o existente (preserva a
+  URL, a data, o autor e a imagem principal quando omitidos) ou
+  `--allow-duplicate` para criar outro — ambos somente com autorização
+  explícita.
+- O agente OpenCode que executa esse fluxo é
+  `.opencode/agents/agente-postador.md`.
+
+O comando equivalente no CLI completo é `python -m pipeline post ...` (exige as
+dependências do projeto, incluindo Scrapling). O `postar.py` é o caminho
+recomendado para artigos prontos.
 
 ## Rotina diária
 
@@ -297,7 +455,9 @@ python -m unittest discover -s tests -v
 Os testes cobrem normalização, UF/cidade, datas, vagas, fatos do INSS,
 cadastro de reserva, inferência de fonte, validação editorial, Portable Text,
 configuração das fontes, políticas de uso e importação local de XML/ZIP do DOU.
-Eles não fazem chamadas de rede.
+O postador tem testes próprios para datas, valores, normalização, duplicatas,
+rascunho e publicação em `tests/test_postador.py`. Eles não fazem chamadas de
+rede.
 
 ## Operação e limites
 

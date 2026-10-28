@@ -16,6 +16,7 @@ from pipeline.extract import discover, extract_article, parse_dou_date_arg
 from pipeline.groq import GroqClient, GroqError
 from pipeline.manual import ManualError, run_bundle
 from pipeline.models import Candidate
+from pipeline.postador import PostadorError, list_categories, run_post_bundle
 from pipeline.runner import PipelineRunner
 from pipeline.sanity import SanityClient, SanityError
 from pipeline.scrape import Scraper
@@ -332,6 +333,76 @@ def _manual(args: argparse.Namespace, settings: Settings) -> int:
     return 0 if summary["errors"] == 0 else 1
 
 
+def _post(args: argparse.Namespace, settings: Settings) -> int:
+    try:
+        summary = run_post_bundle(
+            Path(args.bundle),
+            apply=args.apply,
+            publish=args.publish,
+            force=args.force,
+            update=args.update,
+            allow_duplicate=args.allow_duplicate,
+            settings=settings,
+        )
+    except (PostadorError, ConfigError, SanityError) as exc:
+        print(f"Falha no postador: {exc}", file=sys.stderr)
+        return 1
+
+    if args.json:
+        _print_json(summary)
+        return 0 if summary["errors"] == 0 else 1
+
+    mode = (
+        "atualização + publicação no Sanity"
+        if summary["update"] and summary["publish"]
+        else (
+            "atualização de posts existentes no Sanity"
+            if summary["update"]
+            else (
+                "publicado no Sanity"
+                if summary["publish"]
+                else ("rascunhos no Sanity" if summary["apply"] else "dry-run (nada gravado)")
+            )
+        )
+    )
+    print(f"Postador: {summary['total']} artigo(s)")
+    print(f"Modo: {mode}")
+    print(
+        f"Criados: {summary['created']} | publicados: {summary['published']} | "
+        f"atualizados: {summary['updated']} | ignorados: {summary['skipped']} | "
+        f"validados: {summary['dry_run']} | erros: {summary['errors']}"
+    )
+    for item in summary["items"]:
+        print(f"- [{item['status']}] {item['title'] or item['slug'] or item['index']}")
+        if item.get("sanity_id"):
+            print(f"  id: {item['sanity_id']}")
+        if item.get("url"):
+            print(f"  url: {item['url']}")
+        if item.get("categories"):
+            print(f"  categorias: {', '.join(item['categories'])}")
+        if item.get("author"):
+            print(f"  autor: {item['author']}")
+        if item.get("message"):
+            print(f"  {item['message']}")
+        for warning in (item.get("warnings") or [])[:8]:
+            print(f"  aviso: {warning}")
+    if summary["publish"] or summary["update"]:
+        print(
+            "Revalidação do frontend: "
+            + ("ok" if summary["revalidated"] else "não executada ou falhou")
+        )
+    print(f"Resumo: {summary['summary_path']}")
+    return 0 if summary["errors"] == 0 else 1
+
+
+def _categories(args: argparse.Namespace, settings: Settings) -> int:
+    try:
+        return list_categories(settings, as_json=args.json)
+    except (ConfigError, SanityError) as exc:
+        print(f"Falha ao listar categorias: {exc}", file=sys.stderr)
+        return 1
+
+
 def _daily(args: argparse.Namespace, settings: Settings) -> int:
     try:
         queue = run_daily(
@@ -506,6 +577,42 @@ def build_parser() -> argparse.ArgumentParser:
     manual.add_argument("--json", action="store_true", help="imprime o resumo em JSON")
     manual.set_defaults(func=_manual)
 
+    post = sub.add_parser(
+        "post",
+        help="cria ou publica posts de artigos já escritos pelo usuário (sem fact-check)",
+    )
+    post.add_argument("--bundle", required=True, help="caminho do bundle JSON com os artigos")
+    post.add_argument("--apply", action="store_true", help="cria rascunhos no Sanity")
+    post.add_argument(
+        "--publish",
+        action="store_true",
+        help="publica direto no Sanity (reviewStatus=approved)",
+    )
+    post.add_argument(
+        "--force",
+        action="store_true",
+        help="sobrescreve um post/rascunho com o mesmo slug",
+    )
+    post.add_argument(
+        "--update",
+        action="store_true",
+        help="atualiza um post existente encontrado pelo slug/título (preserva a URL)",
+    )
+    post.add_argument(
+        "--allow-duplicate",
+        action="store_true",
+        help="cria um novo post mesmo quando já existe um com o mesmo título/slug",
+    )
+    post.add_argument("--json", action="store_true", help="imprime o resumo em JSON")
+    post.set_defaults(func=_post)
+
+    categories = sub.add_parser(
+        "categories",
+        help="lista autores e categorias disponíveis no Sanity",
+    )
+    categories.add_argument("--json", action="store_true", help="imprime em JSON")
+    categories.set_defaults(func=_categories)
+
     daily = sub.add_parser(
         "daily",
         help="monta a fila editorial do dia (sem Groq e sem gravar no Sanity)",
@@ -564,7 +671,15 @@ def main(argv: list[str] | None = None) -> int:
     try:
         settings = _settings(args)
         return int(args.func(args, settings))
-    except (ConfigError, DouOpenDataError, ManualError, ValueError, GroqError, SanityError) as exc:
+    except (
+        ConfigError,
+        DouOpenDataError,
+        ManualError,
+        PostadorError,
+        ValueError,
+        GroqError,
+        SanityError,
+    ) as exc:
         print(f"Erro: {exc}", file=sys.stderr)
         return 1
     except KeyboardInterrupt:
