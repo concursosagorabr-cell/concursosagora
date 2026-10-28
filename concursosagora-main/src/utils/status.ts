@@ -291,6 +291,24 @@ export function getContestStatusInfo(post: Partial<Post>): ContestStatusInfo {
     };
   }
 
+  // C2. Aberto explícito sem datas de inscrição: o CMS confirma que o
+  // certame está aberto, mas não há prazo estruturado para calcular o
+  // status. Não invente datas: mostre "Concurso Aberto" e oriente a
+  // consultar o edital.
+  if (cmsStatus === 'aberto') {
+    return {
+      isExpired: false,
+      label: 'Concurso Aberto',
+      badgeBg: 'bg-emerald-600/95 text-white border border-emerald-400/30',
+      badgeText: 'text-white',
+      dotColor: 'bg-emerald-300 animate-pulse motion-reduce:animate-none',
+      enrollmentLabel: 'Consulte o edital',
+      formattedTargetDate,
+      formattedExpirationDate,
+      expirationNote: 'Edital publicado / Consulte o edital',
+    };
+  }
+
   // D. Fallback: verificar datas gerais para posts legados
   const expired = isContestExpired(post);
   if (expired) {

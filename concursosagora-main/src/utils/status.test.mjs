@@ -39,6 +39,18 @@ test('getContestStatusInfo retorna Concurso Aberto quando há prazo de inscriç�
   assert.ok(info.badgeBg.includes('emerald'));
 });
 
+test('getContestStatusInfo retorna Concurso Aberto para status aberto sem datas de inscrição', () => {
+  const post = {
+    title: 'Seleção AgSUS: Editais abertos via Cebraspe com salários até R$ 10,3 mil',
+    status: 'aberto',
+  };
+  const info = getContestStatusInfo(post);
+  assert.equal(info.label, 'Concurso Aberto');
+  assert.equal(info.enrollmentLabel, 'Consulte o edital');
+  assert.equal(info.isExpired, false);
+  assert.ok(info.badgeBg.includes('emerald'));
+});
+
 test('getContestStatusInfo retorna Em Andamento quando inscrições expiraram mas sem prova definida', () => {
   const pastDate = new Date();
   pastDate.setDate(pastDate.getDate() - 5);
