@@ -273,6 +273,54 @@ function generateJobPostingJsonLd(post: Post, postUrl: string): any | null {
   };
 }
 
+/**
+ * Remove seções editoriais internas do corpo do artigo antes de renderizar.
+ * A seção "Informações complementares" é adicionada pelo agente de enriquecimento
+ * e deve ser visível apenas no Sanity Studio (reviewStatus=pending), não no site público.
+ */
+function filterEditorialSections(body: any[]): any[] {
+  if (!body || !Array.isArray(body)) return body;
+  
+  const filtered: any[] = [];
+  let inEditorialSection = false;
+  
+  for (const block of body) {
+    if (block._type !== 'block') {
+      if (!inEditorialSection) filtered.push(block);
+      continue;
+    }
+    
+    const blockText = (block.children || [])
+      .map((c: any) => c.text || '')
+      .join('')
+      .trim()
+      .toLowerCase();
+    
+    // Detecta início da seção editorial (várias variações do marcador)
+    const isEditorialStart = block.style === 'h2' && (
+      blockText.includes('informações complementares') ||
+      blockText.includes('editorial - não publicar') ||
+      blockText.includes('não publicar')
+    );
+    
+    if (isEditorialStart) {
+      inEditorialSection = true;
+      continue;
+    }
+    
+    // Detecta fim da seção editorial (próximo H2)
+    if (inEditorialSection && block.style === 'h2') {
+      inEditorialSection = false;
+    }
+    
+    if (!inEditorialSection) {
+      filtered.push(block);
+    }
+  }
+  
+  return filtered;
+}
+
 export default async function PostPage({ params }: PostPageProps) {
   const { slug } = await params;
 
@@ -430,8 +478,12 @@ export default async function PostPage({ params }: PostPageProps) {
   const jobPostingJsonLd = generateJobPostingJsonLd(post, postUrl);
 
   // Injeta dinamicamente o card de "Leia Também" após o 2º parágrafo no Portable Text
-  const bodyWithRelated = post.body
-    ? injectRelatedArticle(post.body, relatedPosts[0], 2)
+  // Remove seção editorial "Informações complementares" (adicionada pelo agente de enriquecimento)
+  const bodyFiltered = post.body
+    ? filterEditorialSections(post.body)
+    : [];
+  const bodyWithRelated = bodyFiltered
+    ? injectRelatedArticle(bodyFiltered, relatedPosts[0], 2)
     : [];
 
   return (
