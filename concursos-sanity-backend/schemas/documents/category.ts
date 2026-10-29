@@ -35,7 +35,8 @@ export default defineType({
       type: 'string',
       options: {
         list: [
-          { title: 'Área / carreira', value: 'area' },
+          { title: 'Carreira / Área temática', value: 'carreira' },
+          { title: 'Área técnica (sinônimos legados)', value: 'area' },
           { title: 'Estado (UF)', value: 'estado' },
           { title: 'Região', value: 'regiao' },
           { title: 'Situação / tipo', value: 'status' },
@@ -44,7 +45,7 @@ export default defineType({
         ],
         layout: 'dropdown',
       },
-      description: 'Ajuda a organizar o menu e o Studio. Não altera as URLs.',
+      description: 'Ajuda a organizar o menu e o Studio. Não altera as URLs. Use "Carreira" para menus de navegação principal (ex: Fiscal, Tribunais, Policial, Saúde, Educação).',
     }),
   ],
   orderings: [

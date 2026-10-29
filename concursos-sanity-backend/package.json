@@ -16,7 +16,8 @@
     "patch:authors": "node --env-file=.env.local scripts/patch-authors.mjs",
     "seed:settings": "node --env-file=.env.local scripts/seed-site-settings.mjs",
     "setup:webhook": "node --env-file=.env.local scripts/setup-webhook.mjs",
-    "configure:cors": "node --env-file=.env.local scripts/configure-cors.mjs"
+    "configure:cors": "node --env-file=.env.local scripts/configure-cors.mjs",
+    "create:articles": "node --env-file=.env.local scripts/create-articles.mjs"
   },
   "dependencies": {
     "@sanity/client": "^7.25.0",

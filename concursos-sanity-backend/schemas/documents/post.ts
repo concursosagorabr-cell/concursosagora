@@ -138,8 +138,26 @@ export default defineType({
       group: 'concurso',
       options: { list: CONTEST_STATUS, layout: 'radio' },
       initialValue: 'previsto',
-      validation: (Rule) => Rule.required(),
-      description: 'Usado nos badges e no Schema.org JobPosting.',
+      validation: (Rule) => Rule.required().custom((value, context) => {
+        const title = (context.parent as any)?.title as string | undefined;
+        if (!title) return true;
+        
+        const t = title.toLowerCase();
+        const hasAbertoKeywords = t.includes('inscri') && (t.includes('abert') || t.includes('abertas') || t.includes('abertos')) ||
+                                  t.includes('editais abertos') || t.includes('edital aberto');
+        const hasPrevistoKeywords = t.includes('previsto') || t.includes('autorizad') || t.includes('comissao');
+        
+        // Aviso se status='previsto' mas título indica inscrições abertas
+        if (value === 'previsto' && hasAbertoKeywords) {
+          return '⚠️ Título sugere inscrições abertas, mas status está "Previsto". Verifique se deve ser "Aberto".';
+        }
+        // Aviso se status='aberto' mas título indica apenas previsão
+        if (value === 'aberto' && hasPrevistoKeywords && !hasAbertoKeywords) {
+          return '⚠️ Título sugere edital previsto, mas status está "Aberto". Verifique se deve ser "Previsto".';
+        }
+        return true;
+      }),
+      description: 'Usado nos badges e no Schema.org JobPosting. Validação: confere coerência com palavras-chave do título.',
     }),
     defineField({
       name: 'contestStatus',
