@@ -1,0 +1,9 @@
+# Concursos Agora — Security Policy (RFC 9116)
+# https://www.concursosagora.com.br/.well-known/security.txt
+
+Contact: mailto:concursosagorabr@gmail.com
+Expires: 2027-09-07T10:00:00.000Z
+Preferred-Languages: pt-br, en
+Canonical: https://www.concursosagora.com.br/.well-known/security.txt
+Policy: https://www.concursosagora.com.br/politica-de-privacidade
+Acknowledgments: https://www.concursosagora.com.br/sobre-nos
