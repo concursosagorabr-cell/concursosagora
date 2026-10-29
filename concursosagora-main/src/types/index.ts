@@ -36,6 +36,7 @@ export interface Category {
   title: string;
   slug: string;
   description?: string;
+  group?: 'carreira' | 'area' | 'estado' | 'regiao' | 'status' | 'instituicao' | 'banca';
 }
 
 export interface PortableTextChild {

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Post } from '@/types';
 import { getImageUrl } from '@/lib/image';
-import { deduplicateCategories, getPureCategories } from '@/utils/categories';
+import { getPureCategories } from '@/utils/categories';
 import { getContestStatusInfo } from '@/utils/status';
 import { getDescriptiveImageAlt } from '@/utils/imageAlt';
 
@@ -23,8 +23,15 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
 
   const postLink = `/post/${post.slug || post._id}`;
   const pureCategories = getPureCategories(post.categories || []);
+  const careerCategories = pureCategories.filter(c => c.group === 'carreira');
 
   const statusInfo = getContestStatusInfo(post);
+
+  // Badge de salário estruturado (não depende do título truncado)
+  const hasSalary = typeof post.salaryMax === 'number' && post.salaryMax > 0;
+  const salaryLabel = hasSalary
+    ? `R$ ${(post.salaryMax as number).toLocaleString('pt-BR', { minimumFractionDigits: 0 })}`
+    : null;
 
   return (
     <article className="group bg-white rounded-2xl overflow-hidden shadow-xs hover:shadow-xl border border-slate-200/90 hover:border-blue-200 transition-all duration-300 flex flex-col h-full">
@@ -41,42 +48,49 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         </Link>
 
-        {/* Badges sobre a imagem */}
+        {/* Badges sobre a imagem: Status + Carreira/UF + Salário */}
         <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10 pointer-events-none">
           <div className="flex flex-wrap gap-1.5 pointer-events-auto">
+            {/* Status do certame (fonte: post.status) */}
             <span className={`inline-flex items-center gap-1 text-xs font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md backdrop-blur-md ${statusInfo.badgeBg}`}>
               <span className={`w-1.5 h-1.5 rounded-full ${statusInfo.dotColor}`} />
               {statusInfo.label}
             </span>
           </div>
 
-          {(() => {
-            if (pureCategories.length > 0) {
-              const cat = pureCategories[0];
-              return (
-                <Link
-                  key={cat._id}
-                  href={`/categoria/${cat.slug || cat._id}`}
-                  className="pointer-events-auto bg-slate-900/80 hover:bg-blue-600 backdrop-blur-md text-white text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-xs transition-colors"
-                >
-                  {cat.title}
-                </Link>
-              );
-            } else if (post.stateUf) {
-              const ufStr = post.stateUf.trim().toUpperCase();
-              const isNacional = ufStr === 'NACIONAL';
-              return (
-                <Link
-                  key={ufStr}
-                  href={isNacional ? '/concursos/nacional' : `/concursos/${ufStr.toLowerCase()}`}
-                  className="pointer-events-auto bg-slate-900/80 hover:bg-blue-600 backdrop-blur-md text-white text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-xs transition-colors"
-                >
-                  {isNacional ? 'Nacional' : ufStr}
-                </Link>
-              );
-            }
-            return null;
-          })()}
+          <div className="flex flex-wrap gap-1.5 pointer-events-auto items-center">
+            {/* Carreira temática (grupo 'carreira') ou UF */}
+            {careerCategories.length > 0 ? (
+              <Link
+                key={careerCategories[0]._id}
+                href={`/categoria/${careerCategories[0].slug || careerCategories[0]._id}`}
+                className="pointer-events-auto bg-slate-900/80 hover:bg-blue-600 backdrop-blur-md text-white text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-xs transition-colors"
+              >
+                {careerCategories[0].title}
+              </Link>
+            ) : post.stateUf ? (
+              (() => {
+                const ufStr = post.stateUf.trim().toUpperCase();
+                const isNacional = ufStr === 'NACIONAL';
+                return (
+                  <Link
+                    key={ufStr}
+                    href={isNacional ? '/concursos/nacional' : `/concursos/${ufStr.toLowerCase()}`}
+                    className="pointer-events-auto bg-slate-900/80 hover:bg-blue-600 backdrop-blur-md text-white text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-xs transition-colors"
+                  >
+                    {isNacional ? 'Nacional' : ufStr}
+                  </Link>
+                );
+              })()
+            ) : null}
+
+            {/* Salário estruturado — CTR crítico, não depende do título */}
+            {salaryLabel && (
+              <span className="pointer-events-auto bg-emerald-600/95 text-white text-xs font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-xs border border-emerald-400/30 whitespace-nowrap">
+                {salaryLabel}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -90,7 +104,8 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
             )}
           </div>
 
-          <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
+          {/* Título com 3 linhas para não cortar salário no CTR */}
+          <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-3 leading-snug">
             <Link href={postLink}>
               {post.title}
             </Link>

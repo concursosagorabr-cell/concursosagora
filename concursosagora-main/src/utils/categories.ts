@@ -71,8 +71,12 @@ export function deduplicateCategories(categories: Category[]): Category[] {
 }
 
 /**
- * Retorna apenas categorias temáticas/carreiras puras, desconsiderando siglas de estados (AC, AL, SP...)
- * e regiões (Sudeste, Sul...) que já possuem menus/links próprios em "Estados" e "Regiões".
+ * Retorna apenas categorias temáticas/carreiras puras, desconsiderando:
+ * - Siglas de estados (AC, AL, SP...) — têm menus próprios
+ * - Regiões (Sudeste, Sul...) — têm menus próprios
+ * - Grupo 'status' (ex: "Concursos Abertos") — status já é renderizado via campo post.status
+ * - Grupo 'regiao' e 'estado' — redundantes com menus dedicados
+ * - Tags de teste
  */
 export function getPureCategories(categories: Category[]): Category[] {
   const unique = deduplicateCategories(categories);
@@ -89,11 +93,26 @@ export function getPureCategories(categories: Category[]): Category[] {
     // Remover nomes de regiões
     if (REGION_NAMES.has(titleLower)) return false;
 
+    // Remover categorias do grupo 'status' (ex: "Concursos Abertos")
+    // O status do certame vem do campo post.status, não da taxonomia
+    if (cat.group === 'status') return false;
+
+    // Remover grupos 'estado' e 'regiao' (redundantes com menus dedicados)
+    if (cat.group === 'estado' || cat.group === 'regiao') return false;
+
     // Remover tags de teste
     if (titleLower.includes('teste')) return false;
 
     return true;
   });
+}
+
+/**
+ * Retorna apenas categorias do grupo 'carreira' para menus de navegação principal.
+ */
+export function getCareerCategories(categories: Category[]): Category[] {
+  const unique = deduplicateCategories(categories);
+  return unique.filter((cat) => cat.group === 'carreira');
 }
 
 /**

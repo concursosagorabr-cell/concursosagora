@@ -104,9 +104,7 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
             <span>Manchetes & Destaques de Hoje</span>
           </h2>
         </div>
-        <div className="flex items-center gap-1.5 text-xs text-slate-600 font-medium">
-          <span>{current + 1} de {total}</span>
-        </div>
+        {/* Removido contador "1 de 5" redundante — setas e dots já indicam posição */}
       </div>
 
       {/* Grade Editorial: Manchete Principal (Esq) + Plantão Lateral (Dir) */}
@@ -154,19 +152,21 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
                 ))}
               </div>
 
-              {/* Setas Anterior / Próxima */}
+              {/* Setas Anterior / Próxima — acessíveis por teclado */}
               <div className="hidden sm:flex items-center gap-1 pointer-events-auto bg-white/90 p-1 rounded-full border border-slate-200 shadow-sm backdrop-blur-md">
                 <button
                   onClick={() => { prev(); resetInterval(); }}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); prev(); resetInterval(); } }}
                   aria-label="Manchete anterior"
-                  className="w-7 h-7 rounded-full flex items-center justify-center text-slate-700 hover:text-blue-600 hover:bg-slate-100 transition-colors text-base font-bold"
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-slate-700 hover:text-blue-600 hover:bg-slate-100 transition-colors text-base font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   ‹
                 </button>
                 <button
                   onClick={() => { next(); resetInterval(); }}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); next(); resetInterval(); } }}
                   aria-label="Próxima manchete"
-                  className="w-7 h-7 rounded-full flex items-center justify-center text-slate-700 hover:text-blue-600 hover:bg-slate-100 transition-colors text-base font-bold"
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-slate-700 hover:text-blue-600 hover:bg-slate-100 transition-colors text-base font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   ›
                 </button>
@@ -208,14 +208,34 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
                 <span className="text-base leading-none">→</span>
               </Link>
 
-              {/* Dots clicáveis */}
-              <div className="flex items-center gap-1.5">
+              {/* Dots clicáveis — acessíveis por teclado */}
+              <div className="flex items-center gap-1.5" role="tablist" aria-label="Manchetes em destaque">
                 {posts.map((_, idx) => (
                   <button
                     key={idx}
+                    role="tab"
+                    aria-selected={idx === current}
+                    aria-label={`Manchete ${idx + 1}${idx === current ? ' (atual)' : ''}`}
                     onClick={() => { goTo(idx); resetInterval(); }}
-                    aria-label={`Destaque ${idx + 1}`}
-                    className={`h-2 rounded-full transition-all duration-300 ${
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        goTo(idx);
+                        resetInterval();
+                      }
+                      if (e.key === 'ArrowRight' && idx < posts.length - 1) {
+                        e.preventDefault();
+                        goTo(idx + 1);
+                        resetInterval();
+                      }
+                      if (e.key === 'ArrowLeft' && idx > 0) {
+                        e.preventDefault();
+                        goTo(idx - 1);
+                        resetInterval();
+                      }
+                    }}
+                    tabIndex={idx === current ? 0 : -1}
+                    className={`h-2 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                       idx === current ? 'bg-blue-600 w-6' : 'bg-slate-200 hover:bg-slate-300 w-2'
                     }`}
                   />
@@ -271,10 +291,17 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
                       <h4 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
                         {post.title}
                       </h4>
-                      <span className={`inline-flex items-center gap-1 text-xs font-black uppercase px-2 py-0.5 rounded ${status.badgeBg}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${status.dotColor}`} />
-                        {status.label}
-                      </span>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className={`inline-flex items-center gap-1 text-xs font-black uppercase px-2 py-0.5 rounded ${status.badgeBg}`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${status.dotColor}`} />
+                          {status.label}
+                        </span>
+                        {post.salaryMax && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-500/90 text-slate-950 text-xs font-black shadow-xs">
+                            💰 R$ {(post.salaryMax as number).toLocaleString('pt-BR', { minimumFractionDigits: 0 })}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </Link>
                 </article>
