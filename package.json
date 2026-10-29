@@ -12,7 +12,7 @@
   "dependencies": {
     "@next/third-parties": "^16.2.12",
     "@portabletext/react": "^7.0.1",
-    "@sanity/client": "^7.25.0",
+    "@sanity/client": "^8.11.0",
     "@sanity/image-url": "^2.1.1",
     "@upstash/redis": "^1.38.3",
     "@vercel/analytics": "^2.0.1",
