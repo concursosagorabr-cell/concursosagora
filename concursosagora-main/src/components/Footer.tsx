@@ -110,13 +110,13 @@ export default function Footer() {
             <p>© {new Date().getFullYear()} Concursos Agora. Todos os direitos reservados.</p>
             <span className="hidden sm:inline text-slate-700" aria-hidden="true">•</span>
             <p className="text-slate-400 text-xs">
-              Tecnologia & IA por{' '}
+              Tecnologia por{' '}
               <a
                 href="https://www.vetorestrategico.com/"
                 target="_blank"
                 rel="noopener"
                 className="text-blue-400 font-bold hover:text-blue-300 hover:underline transition-colors"
-                title="Vetor Estratégico — Criação de Sites e Inteligência Artificial"
+                title="Vetor Estratégico — Criação de Sites"
               >
                 Vetor Estratégico
               </a>

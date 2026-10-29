@@ -1,0 +1,7 @@
+fix: PostCard & HeroCarousel - separate status badges from career tags; add salary badge; improve accessibility; fix title truncation (line-clamp-3)
+
+- PostCard: use getPureCategories (excludes 'status' group), filter careerCategories for tag, add structured salaryMax badge, increase title to line-clamp-3
+- HeroCarousel: remove redundant counter "1 of 5", add keyboard navigation to dots/arrows, add salary badge to side posts
+- categories.ts: getPureCategories now filters group='status', 'estado', 'regiao'; add getCareerCategories()
+- types.ts: Category now includes group field
+- status.ts: (unchanged, already correct)

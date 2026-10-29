@@ -32,7 +32,7 @@ function isPrevistoHeuristic(title?: string): boolean {
 
 /**
  * Calcula se um concurso está encerrado ou aberto com base na data de término das inscrições (enrollmentEndDate)
- * ou data da prova (examDate) extraída pela IA da notícia.
+ * ou data da prova (examDate) extraída da notícia.
  * Caso NENHUMA data seja informada na notícia, utiliza fallback de 12 meses após a data de criação.
  *
  * REGRA CRÍTICA (auditoria set/2026):

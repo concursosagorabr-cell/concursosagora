@@ -50,7 +50,7 @@ export default function PoliticaEditorialPage() {
           3. Processo Editorial e de Checagem
         </h2>
         <p>
-          A elaboração dos nossos conteúdos segue um rigoroso fluxo editorial. Iniciamos com o monitoramento automatizado de publicações oficiais, que agiliza a detecção de novos editais. A partir daí, a redação inicial pode contar com assistência de inteligência artificial (IA) para a formatação e estruturação da matéria. No entanto, <strong>todo e qualquer conteúdo</strong> passa por criteriosa revisão humana e checagem de fatos (cruzamento com os documentos oficiais) antes da publicação final. Todo esse processo — da apuração à revisão final — é conduzido por mim.
+          A elaboração dos nossos conteúdos segue um rigoroso fluxo editorial. Iniciamos com o monitoramento automatizado de publicações oficiais, que agiliza a detecção de novos editais. A partir daí, a redação e estruturação da matéria são realizadas com base nos documentos oficiais. <strong>Todo e qualquer conteúdo</strong> passa por criteriosa revisão humana e checagem de fatos (cruzamento com os documentos oficiais) antes da publicação final. Todo esse processo — da apuração à revisão final — é conduzido por mim.
         </p>
 
         <h2 className="text-xl font-bold text-slate-900 mt-8 mb-4 border-l-4 border-blue-600 pl-3">
