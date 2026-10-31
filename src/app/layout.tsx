@@ -26,9 +26,6 @@ export const metadata: Metadata = {
   },
   description:
     'Notícias em tempo real sobre concursos públicos no Brasil, editais abertos, inscrições, materiais de estudo e dicas para sua aprovação.',
-  alternates: {
-    canonical: SITE_URL,
-  },
   authors: [{ name: 'Equipe Concursos Agora' }],
   openGraph: {
     type: 'website',
@@ -40,7 +37,7 @@ export const metadata: Metadata = {
       'Notícias em tempo real sobre concursos públicos no Brasil, editais abertos e materiais de estudo.',
     images: [
       {
-        url: `${SITE_URL}/logo.png`,
+        url: `${SITE_URL}/api/og?title=Concursos%20Agora&eyebrow=Not%C3%ADcias%20e%20editais`,
         width: 1200,
         height: 630,
         alt: 'Concursos Agora — Portal de Notícias e Editais de Concursos Públicos',
@@ -52,7 +49,7 @@ export const metadata: Metadata = {
     title: 'Concursos Agora — Portal de Notícias e Editais',
     description:
       'Notícias em tempo real sobre concursos públicos no Brasil, editais abertos e materiais de estudo.',
-    images: [`${SITE_URL}/logo.png`],
+    images: [`${SITE_URL}/api/og?title=Concursos%20Agora&eyebrow=Not%C3%ADcias%20e%20editais`],
   },
   robots: {
     index: true,

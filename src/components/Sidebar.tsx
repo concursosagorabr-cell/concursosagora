@@ -101,6 +101,9 @@ export default function Sidebar({
   const pureCategories = getPureCategories(uniqueCategories);
 
   const displayPopularPosts = topPosts && topPosts.length > 0 ? topPosts : recentPosts;
+  const hasRealRanking =
+    topPosts.length > 0 &&
+    !topPosts.every((post) => recentPosts.some((recent) => recent._id === post._id));
 
   return (
     <aside className="space-y-6">
@@ -115,8 +118,8 @@ export default function Sidebar({
       ) : (
         <RankedPostList
           posts={displayPopularPosts}
-          title="Mais Lidas do Portal"
-          icon="🔥"
+          title={hasRealRanking ? 'Mais Lidas do Portal' : 'Últimas Notícias'}
+          icon={hasRealRanking ? '🔥' : '📰'}
         />
       )}
 

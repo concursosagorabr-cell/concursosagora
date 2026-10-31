@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { getCachedAllPostSlugs, getCachedAllCategorySlugs } from '@/lib/sanity';
+import { getCachedAllPostSlugs, getCachedAllCategorySlugs, getCachedAllAuthorSlugs } from '@/lib/sanity';
 import { CONTENT_HUBS } from '@/utils/hubs';
 import { getAllExamBoards } from '@/utils/bancas';
 import { SITE_URL } from '@/lib/constants';
@@ -10,11 +10,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   let postSlugs: string[] = [];
   let categorySlugs: string[] = [];
+  let authorSlugs: string[] = [];
 
   try {
-    [postSlugs, categorySlugs] = await Promise.all([
+    [postSlugs, categorySlugs, authorSlugs] = await Promise.all([
       getCachedAllPostSlugs(),
       getCachedAllCategorySlugs(),
+      getCachedAllAuthorSlugs(),
     ]);
   } catch (error) {
     console.error('Erro ao buscar slugs para sitemap:', error);
@@ -40,6 +42,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(),
     changeFrequency: 'weekly',
     priority: 0.6,
+  }));
+
+  const cleanAuthorSlugs = (authorSlugs || [])
+    .map((item: any) => (typeof item === 'string' ? item : item?.slug || item?._id))
+    .filter((s): s is string => typeof s === 'string' && s.trim().length > 0);
+
+  const authorUrls: MetadataRoute.Sitemap = cleanAuthorSlugs.map((slug) => ({
+    url: `${baseUrl}/autor/${encodeURIComponent(slug)}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly',
+    priority: 0.5,
   }));
 
   const hubUrls: MetadataRoute.Sitemap = CONTENT_HUBS.map((hub) => ({
@@ -146,5 +159,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...eduStateUrls,
     ...postUrls,
     ...categoryUrls,
+    ...authorUrls,
   ];
 }

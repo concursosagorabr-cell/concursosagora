@@ -76,7 +76,7 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
                 return (
                   <Link
                     key={ufStr}
-                    href={isNacional ? '/concursos/nacional' : `/concursos/${ufStr.toLowerCase()}`}
+                    href={isNacional ? '/categoria/nacional' : `/categoria/${ufStr.toLowerCase()}`}
                     className="pointer-events-auto bg-slate-900/80 hover:bg-blue-600 backdrop-blur-md text-white text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-xs transition-colors"
                   >
                     {isNacional ? 'Nacional' : ufStr}

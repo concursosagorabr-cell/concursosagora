@@ -23,8 +23,14 @@ import {
   educationAndStatePostsQuery,
   highSalaryPostsQuery,
   postsBySlugsQuery,
+  postBySlugHistoryQuery,
+  authorBySlugQuery,
+  postsByAuthorPaginatedQuery,
+  postsByAuthorCountQuery,
+  allAuthorSlugsQuery,
+  relatedPostsByBancaQuery,
 } from './queries';
-import { Category, Post } from '@/types';
+import { Author, Category, Post } from '@/types';
 import { getRedis, REDIS_KEYS } from './redis';
 import { orderPostsBySlugs, mergeWithFallback } from './views-helpers.mjs';
 
@@ -481,5 +487,100 @@ export const getCachedHighSalaryPosts = cache((): Promise<Post[]> => {
     { revalidate: 300, tags: ['posts', 'high-salary-posts'] }
   )();
 });
+
+/**
+ * 20. Redirecionamento de slug antigo (TTL: 30 minutos, Tag: 'posts')
+ * Retorna o slug atual quando o slug solicitado está em `slugHistory`.
+ */
+export const getCachedPostBySlugHistory = cache((slug: string): Promise<string | null> => {
+  return unstable_cache(
+    async () => {
+      const result = await client.fetch<{ slug: string } | null>(
+        postBySlugHistoryQuery,
+        { slug },
+        { next: { tags: ['posts'] } }
+      );
+      return result?.slug || null;
+    },
+    ['sanity', 'post-slug-history', slug],
+    { revalidate: 1800, tags: ['posts'] }
+  )();
+});
+
+/**
+ * 21. Autor por slug (TTL: 1 hora, Tags: 'authors', 'author:[slug]')
+ */
+export const getCachedAuthorBySlug = cache((slug: string): Promise<Author | null> => {
+  return unstable_cache(
+    async () =>
+      client.fetch<Author | null>(authorBySlugQuery, { slug }, {
+        next: { tags: ['authors', `author:${slug}`] },
+      }),
+    ['sanity', 'author', slug],
+    { revalidate: 3600, tags: ['authors', `author:${slug}`] }
+  )();
+});
+
+/**
+ * 22. Posts de um autor (TTL: 5 minutos, Tag: 'posts')
+ */
+export const getCachedPostsByAuthor = cache(
+  (authorId: string, start: number, end: number): Promise<Post[]> => {
+    return unstable_cache(
+      async () =>
+        (await client.fetch<Post[]>(
+          postsByAuthorPaginatedQuery,
+          { authorId, start, end },
+          { next: { tags: ['posts', `author:${authorId}`] } }
+        )) || [],
+      ['sanity', 'posts-by-author', authorId, String(start), String(end)],
+      { revalidate: 300, tags: ['posts', `author:${authorId}`] }
+    )();
+  }
+);
+
+export const getCachedPostsByAuthorCount = cache((authorId: string): Promise<number> => {
+  return unstable_cache(
+    async () =>
+      (await client.fetch<number>(
+        postsByAuthorCountQuery,
+        { authorId },
+        { next: { tags: ['posts', `author:${authorId}`] } }
+      )) || 0,
+    ['sanity', 'posts-by-author-count', authorId],
+    { revalidate: 300, tags: ['posts', `author:${authorId}`] }
+  )();
+});
+
+/**
+ * 23. Slugs de autores para o sitemap (TTL: 1 hora)
+ */
+export const getCachedAllAuthorSlugs = cache((): Promise<string[]> => {
+  return unstable_cache(
+    async () =>
+      (await client.fetch<string[]>(allAuthorSlugsQuery, {}, { next: { tags: ['authors', 'sitemap'] } })) || [],
+    ['sanity', 'all-author-slugs'],
+    { revalidate: 3600, tags: ['authors', 'sitemap'] }
+  )();
+});
+
+/**
+ * 24. Relacionados contextuais (mesma banca / mesmo estado) (TTL: 10 minutos)
+ */
+export const getCachedRelatedPostsByBanca = cache(
+  (currentId: string, banca: string, stateUf: string): Promise<Post[]> => {
+    return unstable_cache(
+      async () =>
+        (await client.fetch<Post[]>(
+          relatedPostsByBancaQuery,
+          { currentId, banca: banca || '', stateUf: stateUf || '' },
+          { next: { tags: ['posts'] } }
+        )) || [],
+      ['sanity', 'related-banca', currentId, banca || '', stateUf || ''],
+      { revalidate: 600, tags: ['posts'] }
+    )();
+  }
+);
+
 
 

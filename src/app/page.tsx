@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import HeroCarousel from '@/components/HeroCarousel';
 import PostCard from '@/components/PostCard';
 import RegionalExplorer from '@/components/RegionalExplorer';
@@ -15,6 +16,7 @@ import {
 } from '@/lib/sanity';
 import { Post, Category } from '@/types';
 import { deduplicateCategories } from '@/utils/categories';
+import { SITE_URL } from '@/lib/constants';
 
 interface HomePageProps {
   searchParams: Promise<{
@@ -22,7 +24,26 @@ interface HomePageProps {
   }>;
 }
 
-export const revalidate = 60; // Incremental Static Regeneration (ISR)
+export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({ searchParams }: HomePageProps): Promise<Metadata> {
+  const { page } = await searchParams;
+  const pageNum = Math.max(1, parseInt(page || '1', 10));
+  const canonical = pageNum > 1 ? `${SITE_URL}/?page=${pageNum}` : SITE_URL;
+
+  return {
+    alternates: { canonical },
+    ...(pageNum > 1
+      ? {
+          title: `Notícias de concursos — Página ${pageNum}`,
+          description: `Concursos públicos, editais e inscrições abertas. Página ${pageNum} das notícias mais recentes do Concursos Agora.`,
+        }
+      : {}),
+    openGraph: {
+      url: canonical,
+    },
+  };
+}
 
 export default async function HomePage({ searchParams }: HomePageProps) {
   const { page } = await searchParams;

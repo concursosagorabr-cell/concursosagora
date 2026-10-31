@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { Author } from '@/types';
 import { getImageUrl } from '@/lib/image';
 import PortableText from './PortableText';
@@ -122,6 +123,12 @@ export default function AuthorCard({ author }: AuthorCardProps) {
           </div>
         </div>
         {renderBio()}
+        <Link
+          href={`/autor/${author.slug || author._id}`}
+          className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors"
+        >
+          Ver todos os artigos de {author.name} <span aria-hidden="true">→</span>
+        </Link>
       </div>
     </div>
   );

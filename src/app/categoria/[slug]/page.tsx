@@ -10,6 +10,7 @@ import {
   getCachedAllCategorySlugs,
 } from '@/lib/sanity';
 import { Category, Post } from '@/types';
+import { SITE_URL } from '@/lib/constants';
 import { deduplicateCategories, getCategoryAliases } from '@/utils/categories';
 import PostCard from '@/components/PostCard';
 import Breadcrumb from '@/components/Breadcrumb';
@@ -56,6 +57,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   return {
     title: `Concursos em ${category.title}`,
     description: category.description || `Confira todas as notícias e editais sobre ${category.title}`,
+    alternates: { canonical: `${SITE_URL}/categoria/${category.slug || category._id}` },
   };
 }
 

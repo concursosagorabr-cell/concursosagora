@@ -50,7 +50,9 @@ export async function generateMetadata({ params }: StatePageProps): Promise<Meta
       locale: 'pt_BR',
       images: [
         {
-          url: 'https://www.concursosagora.com.br/logo.png',
+          url: `https://www.concursosagora.com.br/api/og?title=${encodeURIComponent(
+            `Concursos abertos em ${state.name} ${currentYear}`
+          )}&eyebrow=${encodeURIComponent(`${state.name} • ${ufUpper}`)}`,
           width: 1200,
           height: 630,
           alt: `Concursos Abertos em ${state.name} - Concursos Agora`,

@@ -8,6 +8,24 @@ export interface SanityImageAsset {
   _id?: string;
   _type?: string;
   url?: string;
+  mimeType?: string;
+  metadata?: {
+    dimensions?: {
+      width: number;
+      height: number;
+      aspectRatio?: number;
+    };
+  };
+}
+
+export interface VacancyByRole {
+  _key?: string;
+  _type: 'vacancyByRole';
+  role: string;
+  vacancies: number;
+  salary?: number;
+  requirements?: string;
+  jornada?: string;
 }
 
 export interface SanityImage {
@@ -99,6 +117,8 @@ export interface Post {
   banca?: string;
   stateUf?: string;
   cityName?: string;
+  organ?: string;
+  sphere?: string;
   registrationFee?: number;
   hasExemption?: boolean;
   status?: 'aberto' | 'previsto' | 'em_andamento' | 'encerrado' | 'cancelado';
@@ -107,4 +127,11 @@ export interface Post {
   author?: Author;
   categories?: Category[];
   body?: PortableTextBlock[];
+  slugHistory?: string[];
+  seo?: {
+    metaTitle?: string;
+    metaDescription?: string;
+    keywords?: string[];
+    noIndex?: boolean;
+  };
 }

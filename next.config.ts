@@ -217,6 +217,22 @@ const nextConfig: NextConfig = {
         destination: '/hub/concursos-educacao',
         permanent: true,
       },
+      // Cards antigos linkavam para /concursos/{uf} (rota inexistente).
+      // Consolida na categoria do estado, mesma URL usada pelo menu.
+      ...[
+        'ac', 'al', 'ap', 'am', 'ba', 'ce', 'df', 'es', 'go', 'ma',
+        'mt', 'ms', 'mg', 'pa', 'pb', 'pr', 'pe', 'pi', 'rj', 'rn',
+        'rs', 'ro', 'rr', 'sc', 'sp', 'se', 'to',
+      ].map((uf) => ({
+        source: `/concursos/${uf}`,
+        destination: `/categoria/${uf}`,
+        permanent: true,
+      })),
+      {
+        source: '/concursos/nacional',
+        destination: '/categoria/nacional',
+        permanent: true,
+      },
     ];
   },
   async headers() {

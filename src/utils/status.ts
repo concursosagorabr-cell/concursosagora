@@ -2,7 +2,7 @@ import type { Post } from '../types';
 
 export interface ContestStatusInfo {
   isExpired: boolean;
-  label: 'Concurso Aberto' | 'Concurso Encerrado' | 'Edital Previsto' | 'Em Andamento';
+  label: 'Concurso Aberto' | 'Concurso Encerrado' | 'Edital Previsto' | 'Em Andamento' | 'Cancelado';
   badgeBg: string;
   badgeText: string;
   dotColor: string;

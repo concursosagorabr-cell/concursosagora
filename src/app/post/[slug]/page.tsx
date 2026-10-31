@@ -1,10 +1,12 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import {
   getCachedPostBySlug,
+  getCachedPostBySlugHistory,
   getCachedRelatedPosts,
+  getCachedRelatedPostsByBanca,
   getCachedRelatedPostsFallback,
   getCachedRecentPosts,
   getCachedTopPosts,
@@ -13,6 +15,14 @@ import {
 } from '@/lib/sanity';
 import { Post } from '@/types';
 import { getImageUrl } from '@/lib/image';
+import {
+  getPostSeoTitle,
+  getPostMetaDescription,
+  getPostOgImage,
+  getPostCanonical,
+  getPostSlug,
+  getAuthorUrl,
+} from '@/lib/seo';
 import { deduplicateCategories } from '@/utils/categories';
 import { getContestStatusInfo } from '@/utils/status';
 import { getDescriptiveImageAlt } from '@/utils/imageAlt';
@@ -62,44 +72,64 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
   const post = await getCachedPostBySlug(slug);
 
   if (!post) {
-    return { title: 'Post não encontrado' };
+    const currentSlug = await getCachedPostBySlugHistory(slug);
+    if (currentSlug) {
+      permanentRedirect(`/post/${currentSlug}`);
+    }
+    return { title: 'Post não encontrado', robots: { index: false, follow: false } };
   }
 
-  const imageUrl = getImageUrl(post.mainImage, 1200, 630);
-  const slugStr = typeof post.slug === 'string' ? post.slug : (post.slug as any)?.current || post._id;
-  const url = `https://www.concursosagora.com.br/post/${slugStr}`;
+  // Posts antigos podem ser encontrados pelo _id (que era o slug antigo).
+  // Garante 301/308 para a URL canônica atual.
+  if (getPostSlug(post) !== slug) {
+    permanentRedirect(`/post/${getPostSlug(post)}`);
+  }
+
+  const seoTitle = getPostSeoTitle(post);
+  const description = getPostMetaDescription(post);
+  const ogImage = getPostOgImage(post);
+  const url = getPostCanonical(post);
+  const authorUrl = getAuthorUrl(post.author);
 
   return {
-    title: post.title,
-    description: post.excerpt || `Confira a matéria completa sobre ${post.title}`,
+    title: seoTitle,
+    description,
+    ...(post.author
+      ? { authors: [{ name: post.author.name, url: authorUrl || undefined }] }
+      : {}),
+    ...(post.seo?.keywords?.length ? { keywords: post.seo.keywords } : {}),
     alternates: { canonical: url },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
-    },
+    robots: post.seo?.noIndex
+      ? { index: false, follow: false }
+      : {
+          index: true,
+          follow: true,
+          googleBot: {
+            index: true,
+            follow: true,
+            'max-video-preview': -1,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
+          },
+        },
     openGraph: {
       type: 'article',
       locale: 'pt_BR',
       url,
-      title: post.title,
-      description: post.excerpt || `Confira a matéria completa sobre ${post.title}`,
+      siteName: 'Concursos Agora',
+      title: seoTitle,
+      description,
       publishedTime: post.publishedAt,
       modifiedTime: post._updatedAt || post.publishedAt,
+      authors: post.author ? [post.author.name] : undefined,
       tags: (post.categories || []).map((c: { title: string }) => c.title),
-      images: [{ url: imageUrl, width: 1200, height: 630, alt: post.title }],
+      images: [ogImage],
     },
     twitter: {
       card: 'summary_large_image',
-      title: post.title,
-      description: post.excerpt || `Confira a matéria completa sobre ${post.title}`,
-      images: [imageUrl],
+      title: seoTitle,
+      description,
+      images: [ogImage],
     },
   };
 }
@@ -327,26 +357,43 @@ export default async function PostPage({ params }: PostPageProps) {
   const post: Post | null = await getCachedPostBySlug(slug);
 
   if (!post) {
+    const currentSlug = await getCachedPostBySlugHistory(slug);
+    if (currentSlug) {
+      permanentRedirect(`/post/${currentSlug}`);
+    }
     notFound();
+  }
+
+  // Posts antigos podem ser encontrados pelo _id (que era o slug antigo).
+  if (getPostSlug(post) !== slug) {
+    permanentRedirect(`/post/${getPostSlug(post)}`);
   }
 
   // IDs das categorias do post atual para filtrar posts relacionados
   const categoryIds = (post.categories || []).map((c: { _id: string }) => c._id).filter(Boolean);
 
-  const [relatedByCategory, recentPosts, topPosts, categories] = await Promise.all([
-    // Busca relacionados da mesma categoria (cacheado)
+  const [relatedByBanca, relatedByCategory, recentPosts, topPosts, categories] = await Promise.all([
+    // Prioriza mesma banca / mesmo estado; depois mesma categoria
+    getCachedRelatedPostsByBanca(post._id, post.banca || '', post.stateUf || ''),
     categoryIds.length > 0 ? getCachedRelatedPosts(post._id, categoryIds) : Promise.resolve([]),
     getCachedRecentPosts(),
     getCachedTopPosts(5),
     getCachedCategories(),
   ]);
 
-  // Fallback: se não há relacionados por categoria, busca os mais recentes
-  let relatedPosts: Post[] = relatedByCategory || [];
+  // Mescla relacionados contextuais (banca/estado) com os de categoria, sem duplicar
+  let relatedPosts: Post[] = [...(relatedByBanca || [])];
+  for (const candidate of relatedByCategory || []) {
+    if (!relatedPosts.some((p) => p._id === candidate._id)) {
+      relatedPosts.push(candidate);
+    }
+  }
+  relatedPosts = relatedPosts.slice(0, 3);
+
+  // Fallback: se ainda faltam, busca os mais recentes
   if (relatedPosts.length < 3) {
     const existingIds = [post._id, ...relatedPosts.map((p: Post) => p._id)];
     const fallbackPosts: Post[] = await getCachedRelatedPostsFallback(post._id, existingIds);
-    // Mescla relacionados por categoria com fallback até completar 3
     relatedPosts = [...relatedPosts, ...(fallbackPosts || [])].slice(0, 3);
   }
 
@@ -354,9 +401,9 @@ export default async function PostPage({ params }: PostPageProps) {
   const uniquePostCategories = deduplicateCategories(post.categories || []);
   const statusInfo = getContestStatusInfo(post);
 
-  const slugStr = typeof post.slug === 'string' ? post.slug : (post.slug as any)?.current || post._id;
+  const slugStr = getPostSlug(post);
   const mainImageUrl = getImageUrl(post.mainImage, 1200, 675);
-  const postUrl = `https://www.concursosagora.com.br/post/${slugStr}`;
+  const postUrl = getPostCanonical(post);
   const formattedDate = post.publishedAt
     ? new Date(post.publishedAt).toLocaleDateString('pt-BR', {
         timeZone: 'America/Sao_Paulo',
@@ -373,6 +420,14 @@ export default async function PostPage({ params }: PostPageProps) {
   const readingMinutes = Math.max(1, Math.ceil(wordCount / 200));
 
   // Schema.org JSON-LD para Artigo de Notícia
+  const seoTitle = getPostSeoTitle(post);
+  const metaDescription = getPostMetaDescription(post);
+  const ogImage = getPostOgImage(post);
+  const authorUrl = getAuthorUrl(post.author);
+  const authorHref = post.author
+    ? `/autor/${post.author.slug || post.author._id}`
+    : null;
+
   const articleJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
@@ -380,25 +435,33 @@ export default async function PostPage({ params }: PostPageProps) {
       '@type': 'WebPage',
       '@id': postUrl,
     },
-    headline: post.title,
-    image: [mainImageUrl],
+    headline: post.title.length > 110 ? seoTitle : post.title,
+    alternativeHeadline: post.title,
+    image: [ogImage.url],
     datePublished: post.publishedAt,
     dateModified: post._updatedAt || post.publishedAt,
+    inLanguage: 'pt-BR',
+    isAccessibleForFree: true,
     author: [
       {
         '@type': 'Person',
-        name: post.author?.name || 'Marco Antonio',
+        name: post.author?.name || 'Redação Concursos Agora',
+        ...(authorUrl ? { url: authorUrl } : {}),
+        ...(post.author?.role ? { jobTitle: post.author.role } : {}),
       },
     ],
     publisher: {
       '@type': 'Organization',
       name: 'Concursos Agora',
+      url: 'https://www.concursosagora.com.br',
       logo: {
         '@type': 'ImageObject',
         url: 'https://www.concursosagora.com.br/logo.png',
+        width: 200,
+        height: 200,
       },
     },
-    description: post.excerpt || `Confira a matéria completa sobre ${post.title}`,
+    description: metaDescription,
   };
 
   // Seleção Inteligente de Categoria Primária para Breadcrumb e Rich Results (Google Schema):
@@ -594,9 +657,18 @@ export default async function PostPage({ params }: PostPageProps) {
                   )}
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-bold text-slate-900 block text-sm">
-                        {post.author?.name || 'Redação Concursos Agora'}
-                      </span>
+                      {authorHref ? (
+                        <Link
+                          href={authorHref}
+                          className="font-bold text-slate-900 block text-sm hover:text-blue-600 transition-colors"
+                        >
+                          {post.author?.name}
+                        </Link>
+                      ) : (
+                        <span className="font-bold text-slate-900 block text-sm">
+                          Redação Concursos Agora
+                        </span>
+                      )}
                       {post.author?.role && (
                         <span className="hidden sm:inline-block text-xs font-semibold text-blue-800 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-full">
                           {post.author.role}

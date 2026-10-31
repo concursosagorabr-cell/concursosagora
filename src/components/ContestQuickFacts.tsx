@@ -1,10 +1,193 @@
 'use client';
 
 import Link from 'next/link';
-import type { Post } from '@/types';
+import type { Post, VacancyByRole } from '@/types';
 import { getContestStatusInfo } from '@/utils/status';
 import { EXAM_BOARDS } from '@/utils/bancas';
 import ReportErrorButton from './ReportErrorButton';
+
+interface VacancyRow {
+  role: string;
+  vacancies: number;
+  salary: number | null;
+  requirements: string;
+  jornada: string;
+}
+
+function extractVacanciesFromBody(post: Partial<Post & { vacanciesByRole?: VacancyByRole[] }>): VacancyRow[] {
+  // 1. Se já temos dados estruturados
+  if (post.vacanciesByRole && Array.isArray(post.vacanciesByRole) && post.vacanciesByRole.length > 0) {
+    return post.vacanciesByRole as VacancyRow[];
+  }
+
+  // 2. Tenta extrair do corpo (seção "Cargos e Requisitos")
+  const body = post.body;
+  if (!Array.isArray(body)) return [];
+
+  const rows: VacancyRow[] = [];
+  let inCargosSection = false;
+  let currentEducation = '';
+
+  for (const block of body) {
+    if (block._type !== 'block') continue;
+    const text = (block.children || []).map((c: any) => c.text || '').join('').trim();
+    if (!text) continue;
+
+    // Detecta início da seção de cargos
+    if (block.style === 'h2' && /cargos?\s*e?\s*requisitos/i.test(text)) {
+      inCargosSection = true;
+      continue;
+    }
+
+    // Fim da seção (próximo H2)
+    if (inCargosSection && block.style === 'h2') {
+      inCargosSection = false;
+      continue;
+    }
+
+    if (!inCargosSection) continue;
+
+    // H3 = nível de escolaridade
+    if (block.style === 'h3') {
+      currentEducation = text;
+      continue;
+    }
+
+    // Itens de cargo (bullet points ou parágrafos)
+    const isBullet = block.listItem === 'bullet';
+    if (block.style === 'normal' || isBullet) {
+      // Múltiplos padrões para diferentes formatos de edital
+      
+      // Padrão 1: "Cargo: X vaga(s) – R$ Y – Jornada" (ex: "Enfermeiro (1 vaga – R$ 4.318,18 para 40h)")
+      let match = text.match(/^[\-\•\*]?\s*([^:–|]{5,60}?)\s*\((\d+)\s*vaga[s]?\s*[–|]\s*R\$\s*([\d.,]+)\s*[–|]\s*(\d{1,2}h)\)/i);
+      if (match) {
+        const [, role, vacancies, salary, jornada] = match;
+        rows.push({
+          role: role.trim(),
+          vacancies: parseInt(vacancies, 10),
+          salary: parseFloat(salary.replace(/[.]/g, '').replace(',', '.')),
+          requirements: currentEducation || '',
+          jornada: jornada.trim(),
+        });
+        continue;
+      }
+
+      // Padrão 2: "Cargo – X vaga(s) – R$ Y – Jornada" (ex: "Auxiliar: 2 vagas – R$ 1.500,00 – 40h")
+      match = text.match(/^[\-\•\*]?\s*([^–|]{5,60}?)\s*[–|]\s*(\d+)\s*vaga[s]?\s*[–|]\s*R\$\s*([\d.,]+)\s*[–|]\s*(\d{1,2}h)/i);
+      if (match) {
+        const [, role, vacancies, salary, jornada] = match;
+        rows.push({
+          role: role.trim(),
+          vacancies: parseInt(vacancies, 10),
+          salary: parseFloat(salary.replace(/[.]/g, '').replace(',', '.')),
+          requirements: currentEducation || '',
+          jornada: jornada.trim(),
+        });
+        continue;
+      }
+
+      // Padrão 3: "Cargo: X vagas – R$ Y – Jornada" (ex: "Enfermeiro: 1 vaga – R$ 4.318,18 – 40h")
+      match = text.match(/^[\-\•\*]?\s*([^:–|]{5,60}?):\s*(\d+)\s*vaga[s]?\s*[–|]\s*R\$\s*([\d.,]+)\s*[–|]\s*(\d{1,2}h)/i);
+      if (match) {
+        const [, role, vacancies, salary, jornada] = match;
+        rows.push({
+          role: role.trim(),
+          vacancies: parseInt(vacancies, 10),
+          salary: parseFloat(salary.replace(/[.]/g, '').replace(',', '.')),
+          requirements: currentEducation || '',
+          jornada: jornada.trim(),
+        });
+        continue;
+      }
+
+      // Padrão 4: "Cargo – vencimento de R$ X" (sem vagas explícitas, ex: "Gari, Vigia e Motorista: Vagas imediatas com vencimento de R$ 1.621,00")
+      match = text.match(/^[\-\•\*]?\s*([^:–|]{5,60}?):\s*.*?vencimento\s+de\s*R\$\s*([\d.,]+)/i);
+      if (match) {
+        const [, role, salary] = match;
+        rows.push({
+          role: role.trim(),
+          vacancies: 1, // default
+          salary: parseFloat(salary.replace(/[.]/g, '').replace(',', '.')),
+          requirements: currentEducation || '',
+          jornada: '',
+        });
+        continue;
+      }
+
+      // Padrão 5: "Cargo (X vaga – R$ Y para Zh)" dentro de lista separada por vírgula
+      // Ex: "Enfermeiro (1 vaga – R$ 4.318,18 para 40h), Cirurgião Dentista (1 vaga – R$ 3.458,44 para 20h)"
+      const multiMatches = text.matchAll(/([^,(]{5,60}?)\s*\((\d+)\s*vaga[s]?\s*[–|]\s*R\$\s*([\d.,]+)\s*[–|]\s*(\d{1,2}h)\)/gi);
+      let hasMulti = false;
+      for (const m of multiMatches) {
+        hasMulti = true;
+        const [, role, vacancies, salary, jornada] = m;
+        rows.push({
+          role: role.trim(),
+          vacancies: parseInt(vacancies, 10),
+          salary: parseFloat(salary.replace(/[.]/g, '').replace(',', '.')),
+          requirements: currentEducation || '',
+          jornada: jornada.trim(),
+        });
+      }
+      if (hasMulti) continue;
+
+      // Padrão 6: "Cargo: X vagas imediatas" (sem salário explícito na linha)
+      match = text.match(/^[\-\•\*]?\s*([^:–|]{5,60}?):\s*(\d+)\s*vaga[s]?\s*imediatas?/i);
+      if (match) {
+        const [, role, vacancies] = match;
+        rows.push({
+          role: role.trim(),
+          vacancies: parseInt(vacancies, 10),
+          salary: null,
+          requirements: currentEducation || '',
+          jornada: '',
+        });
+        continue;
+      }
+    }
+  }
+
+  return rows;
+}
+
+function renderVacancyTable(rows: VacancyRow[]) {
+  if (rows.length === 0) return null;
+
+  return (
+    <div className="mt-6 overflow-x-auto">
+      <h3 className="text-sm font-bold text-slate-700 mb-3 flex items-center gap-2">
+        <span>📊</span> Detalhamento de Cargos, Vagas e Remuneração
+      </h3>
+      <table className="w-full text-sm border-collapse border border-slate-200 bg-white rounded-xl overflow-hidden shadow-xs" role="table">
+        <thead>
+          <tr className="bg-slate-50 border-b border-slate-200">
+            <th className="text-left p-3 font-bold text-slate-700">Cargo</th>
+            <th className="text-center p-3 font-bold text-slate-700">Vagas</th>
+            <th className="text-right p-3 font-bold text-slate-700">Salário</th>
+            <th className="text-left p-3 font-bold text-slate-700">Escolaridade / Requisitos</th>
+            <th className="text-center p-3 font-bold text-slate-700">Jornada</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, i) => (
+            <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50'} style={{ borderBottom: '1px solid #e2e8f0' }}>
+              <td className="p-3 font-medium text-slate-900">{row.role}</td>
+              <td className="p-3 text-center text-slate-700">{row.vacancies.toLocaleString('pt-BR')} vaga{row.vacancies !== 1 ? 's' : ''}</td>
+              <td className="p-3 text-right font-semibold text-emerald-700">
+                {row.salary ? `R$ ${row.salary.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : 'Piso nacional / A definir'}
+              </td>
+              <td className="p-3 text-slate-600">{row.requirements || '—'}</td>
+              <td className="p-3 text-center text-slate-600">{row.jornada || '—'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className="text-[11px] text-slate-500 mt-2">
+        Valores referentes ao vencimento básico inicial. Podem incidir adicionais (insalubridade, periculosidade, responsabilidade técnica, etc.). Consulte o edital.
+      </p>
+    </div>
+  );
+}
 
 interface ContestQuickFactsProps {
   post: Partial<Post>;
@@ -115,6 +298,7 @@ export default function ContestQuickFacts({ post }: ContestQuickFactsProps) {
   ];
 
   const visibleFacts = facts.filter(f => f.value != null);
+  const vacancyRows = extractVacanciesFromBody(post);
 
   return (
     <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
@@ -164,6 +348,9 @@ export default function ContestQuickFacts({ post }: ContestQuickFactsProps) {
           </div>
         ))}
       </div>
+
+      {/* Tabela de cargos (quando disponível) */}
+      {renderVacancyTable(vacancyRows)}
 
       {/* Rodapé: Fonte oficial + Reportar erro */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-slate-200">

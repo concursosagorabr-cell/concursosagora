@@ -17,14 +17,21 @@ export const compactPostFields = `
   banca,
   stateUf,
   cityName,
+  organ,
+  sphere,
   registrationFee,
   hasExemption,
   status,
+  vacanciesByRole,
   mainImage {
     ...,
     asset-> {
       _id,
-      url
+      url,
+      mimeType,
+      metadata {
+        dimensions
+      }
     }
   },
   "excerpt": coalesce(excerpt, ""),
@@ -65,14 +72,21 @@ export const fullPostFields = `
   banca,
   stateUf,
   cityName,
+  organ,
+  sphere,
   registrationFee,
   hasExemption,
   status,
+  vacanciesByRole,
   mainImage {
     ...,
     asset-> {
       _id,
-      url
+      url,
+      mimeType,
+      metadata {
+        dimensions
+      }
     }
   },
   "excerpt": coalesce(excerpt, ""),
@@ -94,7 +108,14 @@ export const fullPostFields = `
     "slug": coalesce(slug.current, _id),
     description
   }, []),
-  body
+  body,
+  slugHistory,
+  seo {
+    metaTitle,
+    metaDescription,
+    keywords,
+    noIndex
+  }
 `;
 
 // 1. Consulta para todos os posts
@@ -330,3 +351,54 @@ export const highSalaryPostsQuery = `
   }
 `;
 
+
+// 18. Redirecionamento de slug antigo -> slug atual (301/308)
+export const postBySlugHistoryQuery = `
+  *[_type == "post" && $slug in slugHistory][0] {
+    "slug": coalesce(slug.current, _id)
+  }
+`;
+
+// 19. Autor por slug (páginas de autor / E-E-A-T)
+export const authorBySlugQuery = `
+  *[_type == "author" && (slug.current == $slug || _id == $slug)][0] {
+    _id,
+    name,
+    role,
+    "slug": coalesce(slug.current, _id),
+    image,
+    bio,
+    facebookUrl,
+    linkedinUrl,
+    instagramUrl,
+    twitterUrl
+  }
+`;
+
+// 20. Posts de um autor (paginados)
+export const postsByAuthorPaginatedQuery = `
+  *[_type == "post" && author._ref == $authorId && status != "cancelado"]
+  | order(publishedAt desc) [$start..$end] {
+    ${compactPostFields}
+  }
+`;
+
+export const postsByAuthorCountQuery = `
+  count(*[_type == "post" && author._ref == $authorId && status != "cancelado"])
+`;
+
+export const allAuthorSlugsQuery = `
+  *[_type == "author" && defined(name)] {
+    "slug": coalesce(slug.current, _id)
+  }[].slug
+`;
+
+// 21. Relacionados contextuais: mesma banca primeiro, depois mesmo estado
+export const relatedPostsByBancaQuery = `
+  *[_type == "post" && _id != $currentId && status != "cancelado" && (
+    ($banca != "" && banca == $banca) ||
+    ($stateUf != "" && $stateUf != "Nacional" && stateUf == $stateUf)
+  )] | score(banca == $banca) | order(_score desc, publishedAt desc)[0..2] {
+    ${compactPostFields}
+  }
+`;
