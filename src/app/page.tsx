@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import HeroCarousel from '@/components/HeroCarousel';
 import PostCard from '@/components/PostCard';
 import RegionalExplorer from '@/components/RegionalExplorer';
+import AnaliseHomeSection from '@/components/analises/AnaliseHomeSection';
 import Sidebar from '@/components/Sidebar';
 import Pagination from '@/components/Pagination';
 import HubCard from '@/components/HubCard';
@@ -95,12 +96,17 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <HeroCarousel posts={heroPosts} />
       )}
 
-      {/* ── 2. Navegador Regional Interativo por Estados e Regiões ── */}
+      {/* ── 2. Coluna Editorial — Análises & Opinião ── */}
+      {currentPage === 1 && (
+        <AnaliseHomeSection />
+      )}
+
+      {/* ── 3. Navegador Regional Interativo por Estados e Regiões ── */}
       {currentPage === 1 && (
         <RegionalExplorer />
       )}
 
-      {/* ── 3. Carreiras em Foco (Silos e Guias Especializados) ── */}
+      {/* ── 4. Carreiras em Foco (Silos e Guias Especializados) ── */}
       {currentPage === 1 && (
         <section className="my-10">
           <div className="flex items-center justify-between mb-5">
@@ -124,7 +130,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         </section>
       )}
 
-      {/* ── 4. Feed de Últimas Notícias com Sidebar Editorial ── */}
+      {/* ── 5. Feed de Últimas Notícias com Sidebar Editorial ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-10 my-10">
         
         {/* Feed de Matérias */}

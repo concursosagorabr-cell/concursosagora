@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 import { getCachedAllPostSlugs, getCachedAllCategorySlugs, getCachedAllAuthorSlugs } from '@/lib/sanity';
 import { CONTENT_HUBS } from '@/utils/hubs';
 import { getAllExamBoards } from '@/utils/bancas';
+import { getAllAnalises } from '@/content/analises';
 import { SITE_URL } from '@/lib/constants';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -60,6 +61,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(),
     changeFrequency: 'daily',
     priority: 0.9,
+  }));
+
+  const analiseUrls: MetadataRoute.Sitemap = getAllAnalises().map((analise) => ({
+    url: `${baseUrl}/analises/${encodeURIComponent(analise.slug)}`,
+    lastModified: new Date(analise.updatedAt || analise.publishedAt),
+    changeFrequency: 'monthly',
+    priority: 0.75,
   }));
 
   const stateUfs = [
@@ -124,6 +132,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.95,
     },
     {
+      url: `${baseUrl}/analises`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.85,
+    },
+    {
       url: `${baseUrl}/hub`,
       lastModified: new Date(),
       changeFrequency: 'daily',
@@ -158,6 +172,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...bancaUrls,
     ...eduStateUrls,
     ...postUrls,
+    ...analiseUrls,
     ...categoryUrls,
     ...authorUrls,
   ];
