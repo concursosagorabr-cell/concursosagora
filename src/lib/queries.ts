@@ -21,6 +21,7 @@ export const compactPostFields = `
   sphere,
   registrationFee,
   hasExemption,
+  studyMaterialUrl,
   status,
   vacanciesByRole,
   mainImage {
@@ -76,6 +77,7 @@ export const fullPostFields = `
   sphere,
   registrationFee,
   hasExemption,
+  studyMaterialUrl,
   status,
   vacanciesByRole,
   mainImage {

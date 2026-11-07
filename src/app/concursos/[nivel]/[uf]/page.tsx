@@ -52,10 +52,22 @@ export async function generateMetadata({ params }: EduStatePageProps): Promise<M
   const description = `Confira a lista de concursos públicos abertos e previstos para ${eduInfo.label} em ${state.name} (${ufUpper}) em ${year}. Vagas em prefeituras, tribunais e segurança pública.`;
   const url = `https://www.concursosagora.com.br/concursos/${nivel.toLowerCase()}/${uf.toLowerCase()}`;
 
+  // Verifica se há posts para decidir indexação (evita Soft 404)
+  let hasPosts = true;
+  try {
+    const posts = await getCachedEducationAndStatePosts(
+      eduInfo.key, eduInfo.short, uf.toLowerCase(), ufUpper, state.name
+    );
+    hasPosts = (posts || []).length > 0;
+  } catch {
+    // Em caso de erro, mantém indexável para não perder tráfego
+  }
+
   return {
     title,
     description,
     alternates: { canonical: url },
+    ...(hasPosts ? {} : { robots: { index: false, follow: true } }),
     keywords: `concursos ${eduInfo.short} ${state.name}, concurso ${ufUpper} ${eduInfo.short}, vagas ${state.name} ${year}, editais ${ufUpper}`,
     openGraph: {
       title,

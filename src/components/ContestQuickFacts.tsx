@@ -352,13 +352,30 @@ export default function ContestQuickFacts({ post }: ContestQuickFactsProps) {
       {/* Tabela de cargos (quando disponível) */}
       {renderVacancyTable(vacancyRows)}
 
-      {/* Rodapé: Fonte oficial + Reportar erro */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-slate-200">
+      {/* Botões de Ação Oficial e Transparência */}
+      <div className="flex flex-col sm:flex-row gap-3 pt-3 border-t border-slate-200">
+        {boardInfo?.website && (
+          <a
+            href={boardInfo.website}
+            target="_blank"
+            rel="nofollow noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition-colors shadow-sm"
+          >
+            <span aria-hidden="true">🔗</span>
+            Acessar Edital Oficial &amp; Inscrições
+          </a>
+        )}
+        <ReportErrorButton postTitle={post.title || ''} />
+      </div>
+
+      {/* Rodapé: Fonte oficial + Nota de utilidade pública */}
+      <div className="space-y-2 pt-2 border-t border-slate-200">
         <p className="text-[11px] text-slate-500 leading-relaxed">
           <strong>⚠️ Importante:</strong> Confira sempre o edital oficial no portal da banca organizadora ou do órgão responsável antes de efetuar inscrição.
         </p>
-        {/* FIX: Botão de reporte de erro com e-mail ofuscado contra bots - 2026-09-06 */}
-        <ReportErrorButton postTitle={post.title || ''} />
+        <p className="text-[11px] text-slate-400 leading-relaxed italic">
+          O Concursos Agora é um portal independente de utilidade pública. Não cobramos taxas nem realizamos inscrições. As informações são extraídas diretamente do Diário Oficial e das bancas oficiais organizadoras.
+        </p>
       </div>
     </div>
   );

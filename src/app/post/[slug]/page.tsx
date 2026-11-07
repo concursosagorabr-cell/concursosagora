@@ -27,6 +27,7 @@ import { deduplicateCategories } from '@/utils/categories';
 import { getContestStatusInfo } from '@/utils/status';
 import { getDescriptiveImageAlt } from '@/utils/imageAlt';
 import { injectRelatedArticle } from '@/utils/injectRelatedArticle';
+import { EXAM_BOARDS } from '@/utils/bancas';
 import PortableText from '@/components/PortableText';
 import Breadcrumb from '@/components/Breadcrumb';
 import AuthorCard from '@/components/AuthorCard';
@@ -38,6 +39,7 @@ import ShareButtons from '@/components/ShareButtons';
 import CommunityBanner from '@/components/CommunityBanner';
 import ContestCountdown from '@/components/ContestCountdown';
 import ContestQuickFacts from '@/components/ContestQuickFacts';
+import StudyMaterialCTA from '@/components/StudyMaterialCTA';
 import Sidebar from '@/components/Sidebar';
 import ViewTracker from '@/components/ViewTracker';
 
@@ -241,35 +243,71 @@ function extractFaqJsonLd(body?: any[]): any | null {
  * Gera Schema.org/JobPosting para inclusão automática e destaque no Google Jobs (Vagas).
  */
 function generateJobPostingJsonLd(post: Post, postUrl: string): any | null {
-  if (post.status === 'previsto' || post.status === 'encerrado') return null;
   if (!post.enrollmentEndDate) return null;
-  if (new Date(post.enrollmentEndDate).getTime() < Date.now()) return null;
 
   const validThrough = post.enrollmentEndDate;
 
-  const hiringName = post.cityName
-    ? `Prefeitura Municipal de ${post.cityName}`
-    : post.stateUf && post.stateUf !== 'Nacional'
-    ? `Órgão Público Estadual (${post.stateUf})`
-    : 'Serviço Público Federal / Concurso Nacional';
+  // Usa o órgão real quando disponível; fallback por esfera/estado
+  const hiringName =
+    post.organ ||
+    (post.sphere === 'municipal' && post.cityName
+      ? `Prefeitura Municipal de ${post.cityName}`
+      : post.stateUf && post.stateUf !== 'Nacional'
+      ? `Órgão Público Estadual de ${post.stateUf}`
+      : 'Serviço Público Federal / Concurso Nacional');
+
+  // sameAs aponta para o site da banca quando conhecido
+  const boardSlug = post.banca?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  const boardWebsite = boardSlug ? EXAM_BOARDS[boardSlug]?.website : undefined;
+
+  // Constrói descrição rica para o Google Jobs
+  const descriptionParts: string[] = [];
+  if (post.excerpt) descriptionParts.push(post.excerpt);
+  if (post.vacanciesTotal) {
+    descriptionParts.push(
+      `${post.vacanciesTotal} ${post.vacanciesTotal === 1 ? 'vaga disponível' : 'vagas disponíveis'}`
+    );
+  }
+  if (post.salaryMax) {
+    const salaryStr = post.salaryMin
+      ? `salário entre R$ ${post.salaryMin.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} e R$ ${post.salaryMax.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+      : `salário até R$ ${post.salaryMax.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+    descriptionParts.push(salaryStr);
+  }
+  if (post.enrollmentEndDate) {
+    const endDate = new Date(post.enrollmentEndDate).toLocaleDateString('pt-BR', {
+      timeZone: 'America/Sao_Paulo',
+    });
+    descriptionParts.push(`inscrições até ${endDate}`);
+  }
+  if (post.banca) {
+    descriptionParts.push(`banca organizadora: ${post.banca}`);
+  }
+
+  const description = descriptionParts.length > 0
+    ? descriptionParts.join('. ') + '.'
+    : `Oportunidade no concurso público ${post.title}. Veja requisitos, cargos e edital completo.`;
 
   return {
     '@context': 'https://schema.org',
     '@type': 'JobPosting',
     title: post.title,
-    description: post.excerpt || `Oportunidade no concurso público ${post.title}. Veja requisitos, cargos e edital completo.`,
+    description,
     identifier: {
       '@type': 'PropertyValue',
       name: 'Concursos Agora',
       value: post._id,
     },
+    url: postUrl,
     datePosted: post.publishedAt,
     validThrough: validThrough,
     employmentType: 'FULL_TIME',
+    inLanguage: 'pt-BR',
+    directApply: false,
     hiringOrganization: {
       '@type': 'Organization',
       name: hiringName,
-      sameAs: 'https://www.concursosagora.com.br',
+      sameAs: boardWebsite || 'https://www.concursosagora.com.br',
     },
     jobLocation: {
       '@type': 'Place',
@@ -280,6 +318,9 @@ function generateJobPostingJsonLd(post: Post, postUrl: string): any | null {
         ...(post.cityName ? { addressLocality: post.cityName } : {}),
       },
     },
+    ...(post.vacanciesTotal
+      ? { totalJobOpenings: post.vacanciesTotal }
+      : {}),
     ...(post.salaryMax
       ? {
           baseSalary: {
@@ -298,6 +339,11 @@ function generateJobPostingJsonLd(post: Post, postUrl: string): any | null {
     ...(post.educationLevel && post.educationLevel.length > 0
       ? {
           educationRequirements: post.educationLevel.join(', '),
+        }
+      : {}),
+    ...(post.examDate
+      ? {
+          jobStartDate: post.examDate,
         }
       : {}),
   };
@@ -724,6 +770,15 @@ export default async function PostPage({ params }: PostPageProps) {
             <div className="bg-white p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-xs space-y-6">
               {bodyWithRelated.length > 0 && <PortableText value={bodyWithRelated} />}
             </div>
+
+            {/* CTA de Material Preparatório (afiliação ética — só aparece se houver URL) */}
+            {post.studyMaterialUrl && (
+              <StudyMaterialCTA
+                studyMaterialUrl={post.studyMaterialUrl}
+                bancaName={post.banca}
+                organName={post.organ}
+              />
+            )}
 
             {/* Compartilhamento no final do conteúdo */}
             <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 shadow-xs">

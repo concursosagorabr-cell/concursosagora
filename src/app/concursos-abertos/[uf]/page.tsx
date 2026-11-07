@@ -8,6 +8,7 @@ import Breadcrumb from '@/components/Breadcrumb';
 import Sidebar from '@/components/Sidebar';
 import ShareButtons from '@/components/ShareButtons';
 import CommunityBanner from '@/components/CommunityBanner';
+import SegmentedAlertBox from '@/components/SegmentedAlertBox';
 import { BRAZIL_STATES } from '@/utils/states';
 
 interface StatePageProps {
@@ -37,10 +38,20 @@ export async function generateMetadata({ params }: StatePageProps): Promise<Meta
   const description = `Confira a lista atualizada de concursos públicos abertos e previstos em ${state.name} (${ufUpper}) em ${currentYear}. Vagas para prefeituras, tribunais, polícias e órgãos estaduais.`;
   const url = `https://www.concursosagora.com.br/concursos-abertos/${ufLower}`;
 
+  // Verifica se há posts para decidir indexação (evita Soft 404)
+  let hasPosts = true;
+  try {
+    const posts = await getCachedStatePosts(ufLower, ufUpper, state.name);
+    hasPosts = (posts || []).length > 0;
+  } catch {
+    // Em caso de erro, mantém indexável para não perder tráfego
+  }
+
   return {
     title,
     description,
     alternates: { canonical: url },
+    ...(hasPosts ? {} : { robots: { index: false, follow: true } }),
     keywords: `concursos abertos em ${state.name}, concurso ${ufUpper} ${currentYear}, vagas ${state.name}, editais ${ufUpper}, concurso público ${state.capital}`,
     openGraph: {
       title,
@@ -208,10 +219,10 @@ export default async function StateContestsPage({ params }: StatePageProps) {
                   <div className="p-8 text-center rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
                     <p className="text-3xl">📋</p>
                     <h3 className="text-lg font-bold text-slate-900">
-                      Nenhum edital recente específico para {stateName} no momento
+                      Nenhum concurso aberto no momento para {stateName} ({ufUpper})
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto">
-                      Novas vagas são publicadas diariamente. Acesse a página inicial ou inscreva-se nos nossos canais para ser avisado assim que sair um novo edital em {ufUpper}.
+                      Novos concursos são publicados diariamente. Cadastre-se no Alerta VIP abaixo para ser avisado assim que sair um novo edital em {ufUpper}.
                     </p>
                     <Link
                       href="/"
@@ -225,6 +236,12 @@ export default async function StateContestsPage({ params }: StatePageProps) {
 
               {/* Banner de Comunidade */}
               <CommunityBanner categoryName={stateName} />
+
+              {/* Captura de Leads Segmentada com Estado Pré-selecionado */}
+              <SegmentedAlertBox
+                segmentName={`Concursos em ${stateName}`}
+                badgeText={`Alerta VIP ${ufUpper}`}
+              />
 
               {/* Navegação Rápida entre Outros Estados da Mesma Região */}
               <section className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs">

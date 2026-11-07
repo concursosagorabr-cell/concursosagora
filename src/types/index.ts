@@ -118,6 +118,7 @@ export interface Post {
   sphere?: string;
   registrationFee?: number;
   hasExemption?: boolean;
+  studyMaterialUrl?: string;
   status?: 'aberto' | 'previsto' | 'em_andamento' | 'encerrado' | 'cancelado';
   mainImage?: SanityImage;
   excerpt?: string;
