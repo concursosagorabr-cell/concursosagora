@@ -218,15 +218,6 @@ export default function MobileMenu({ isOpen, onClose, categories = [] }: MobileM
             <span>Todas as Notícias</span>
           </Link>
 
-          {/* Análises & Opinião */}
-          <Link
-            href="/analises"
-            onClick={onClose}
-            className="flex items-center gap-2 px-4 py-3 text-sm font-bold text-amber-700 bg-amber-50/60 hover:bg-amber-50 border-b border-slate-100 transition-colors"
-          >
-            <span aria-hidden="true" className="mr-1">✍️</span>
-            <span>Análises &amp; Opinião</span>
-          </Link>
 
           {/* Status */}
           <SectionToggle title="Status do Concurso" defaultOpen={true}>

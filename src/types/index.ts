@@ -94,45 +94,6 @@ export interface DynamicRelatedPostBlock {
   data: RelatedPostData;
 }
 
-/**
- * Interface tratada para consumo no frontend (após expansão via projeção GROQ)
- */
-/**
- * Blocos editoriais das análises autorais do Concursos Agora.
- * Conteúdo local, versionado no repositório (não depende do Sanity).
- */
-export type AnaliseBlock =
-  | { type: 'paragraph'; text: string }
-  | { type: 'heading'; text: string }
-  | { type: 'list'; ordered?: boolean; items: string[] }
-  | { type: 'quote'; text: string; cite?: string };
-
-export interface Analise {
-  slug: string;
-  title: string;
-  shortTitle: string;
-  excerpt: string;
-  image: {
-    src: string;
-    alt: string;
-    caption?: string;
-    credit?: string;
-  };
-  publishedAt: string;
-  updatedAt?: string;
-  author: {
-    name: string;
-    role: string;
-  };
-  tags: string[];
-  body: AnaliseBlock[];
-  featured?: boolean;
-  seo?: {
-    metaTitle?: string;
-    metaDescription?: string;
-  };
-}
-
 export interface Post {
   _id: string;
   _createdAt: string;

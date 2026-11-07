@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import HeroCarousel from '@/components/HeroCarousel';
 import PostCard from '@/components/PostCard';
 import RegionalExplorer from '@/components/RegionalExplorer';
-import AnaliseHomeSection from '@/components/analises/AnaliseHomeSection';
 import Sidebar from '@/components/Sidebar';
 import Pagination from '@/components/Pagination';
 import HubCard from '@/components/HubCard';
@@ -94,11 +93,6 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       {/* ── 1. Grade Editorial de Manchetes & Plantão de Notícias ── */}
       {currentPage === 1 && heroPosts.length > 0 && (
         <HeroCarousel posts={heroPosts} />
-      )}
-
-      {/* ── 2. Coluna Editorial — Análises & Opinião ── */}
-      {currentPage === 1 && (
-        <AnaliseHomeSection />
       )}
 
       {/* ── 3. Navegador Regional Interativo por Estados e Regiões ── */}

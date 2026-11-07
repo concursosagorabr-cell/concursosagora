@@ -166,15 +166,6 @@ export default function Navbar({ categories = [] }: NavbarProps) {
         Notícias
       </Link>
 
-      {/* Análises & Opinião — coluna editorial própria */}
-      <Link
-        href="/analises"
-        className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg font-bold text-amber-700 hover:bg-amber-50 transition-colors whitespace-nowrap"
-      >
-        <span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-        Análises
-      </Link>
-
       {/* Inscrições Abertas — destaque verde */}
       <Link
         href="/search?q=aberto"
