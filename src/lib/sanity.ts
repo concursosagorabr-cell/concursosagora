@@ -381,29 +381,25 @@ export const getCachedAllCategorySlugs = cache((): Promise<string[]> => {
  * 14. Posts para o Google News Sitemap (últimas 48h) (TTL: 5 minutos / 300s, Tags: 'posts', 'sitemap-news')
  */
 export const getCachedNewsSitemapPosts = cache((twoDaysAgo: string): Promise<any[]> => {
-  const query = `*[_type == "post" && (publishedAt >= $twoDaysAgo || _createdAt >= $twoDaysAgo)] | order(publishedAt desc)[0..1000] {
+  // Regra do Google Notícias: o sitemap de notícias deve conter SOMENTE
+  // matérias publicadas nas últimas 48 horas. Nunca use fallback com posts
+  // antigos — isso invalida o arquivo e atrasa a indexação.
+  const query = `*[
+    _type == "post" &&
+    status != "cancelado" &&
+    !(seo.noIndex == true) &&
+    defined(slug.current) &&
+    (publishedAt >= $twoDaysAgo || _createdAt >= $twoDaysAgo)
+  ] | order(publishedAt desc)[0..999] {
     _id,
     title,
-    "slug": coalesce(slug.current, _id),
+    "slug": slug.current,
     publishedAt,
     _createdAt
   }`;
   return unstable_cache(
     async () => {
-      let posts = await client.fetch<any[]>(query, { twoDaysAgo }, { next: { tags: ['posts', 'sitemap-news'] } });
-      if (!posts || posts.length === 0) {
-        posts = await client.fetch<any[]>(
-          `*[_type == "post" && status != "cancelado"] | order(publishedAt desc)[0..10] {
-            _id,
-            title,
-            "slug": coalesce(slug.current, _id),
-            publishedAt,
-            _createdAt
-          }`,
-          {},
-          { next: { tags: ['posts', 'sitemap-news'] } }
-        );
-      }
+      const posts = await client.fetch<any[]>(query, { twoDaysAgo }, { next: { tags: ['posts', 'sitemap-news'] } });
       return posts || [];
     },
     ['sanity', 'sitemap-news-posts'],
