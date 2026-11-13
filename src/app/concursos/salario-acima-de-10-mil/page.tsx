@@ -7,25 +7,45 @@ import SegmentedAlertBox from '@/components/SegmentedAlertBox';
 
 export const revalidate = 300; // 5 minutos ISR
 
-export const metadata: Metadata = {
-  title: 'Concursos com Salário Acima de R$ 10.000 em 2026: Vagas de Alta Remuneração',
-  description:
-    'Guia atualizado com todos os concursos públicos com salários acima de R$ 10.000, R$ 15.000 e R$ 20.000 por mês. Oportunidades fiscais, jurídicas, policiais e de controle.',
-  alternates: { canonical: 'https://www.concursosagora.com.br/concursos/salario-acima-de-10-mil' },
-  keywords:
-    'concursos salario alto, concursos acima de 10 mil, concursos fiscais, concursos tribunais, concursos perito policial, salarios concursos 2026',
-  openGraph: {
-    title: 'Concursos com Salário Acima de R$ 10.000 em 2026 — Concursos Agora',
+export async function generateMetadata(): Promise<Metadata> {
+  const url = 'https://www.concursosagora.com.br/concursos/salario-acima-de-10-mil';
+  
+  // Verifica se há posts para decidir indexação (evita Soft 404 / Thin Content)
+  let hasPosts = true;
+  try {
+    const posts = await getCachedHighSalaryPosts();
+    hasPosts = (posts || []).length >= 2;
+  } catch {
+    // Em caso de erro, mantém indexável para não perder tráfego
+  }
+
+  return {
+    title: 'Concursos com Salário Acima de R$ 10.000 em 2026: Vagas de Alta Remuneração',
     description:
-      'Confira os melhores editais do Brasil com remunerações acima de R$ 10 mil mensais.',
-    url: 'https://www.concursosagora.com.br/concursos/salario-acima-de-10-mil',
-    type: 'website',
-    locale: 'pt_BR',
-  },
-};
+      'Guia atualizado com todos os concursos públicos com salários acima de R$ 10.000, R$ 15.000 e R$ 20.000 por mês. Oportunidades fiscais, jurídicas, policiais e de controle.',
+    alternates: { canonical: url },
+    ...(hasPosts ? {} : { robots: { index: false, follow: true } }),
+    keywords:
+      'concursos salario alto, concursos acima de 10 mil, concursos fiscais, concursos tribunais, concursos perito policial, salarios concursos 2026',
+    openGraph: {
+      title: 'Concursos com Salário Acima de R$ 10.000 em 2026 — Concursos Agora',
+      description:
+        'Confira os melhores editais do Brasil com remunerações acima de R$ 10 mil mensais.',
+      url,
+      type: 'website',
+      locale: 'pt_BR',
+    },
+  };
+}
 
 export default async function HighSalaryContestsPage() {
   const posts = await getCachedHighSalaryPosts();
+
+  // Filtro de segurança: ocultar cancelados e encerrados
+  const activePosts = (posts || []).filter(post => 
+    post.status === 'aberto' || post.status === 'previsto' || post.status === 'em_andamento'
+  );
+
   const pageUrl = 'https://www.concursosagora.com.br/concursos/salario-acima-de-10-mil';
 
   // JSON-LD
@@ -46,7 +66,7 @@ export default async function HighSalaryContestsPage() {
     },
     mainEntity: {
       '@type': 'ItemList',
-      itemListElement: (posts || []).slice(0, 20).map((post, index) => ({
+      itemListElement: activePosts.slice(0, 20).map((post, index) => ({
         '@type': 'ListItem',
         position: index + 1,
         name: post.title,
@@ -91,7 +111,7 @@ export default async function HighSalaryContestsPage() {
               <div className="pt-2">
                 <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse motion-reduce:animate-none" />
-                  {posts.length} {posts.length === 1 ? 'edital de alto rendimento' : 'editais de alto rendimento'}
+                  {activePosts.length} {activePosts.length === 1 ? 'edital de alto rendimento' : 'editais de alto rendimento'}
                 </span>
               </div>
             </div>
@@ -99,9 +119,9 @@ export default async function HighSalaryContestsPage() {
 
           {/* Lista de Vagas */}
           <section aria-label="Concursos com salários acima de 10 mil reais">
-            {posts.length > 0 ? (
+            {activePosts.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {posts.map((post) => (
+                {activePosts.map((post) => (
                   <PostCard key={post._id} post={post} />
                 ))}
               </div>

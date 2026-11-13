@@ -38,11 +38,12 @@ export async function generateMetadata({ params }: StatePageProps): Promise<Meta
   const description = `Confira a lista atualizada de concursos públicos abertos e previstos em ${state.name} (${ufUpper}) em ${currentYear}. Vagas para prefeituras, tribunais, polícias e órgãos estaduais.`;
   const url = `https://www.concursosagora.com.br/concursos-abertos/${ufLower}`;
 
-  // Verifica se há posts para decidir indexação (evita Soft 404)
+  // Verifica se há posts para decidir indexação (evita Soft 404 / Thin Content)
+  // Noindex se tiver MENOS DE 2 oportunidades reais
   let hasPosts = true;
   try {
     const posts = await getCachedStatePosts(ufLower, ufUpper, state.name);
-    hasPosts = (posts || []).length > 0;
+    hasPosts = (posts || []).length >= 2;
   } catch {
     // Em caso de erro, mantém indexável para não perder tráfego
   }
@@ -107,6 +108,11 @@ export default async function StateContestsPage({ params }: StatePageProps) {
     console.error(`Erro ao buscar concursos de ${stateName}:`, error);
   }
 
+  // Filtro de segurança: ocultar cancelados e encerrados
+  const activePosts = posts.filter(post => 
+    post.status === 'aberto' || post.status === 'previsto' || post.status === 'em_andamento'
+  );
+
   const pageUrl = `https://www.concursosagora.com.br/concursos-abertos/${ufLower}`;
 
   // JSON-LD Schema
@@ -141,7 +147,7 @@ export default async function StateContestsPage({ params }: StatePageProps) {
     },
     mainEntity: {
       '@type': 'ItemList',
-      itemListElement: (posts || []).map((post, index) => ({
+      itemListElement: activePosts.map((post, index) => ({
         '@type': 'ListItem',
         position: index + 1,
         name: post.title,
@@ -189,7 +195,7 @@ export default async function StateContestsPage({ params }: StatePageProps) {
                   <div className="pt-2 flex flex-wrap items-center gap-3">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold">
                       <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse motion-reduce:animate-none" />
-                      {posts.length} {posts.length === 1 ? 'oportunidade listada' : 'oportunidades listadas'}
+                      {activePosts.length} {activePosts.length === 1 ? 'oportunidade listada' : 'oportunidades listadas'}
                     </span>
                   </div>
                 </div>
@@ -209,9 +215,9 @@ export default async function StateContestsPage({ params }: StatePageProps) {
                   Editais Recentes em {stateName}
                 </h2>
 
-                {posts && posts.length > 0 ? (
+                {activePosts.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {posts.map((post) => (
+                    {activePosts.map((post) => (
                       <PostCard key={post._id} post={post} />
                     ))}
                   </div>

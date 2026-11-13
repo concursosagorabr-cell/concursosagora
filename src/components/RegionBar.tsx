@@ -86,22 +86,38 @@ const MACRO_REGIONS = [
 
 export default function RegionBar() {
   const [isOpen, setIsOpen] = useState(false);
+  // A data NUNCA é renderizada no servidor: o HTML do header pode vir do cache
+  // ISR e ficaria “congelado” por dias. Calculamos no cliente após a montagem.
+  const [displayDate, setDisplayDate] = useState<string | null>(null);
+  const [shortDate, setShortDate] = useState<string | null>(null);
   const barContainerRef = useRef<HTMLDivElement>(null);
 
-  const todayFormatted = new Intl.DateTimeFormat('pt-BR', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  }).format(new Date());
+  useEffect(() => {
+    const updateDate = () => {
+      const now = new Date();
+      const longDate = new Intl.DateTimeFormat('pt-BR', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        timeZone: 'America/Sao_Paulo',
+      }).format(now);
+      setDisplayDate(longDate.charAt(0).toUpperCase() + longDate.slice(1));
+      setShortDate(
+        new Intl.DateTimeFormat('pt-BR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          timeZone: 'America/Sao_Paulo',
+        }).format(now)
+      );
+    };
 
-  const displayDate = todayFormatted.charAt(0).toUpperCase() + todayFormatted.slice(1);
-
-  const shortDate = new Intl.DateTimeFormat('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  }).format(new Date());
+    updateDate();
+    // Mantém a data correta mesmo em abas abertas por muito tempo / virada de dia.
+    const timer = window.setInterval(updateDate, 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   // Fechar menu ao clicar fora do componente RegionBar ou pressionar Escape
   useEffect(() => {
@@ -135,12 +151,13 @@ export default function RegionBar() {
             <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping motion-reduce:animate-none inline-block" />
             <span>Plantão de Editais</span>
           </div>
-          {/* Data completa em telas amplas (2xl), compacta em xl, oculta em menores para garantir espaço aos filtros */}
-          <span className="hidden 2xl:inline-block text-slate-400 font-medium">
-            {displayDate}
+          {/* Data completa em telas amplas (2xl), compacta em xl, oculta em menores para garantir espaço aos filtros.
+              Renderizada só no cliente (min-width reserva o espaço) para não congelar em HTML cacheado. */}
+          <span className="hidden 2xl:inline-block text-slate-400 font-medium min-w-[13rem]">
+            {displayDate || <span className="invisible" aria-hidden="true">.</span>}
           </span>
-          <span className="hidden xl:inline-block 2xl:hidden text-slate-400 font-medium text-[11px]">
-            {shortDate}
+          <span className="hidden xl:inline-block 2xl:hidden text-slate-400 font-medium text-[11px] min-w-[4.5rem]">
+            {shortDate || <span className="invisible" aria-hidden="true">.</span>}
           </span>
           <span className="hidden md:inline-block h-3.5 w-px bg-slate-800 shrink-0" aria-hidden="true" />
         </div>

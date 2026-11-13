@@ -12,6 +12,8 @@ import {
 import { Category, Post } from '@/types';
 import { SITE_URL } from '@/lib/constants';
 import { deduplicateCategories, getCategoryAliases } from '@/utils/categories';
+import { getCategoryScope } from '@/utils/taxonomy';
+import { assertPageInRange, parsePageParam } from '@/utils/pagination';
 import PostCard from '@/components/PostCard';
 import Breadcrumb from '@/components/Breadcrumb';
 import Sidebar from '@/components/Sidebar';
@@ -54,10 +56,22 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
     return { title: 'Categoria não encontrada' };
   }
 
+  // Verifica se há posts para decidir indexação (evita Soft 404 / Thin Content)
+  let hasPosts = true;
+  try {
+    const categorySlugs = getCategoryAliases(slug);
+    const scope = getCategoryScope(slug, category);
+    const posts = await getCachedPostsByCategory(slug, categorySlugs, 0, 1, scope);
+    hasPosts = (posts || []).length >= 2;
+  } catch {
+    // Em caso de erro, mantém indexável para não perder tráfego
+  }
+
   return {
     title: `Concursos em ${category.title}`,
     description: category.description || `Confira todas as notícias e editais sobre ${category.title}`,
     alternates: { canonical: `${SITE_URL}/categoria/${category.slug || category._id}` },
+    ...(hasPosts ? {} : { robots: { index: false, follow: true } }),
   };
 }
 
@@ -71,23 +85,30 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     notFound();
   }
 
-  const currentPage = Math.max(1, parseInt(page || '1', 10));
+  const currentPage = parsePageParam(page);
   const itemsPerPage = 10;
   const start = (currentPage - 1) * itemsPerPage;
   const end = start + itemsPerPage - 1;
 
   const categorySlugs = getCategoryAliases(slug);
+  const scope = getCategoryScope(slug, category);
 
   const [posts, totalPosts, recentPosts, topPosts, categories] = await Promise.all([
-    getCachedPostsByCategory(slug, categorySlugs, start, end),
-    getCachedPostsByCategoryCount(slug, categorySlugs),
+    getCachedPostsByCategory(slug, categorySlugs, start, end, scope),
+    getCachedPostsByCategoryCount(slug, categorySlugs, scope),
     getCachedRecentPosts(),
     getCachedTopPosts(5),
     getCachedCategories(),
   ]);
 
+  // Filtro de segurança: ocultar cancelados e encerrados
+  const activePosts = posts.filter(post => 
+    post.status === 'aberto' || post.status === 'previsto' || post.status === 'em_andamento'
+  );
+
   const uniqueCategories = deduplicateCategories(categories);
   const totalPages = Math.ceil((totalPosts || 0) / itemsPerPage);
+  assertPageInRange(currentPage, totalPages);
   const baseUrl = `/categoria/${category.slug || category._id}`;
 
   return (
@@ -119,10 +140,10 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             </span>
           </div>
 
-          {posts.length > 0 ? (
+          {activePosts.length > 0 ? (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {posts.map((post) => (
+                {activePosts.map((post) => (
                   <PostCard key={post._id} post={post} />
                 ))}
               </div>

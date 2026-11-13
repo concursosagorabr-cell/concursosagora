@@ -29,6 +29,7 @@ import {
   postsByAuthorCountQuery,
   allAuthorSlugsQuery,
   relatedPostsByBancaQuery,
+  relatedPostsByStateQuery,
 } from './queries';
 import { Author, Category, Post } from '@/types';
 import { getRedis, REDIS_KEYS } from './redis';
@@ -246,18 +247,31 @@ export const getCachedRelatedPostsFallback = cache((currentId: string, excludeId
 
 /**
  * 8. Posts por categoria paginados (TTL: 5 minutos / 300s, Tags: 'posts', 'category:[categorySlug]')
+ *
+ * `scope` usa os campos dedicados stateUf/region para que /categoria/sul e
+ * /categoria/sp tragam todas as matérias do estado/região — não apenas as que
+ * receberam a categoria manualmente.
  */
 export const getCachedPostsByCategory = cache(
-  (categorySlug: string, categorySlugs: string[], start: number, end: number): Promise<Post[]> => {
+  (
+    categorySlug: string,
+    categorySlugs: string[],
+    start: number,
+    end: number,
+    scope?: { uf?: string | null; region?: string | null; regionUfs?: string[] }
+  ): Promise<Post[]> => {
     const slugKey = categorySlugs.join(',');
+    const uf = scope?.uf || null;
+    const region = scope?.region || null;
+    const regionUfs = scope?.regionUfs || [];
     return unstable_cache(
       async () =>
         (await client.fetch<Post[]>(
           postsByCategoryPaginatedQuery,
-          { categorySlug, categorySlugs, start, end },
+          { categorySlug, categorySlugs, start, end, uf, region, regionUfs },
           { next: { tags: ['posts', `category:${categorySlug}`] } }
         )) || [],
-      ['sanity', 'posts-by-category', categorySlug, slugKey, String(start), String(end)],
+      ['sanity', 'posts-by-category', categorySlug, slugKey, String(start), String(end), uf || '', region || '', regionUfs.join(',')],
       { revalidate: 300, tags: ['posts', `category:${categorySlug}`] }
     )();
   }
@@ -267,16 +281,23 @@ export const getCachedPostsByCategory = cache(
  * 8b. Contagem de posts por categoria (TTL: 10 minutos / 600s, Tags: 'posts', 'category:[categorySlug]')
  */
 export const getCachedPostsByCategoryCount = cache(
-  (categorySlug: string, categorySlugs: string[]): Promise<number> => {
+  (
+    categorySlug: string,
+    categorySlugs: string[],
+    scope?: { uf?: string | null; region?: string | null; regionUfs?: string[] }
+  ): Promise<number> => {
     const slugKey = categorySlugs.join(',');
+    const uf = scope?.uf || null;
+    const region = scope?.region || null;
+    const regionUfs = scope?.regionUfs || [];
     return unstable_cache(
       async () =>
         (await client.fetch<number>(
           postsByCategoryCountQuery,
-          { categorySlug, categorySlugs },
+          { categorySlug, categorySlugs, uf, region, regionUfs },
           { next: { tags: ['posts', `category:${categorySlug}`] } }
         )) || 0,
-      ['sanity', 'posts-by-category-count', categorySlug, slugKey],
+      ['sanity', 'posts-by-category-count', categorySlug, slugKey, uf || '', region || '', regionUfs.join(',')],
       { revalidate: 600, tags: ['posts', `category:${categorySlug}`] }
     )();
   }
@@ -301,39 +322,39 @@ export const getCachedStatePosts = cache(
 );
 
 /**
- * 10. Posts por Hub de Conteúdo / Silos (TTL: 10 minutos / 600s, Tags: 'posts', 'hub:[mainKeyword]')
+ * 10. Posts por Hub de Conteúdo / Silos (TTL: 10 minutos / 600s, Tags: 'posts', 'hub:[slug]')
  */
 export const getCachedHubPosts = cache(
-  (keywords: string[], mainKeyword: string, start: number, end: number): Promise<Post[]> => {
+  (hubSlug: string, keywords: string[], mainKeyword: string, start: number, end: number): Promise<Post[]> => {
     const kwKey = keywords.join(',');
     return unstable_cache(
       async () =>
         (await client.fetch<Post[]>(
           postsByKeywordsPaginatedQuery,
-          { keywords, mainKeyword, start, end },
-          { next: { tags: ['posts', `hub:${mainKeyword}`] } }
+          { hubSlug, keywords, mainKeyword, start, end },
+          { next: { tags: ['posts', `hub:${hubSlug}`] } }
         )) || [],
-      ['sanity', 'hub-posts', mainKeyword, kwKey, String(start), String(end)],
-      { revalidate: 600, tags: ['posts', `hub:${mainKeyword}`] }
+      ['sanity', 'hub-posts', hubSlug, mainKeyword, kwKey, String(start), String(end)],
+      { revalidate: 600, tags: ['posts', `hub:${hubSlug}`] }
     )();
   }
 );
 
 /**
- * 10b. Contagem de posts por Hub de Conteúdo (TTL: 10 minutos / 600s, Tags: 'posts', 'hub:[mainKeyword]')
+ * 10b. Contagem de posts por Hub de Conteúdo (TTL: 10 minutos / 600s, Tags: 'posts', 'hub:[slug]')
  */
 export const getCachedHubPostsCount = cache(
-  (keywords: string[], mainKeyword: string): Promise<number> => {
+  (hubSlug: string, keywords: string[], mainKeyword: string): Promise<number> => {
     const kwKey = keywords.join(',');
     return unstable_cache(
       async () =>
         (await client.fetch<number>(
           postsByKeywordsCountQuery,
-          { keywords, mainKeyword },
-          { next: { tags: ['posts', `hub:${mainKeyword}`] } }
+          { hubSlug, keywords, mainKeyword },
+          { next: { tags: ['posts', `hub:${hubSlug}`] } }
         )) || 0,
-      ['sanity', 'hub-posts-count', mainKeyword, kwKey],
-      { revalidate: 600, tags: ['posts', `hub:${mainKeyword}`] }
+      ['sanity', 'hub-posts-count', hubSlug, mainKeyword, kwKey],
+      { revalidate: 600, tags: ['posts', `hub:${hubSlug}`] }
     )();
   }
 );
@@ -574,6 +595,25 @@ export const getCachedRelatedPostsByBanca = cache(
         )) || [],
       ['sanity', 'related-banca', currentId, banca || '', stateUf || ''],
       { revalidate: 600, tags: ['posts'] }
+    )();
+  }
+);
+
+/**
+ * 25. Relacionados estritos por UF (TTL: 10 minutos)
+ * Alimenta o widget "Mais em [UF]" sem misturar estados de outras regiões.
+ */
+export const getCachedRelatedPostsByState = cache(
+  (currentId: string, stateUf: string): Promise<Post[]> => {
+    return unstable_cache(
+      async () =>
+        (await client.fetch<Post[]>(
+          relatedPostsByStateQuery,
+          { currentId, stateUf },
+          { next: { tags: ['posts', `state:${stateUf.toLowerCase()}`] } }
+        )) || [],
+      ['sanity', 'related-state', currentId, stateUf],
+      { revalidate: 600, tags: ['posts', `state:${stateUf.toLowerCase()}`] }
     )();
   }
 );

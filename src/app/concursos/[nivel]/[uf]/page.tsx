@@ -52,13 +52,14 @@ export async function generateMetadata({ params }: EduStatePageProps): Promise<M
   const description = `Confira a lista de concursos públicos abertos e previstos para ${eduInfo.label} em ${state.name} (${ufUpper}) em ${year}. Vagas em prefeituras, tribunais e segurança pública.`;
   const url = `https://www.concursosagora.com.br/concursos/${nivel.toLowerCase()}/${uf.toLowerCase()}`;
 
-  // Verifica se há posts para decidir indexação (evita Soft 404)
+  // Verifica se há posts para decidir indexação (evita Soft 404 / Thin Content)
+  // Noindex se tiver MENOS DE 2 oportunidades reais
   let hasPosts = true;
   try {
     const posts = await getCachedEducationAndStatePosts(
       eduInfo.key, eduInfo.short, uf.toLowerCase(), ufUpper, state.name
     );
-    hasPosts = (posts || []).length > 0;
+    hasPosts = (posts || []).length >= 2;
   } catch {
     // Em caso de erro, mantém indexável para não perder tráfego
   }
@@ -99,6 +100,11 @@ export default async function EducationAndStatePage({ params }: EduStatePageProp
     getCachedRecentPosts(),
   ]);
 
+  // Filtro de segurança no client-side: ocultar cancelados e encerrados
+  const activePosts = (posts || []).filter(post => 
+    post.status === 'aberto' || post.status === 'previsto' || post.status === 'em_andamento'
+  );
+
   const pageUrl = `https://www.concursosagora.com.br/concursos/${nivelLower}/${ufLower}`;
 
   // JSON-LD Schemas (CollectionPage + ItemList + FAQPage)
@@ -120,7 +126,7 @@ export default async function EducationAndStatePage({ params }: EduStatePageProp
         },
         mainEntity: {
           '@type': 'ItemList',
-          itemListElement: (posts || []).slice(0, 20).map((post, index) => ({
+          itemListElement: activePosts.slice(0, 20).map((post, index) => ({
             '@type': 'ListItem',
             position: index + 1,
             name: post.title,
@@ -193,7 +199,7 @@ export default async function EducationAndStatePage({ params }: EduStatePageProp
               <div className="pt-2">
                 <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse motion-reduce:animate-none" />
-                  {posts.length} {posts.length === 1 ? 'oportunidade localizada' : 'oportunidades localizadas'}
+                  {activePosts.length} {activePosts.length === 1 ? 'oportunidade localizada' : 'oportunidades localizadas'}
                 </span>
               </div>
             </div>
@@ -201,9 +207,9 @@ export default async function EducationAndStatePage({ params }: EduStatePageProp
 
           {/* Lista de Concursos Específicos */}
           <section aria-label={`Vagas de ${eduInfo.short} em ${stateName}`}>
-            {posts.length > 0 ? (
+            {activePosts.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {posts.map((post) => (
+                {activePosts.map((post) => (
                   <PostCard key={post._id} post={post} />
                 ))}
               </div>

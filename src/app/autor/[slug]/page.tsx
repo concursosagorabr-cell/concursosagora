@@ -15,6 +15,7 @@ import { Author, Post } from '@/types';
 import { getImageUrl } from '@/lib/image';
 import { SITE_URL } from '@/lib/constants';
 import { deduplicateCategories } from '@/utils/categories';
+import { assertPageInRange, parsePageParam } from '@/utils/pagination';
 import PostCard from '@/components/PostCard';
 import Breadcrumb from '@/components/Breadcrumb';
 import Sidebar from '@/components/Sidebar';
@@ -80,7 +81,7 @@ export default async function AuthorPage({ params, searchParams }: AuthorPagePro
   const author = await getCachedAuthorBySlug(slug);
   if (!author) notFound();
 
-  const currentPage = Math.max(1, parseInt(page || '1', 10));
+  const currentPage = parsePageParam(page);
   const itemsPerPage = 10;
   const start = (currentPage - 1) * itemsPerPage;
   const end = start + itemsPerPage - 1;
@@ -95,6 +96,7 @@ export default async function AuthorPage({ params, searchParams }: AuthorPagePro
 
   const uniqueCategories = deduplicateCategories(categories);
   const totalPages = Math.ceil((totalPosts || 0) / itemsPerPage);
+  assertPageInRange(currentPage, totalPages);
   const baseUrl = `/autor/${author.slug || author._id}`;
   const avatarUrl = getImageUrl(author.image, 200, 200);
   const socials = [

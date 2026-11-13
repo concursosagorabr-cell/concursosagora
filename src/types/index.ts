@@ -113,6 +113,8 @@ export interface Post {
   educationLevel?: string[];
   banca?: string;
   stateUf?: string;
+  region?: string;
+  hubAreas?: string[];
   cityName?: string;
   organ?: string;
   sphere?: string;

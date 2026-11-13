@@ -7,6 +7,7 @@ import {
   getCachedPostBySlugHistory,
   getCachedRelatedPosts,
   getCachedRelatedPostsByBanca,
+  getCachedRelatedPostsByState,
   getCachedRelatedPostsFallback,
   getCachedRecentPosts,
   getCachedTopPosts,
@@ -24,6 +25,7 @@ import {
   getAuthorUrl,
 } from '@/lib/seo';
 import { deduplicateCategories } from '@/utils/categories';
+import { getRegionForUf, getStateCategorySlug, normalizeUf } from '@/utils/taxonomy';
 import { getContestStatusInfo } from '@/utils/status';
 import { getDescriptiveImageAlt } from '@/utils/imageAlt';
 import { injectRelatedArticle } from '@/utils/injectRelatedArticle';
@@ -418,14 +420,21 @@ export default async function PostPage({ params }: PostPageProps) {
   // IDs das categorias do post atual para filtrar posts relacionados
   const categoryIds = (post.categories || []).map((c: { _id: string }) => c._id).filter(Boolean);
 
-  const [relatedByBanca, relatedByCategory, recentPosts, topPosts, categories] = await Promise.all([
+  const [relatedByBanca, relatedByState, relatedByCategory, recentPosts, topPosts, categories] = await Promise.all([
     // Prioriza mesma banca / mesmo estado; depois mesma categoria
     getCachedRelatedPostsByBanca(post._id, post.banca || '', post.stateUf || ''),
+    // Lista estrita por UF para o widget "Mais em [UF]"
+    post.stateUf && post.stateUf !== 'Nacional'
+      ? getCachedRelatedPostsByState(post._id, post.stateUf)
+      : Promise.resolve([]),
     categoryIds.length > 0 ? getCachedRelatedPosts(post._id, categoryIds) : Promise.resolve([]),
     getCachedRecentPosts(),
     getCachedTopPosts(5),
     getCachedCategories(),
   ]);
+
+  // Widget "Mais em [UF]": usa somente matérias do mesmo estado.
+  const stateRelatedPosts: Post[] = (relatedByState || []).slice(0, 5);
 
   // Mescla relacionados contextuais (banca/estado) com os de categoria, sem duplicar
   let relatedPosts: Post[] = [...(relatedByBanca || [])];
@@ -537,12 +546,26 @@ export default async function PostPage({ params }: PostPageProps) {
   });
 
   // 3. A categoria primária prioriza a UF legítima do post, ou a área temática de maior relevância
+  const postUf = normalizeUf(post.stateUf);
   const primaryCategory =
     stateCategory ||
     validThematicCategories[0] ||
-    (post.stateUf && post.stateUf !== 'Nacional'
-      ? { title: post.stateUf.toUpperCase(), slug: post.stateUf.toLowerCase(), _id: `cat-${post.stateUf.toLowerCase()}` }
+    (postUf && postUf !== 'Nacional'
+      ? {
+          title: postUf,
+          slug: getStateCategorySlug(postUf) || postUf.toLowerCase(),
+          _id: `cat-${getStateCategorySlug(postUf) || postUf.toLowerCase()}`,
+        }
       : uniquePostCategories[0]);
+
+  // Rótulo e lista do widget contextual. Quando há matérias do mesmo estado,
+  // o bloco é rotulado com a UF e NUNCA mistura outros estados.
+  const contextPosts =
+    stateRelatedPosts.length > 0 ? stateRelatedPosts : relatedPosts;
+  const contextLabel =
+    stateRelatedPosts.length > 0
+      ? postUf || getRegionForUf(post.stateUf)
+      : primaryCategory?.title;
 
   // Schema.org JSON-LD para Breadcrumbs
   const breadcrumbJsonLd = {
@@ -797,8 +820,8 @@ export default async function PostPage({ params }: PostPageProps) {
 
             {/* "Leia Também" Contextual — exibido logo após o conteúdo para reter o leitor */}
             <InArticleCTA
-              posts={relatedPosts.slice(0, 2)}
-              categoryName={primaryCategory?.title}
+              posts={contextPosts.slice(0, 2)}
+              categoryName={contextLabel}
             />
 
             {/* Banner do Canal VIP do Telegram */}
@@ -813,6 +836,7 @@ export default async function PostPage({ params }: PostPageProps) {
             <PostHubWidget
               postTitle={post.title}
               categoryTitles={uniquePostCategories.map((c) => c.title)}
+              hubAreas={post.hubAreas}
             />
 
             {/* Card do Autor */}
@@ -827,8 +851,8 @@ export default async function PostPage({ params }: PostPageProps) {
             recentPosts={recentPosts}
             topPosts={topPosts}
             categories={uniqueCategories}
-            categoryPosts={relatedPosts.length > 0 ? relatedPosts : undefined}
-            categoryName={primaryCategory?.title}
+            categoryPosts={contextPosts.length > 0 ? contextPosts : undefined}
+            categoryName={contextLabel}
           />
         </div>
       </article>

@@ -24,8 +24,22 @@ export async function generateMetadata({ searchParams }: SearchPageProps): Promi
     .trim()
     .slice(0, 100);
 
+  // Noindex para buscas vazias ou com menos de 2 resultados (thin content)
+  let hasPosts = true;
+  if (sanitizedQ) {
+    try {
+      const posts = await getCachedSearchPosts(sanitizedQ);
+      hasPosts = (posts || []).length >= 2;
+    } catch {
+      hasPosts = true; // Em caso de erro, mantém indexável
+    }
+  } else {
+    hasPosts = false; // Busca vazia não indexa
+  }
+
   return {
     title: sanitizedQ ? `Resultado da busca por "${sanitizedQ}"` : 'Pesquisar Concursos',
+    ...(hasPosts ? {} : { robots: { index: false, follow: true } }),
   };
 }
 
@@ -57,6 +71,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     console.error('Erro ao processar busca em SearchPage:', error);
   }
 
+  // Filtro de segurança: ocultar cancelados e encerrados
+  const activePosts = posts.filter(post => 
+    post.status === 'aberto' || post.status === 'previsto' || post.status === 'em_andamento'
+  );
+
   const uniqueCategories = deduplicateCategories(categories);
 
   return (
@@ -74,22 +93,22 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         <div className="lg:col-span-2 space-y-6">
           {searchTerm ? (
             <h2 className="text-xl font-bold text-slate-900 border-b border-slate-200 pb-3">
-              Resultados para &quot;<span className="text-blue-600">{searchTerm}</span>&quot; ({posts.length})
+              Resultados para "<span className="text-blue-600">{searchTerm}</span>" ({activePosts.length})
             </h2>
           ) : (
             <p className="text-slate-500 text-center py-4">Digite uma palavra-chave acima para buscar notícias.</p>
           )}
 
-          {posts.length > 0 ? (
+          {activePosts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {posts.map((post) => (
+              {activePosts.map((post) => (
                 <PostCard key={post._id} post={post} />
               ))}
             </div>
           ) : searchTerm ? (
             <div className="bg-white p-8 rounded-2xl border border-slate-200 text-center">
               <p className="text-slate-600">
-                Nenhum resultado encontrado para &quot;{searchTerm}&quot;. Tente buscar com outros termos.
+                Nenhum resultado encontrado para "{searchTerm}". Tente buscar com outros termos.
               </p>
             </div>
           ) : null}

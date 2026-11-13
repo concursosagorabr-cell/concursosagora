@@ -1,13 +1,17 @@
 import Link from 'next/link';
-import { getMatchingHubForPost } from '@/utils/hubs';
+import { getHubBySlug, getMatchingHubForPost } from '@/utils/hubs';
 
 interface PostHubWidgetProps {
   postTitle: string;
   categoryTitles?: string[];
+  hubAreas?: string[];
 }
 
-export default function PostHubWidget({ postTitle, categoryTitles = [] }: PostHubWidgetProps) {
-  const hub = getMatchingHubForPost(postTitle, categoryTitles);
+export default function PostHubWidget({ postTitle, categoryTitles = [], hubAreas = [] }: PostHubWidgetProps) {
+  const explicitHub = hubAreas
+    .map((slug) => getHubBySlug(slug))
+    .find((hub) => Boolean(hub));
+  const hub = explicitHub || getMatchingHubForPost(postTitle, categoryTitles);
 
   if (!hub) return null;
 

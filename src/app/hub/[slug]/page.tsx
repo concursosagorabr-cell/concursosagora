@@ -14,6 +14,7 @@ import {
 } from '@/lib/sanity';
 import { Post, Category } from '@/types';
 import { deduplicateCategories } from '@/utils/categories';
+import { assertPageInRange, parsePageParam } from '@/utils/pagination';
 
 interface HubPageProps {
   params: Promise<{
@@ -40,10 +41,21 @@ export async function generateMetadata({ params }: HubPageProps): Promise<Metada
 
   const url = `https://www.concursosagora.com.br/hub/${hub.slug}`;
 
+  // Verifica se há posts para decidir indexação (evita Soft 404 / Thin Content)
+  let hasPosts = true;
+  try {
+    const mainKeyword = hub.keywords[0] || slug;
+    const posts = await getCachedHubPosts(hub.slug, hub.categoryMatch, mainKeyword, 0, 1);
+    hasPosts = (posts || []).length >= 2;
+  } catch {
+    // Em caso de erro, mantém indexável para não perder tráfego
+  }
+
   return {
     title: `${hub.title} — Guia de Editais & Vagas`,
     description: hub.seoDescription,
     alternates: { canonical: url },
+    ...(hasPosts ? {} : { robots: { index: false, follow: true } }),
     openGraph: {
       type: 'website',
       url,
@@ -63,7 +75,7 @@ export default async function HubDetailPage({ params, searchParams }: HubPagePro
     notFound();
   }
 
-  const currentPage = Math.max(1, parseInt(page || '1', 10));
+  const currentPage = parsePageParam(page);
   const itemsPerPage = 10;
   const start = (currentPage - 1) * itemsPerPage;
   const end = start + itemsPerPage - 1;
@@ -71,14 +83,20 @@ export default async function HubDetailPage({ params, searchParams }: HubPagePro
   const mainKeyword = hub.keywords[0] || slug;
 
   const [posts, totalPosts, recentPosts, categories]: [Post[], number, Post[], Category[]] = await Promise.all([
-    getCachedHubPosts(hub.categoryMatch, mainKeyword, start, end),
-    getCachedHubPostsCount(hub.categoryMatch, mainKeyword),
+    getCachedHubPosts(hub.slug, hub.categoryMatch, mainKeyword, start, end),
+    getCachedHubPostsCount(hub.slug, hub.categoryMatch, mainKeyword),
     getCachedRecentPosts(),
     getCachedCategories(),
   ]);
 
+  // Filtro de segurança: ocultar cancelados e encerrados
+  const activePosts = posts.filter(post => 
+    post.status === 'aberto' || post.status === 'previsto' || post.status === 'em_andamento'
+  );
+
   const uniqueCategories = deduplicateCategories(categories);
   const totalPages = Math.ceil((totalPosts || 0) / itemsPerPage);
+  assertPageInRange(currentPage, totalPages);
   const baseUrl = `/hub/${hub.slug}`;
   const hubUrl = `https://www.concursosagora.com.br/hub/${hub.slug}`;
 
@@ -205,10 +223,10 @@ export default async function HubDetailPage({ params, searchParams }: HubPagePro
               </span>
             </div>
 
-            {posts.length > 0 ? (
+            {activePosts.length > 0 ? (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {posts.map((post) => (
+                  {activePosts.map((post) => (
                     <PostCard key={post._id} post={post} />
                   ))}
                 </div>

@@ -16,6 +16,7 @@ import {
 } from '@/lib/sanity';
 import { Post, Category } from '@/types';
 import { deduplicateCategories } from '@/utils/categories';
+import { assertPageInRange, parsePageParam } from '@/utils/pagination';
 import { SITE_URL } from '@/lib/constants';
 
 interface HomePageProps {
@@ -48,7 +49,7 @@ export async function generateMetadata({ searchParams }: HomePageProps): Promise
 export default async function HomePage({ searchParams }: HomePageProps) {
   const { page } = await searchParams;
 
-  const currentPage = Math.max(1, parseInt(page || '1', 10));
+  const currentPage = parsePageParam(page);
   const itemsPerPage = 10;
   const start = (currentPage - 1) * itemsPerPage;
   const end = start + itemsPerPage - 1;
@@ -79,6 +80,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
   const uniqueCategories = deduplicateCategories(categories);
   const totalPages = Math.ceil((totalPosts || 0) / itemsPerPage);
+  assertPageInRange(currentPage, totalPages);
   // O Hero utiliza as 6 matérias mais recentes para alimentar a Manchete + Plantão Lateral
   const heroPosts = currentPage === 1 ? recentPosts.slice(0, 6) : [];
   const gridPosts = posts;

@@ -8,6 +8,7 @@ import {
 } from '@/lib/sanity';
 import { Post, Category } from '@/types';
 import { deduplicateCategories } from '@/utils/categories';
+import { assertPageInRange, parsePageParam } from '@/utils/pagination';
 import PostCard from '@/components/PostCard';
 import Breadcrumb from '@/components/Breadcrumb';
 import Sidebar from '@/components/Sidebar';
@@ -23,7 +24,7 @@ export const revalidate = 60; // Incremental Static Regeneration (ISR)
 
 export async function generateMetadata({ searchParams }: NoticiasPageProps): Promise<Metadata> {
   const { page } = await searchParams;
-  const pageNum = parseInt(page || '1', 10);
+  const pageNum = parsePageParam(page);
   const pageSuffix = pageNum > 1 ? ` — Página ${pageNum}` : '';
   const url = pageNum > 1 ? `https://www.concursosagora.com.br/noticias?page=${pageNum}` : 'https://www.concursosagora.com.br/noticias';
 
@@ -47,7 +48,7 @@ export async function generateMetadata({ searchParams }: NoticiasPageProps): Pro
 export default async function NoticiasPage({ searchParams }: NoticiasPageProps) {
   const { page } = await searchParams;
 
-  const currentPage = Math.max(1, parseInt(page || '1', 10));
+  const currentPage = parsePageParam(page);
   const itemsPerPage = 12;
   const start = (currentPage - 1) * itemsPerPage;
   const end = start + itemsPerPage - 1;
@@ -82,6 +83,7 @@ export default async function NoticiasPage({ searchParams }: NoticiasPageProps) 
 
   const uniqueCategories = deduplicateCategories(categories);
   const totalPages = Math.ceil((totalPosts || 0) / itemsPerPage);
+  assertPageInRange(currentPage, totalPages);
 
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',

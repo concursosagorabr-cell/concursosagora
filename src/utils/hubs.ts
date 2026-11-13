@@ -28,7 +28,7 @@ export const CONTENT_HUBS: ContentHub[] = [
     seoDescription:
       'Confira os concursos públicos municipais com editais abertos e previstos para prefeituras e câmaras em todos os estados do Brasil.',
     keywords: ['municipal', 'prefeitura', 'câmara', 'guarda municipal', 'município'],
-    categoryMatch: ['municipais', 'prefeituras', 'câmaras', 'guarda-municipal'],
+    categoryMatch: ['prefeituras', 'municipais', 'camaras', 'guarda-municipal', 'municipal'],
     subSilos: [
       { title: 'São Paulo (SP)', slug: 'sp', type: 'uf' },
       { title: 'Rio de Janeiro (RJ)', slug: 'rj', type: 'uf' },
@@ -52,7 +52,7 @@ export const CONTENT_HUBS: ContentHub[] = [
     seoDescription:
       'Acompanhe todos os concursos da área policial e segurança pública: PF, PRF, Polícia Civil, Polícia Militar, Polícia Penal e Bombeiros.',
     keywords: ['polícia', 'policial', 'pm', 'pc', 'pf', 'prf', 'penal', 'bombeiro', 'segurança'],
-    categoryMatch: ['policial', 'segurança-pública', 'carreiras-policiais', 'polícia-civil', 'polícia-militar', 'polícia-penal'],
+    categoryMatch: ['seguranca', 'policial', 'policia-militar', 'policia-civil', 'seguranca-publica', 'carreiras-policiais'],
     subSilos: [
       { title: 'Polícia Federal & PRF', slug: 'policia-federal', type: 'search' },
       { title: 'Polícia Civil (PC)', slug: 'policia-civil', type: 'search' },
@@ -72,7 +72,7 @@ export const CONTENT_HUBS: ContentHub[] = [
     seoDescription:
       'Tudo sobre concursos de tribunais de justiça (TJ), do trabalho (TRT), federais (TRF), eleitorais (TRE) e Ministério Público.',
     keywords: ['tribunal', 'tj', 'trt', 'trf', 'tre', 'tst', 'stj', 'stf', 'defensoria', 'mpu', 'ministério público'],
-    categoryMatch: ['tribunais', 'judiciário', 'ministério-público', 'tj', 'trt', 'trf', 'tre'],
+    categoryMatch: ['tribunais', 'judiciario', 'juridico', 'ministerio-publico', 'defensoria', 'tj', 'trt', 'trf', 'tre'],
     subSilos: [
       { title: 'Tribunais de Justiça (TJs)', slug: 'tj', type: 'search' },
       { title: 'Tribunais Regionais do Trabalho (TRTs)', slug: 'trt', type: 'search' },
@@ -92,7 +92,7 @@ export const CONTENT_HUBS: ContentHub[] = [
     seoDescription:
       'Notícias e vagas para concursos bancários no Brasil: Caixa Econômica, Banco do Brasil, BACEN, BNDES, BRB e Banrisul.',
     keywords: ['banco', 'bancária', 'caixa', 'bacen', 'bndes', 'finanças', 'banrisul', 'brb'],
-    categoryMatch: ['bancária', 'bancários', 'finanças', 'bancos'],
+    categoryMatch: ['financas', 'bancaria', 'bancarios', 'bancos', 'caixa-economica'],
     subSilos: [
       { title: 'Banco do Brasil (BB)', slug: 'banco-do-brasil', type: 'search' },
       { title: 'Caixa Econômica Federal (CEF)', slug: 'caixa-economica', type: 'search' },
@@ -111,7 +111,7 @@ export const CONTENT_HUBS: ContentHub[] = [
     seoDescription:
       'Confira os melhores concursos para Auditor Fiscal e Analista da Receita Federal, SEFAZ estaduais, ISS e Tribunais de Contas.',
     keywords: ['fiscal', 'sefaz', 'receita', 'iss', 'tcu', 'tce', 'auditor', 'contábil', 'controle'],
-    categoryMatch: ['fiscal', 'fiscal-contábil', 'receita-federal', 'sefaz', 'controle'],
+    categoryMatch: ['fiscal', 'iss', 'receita-federal', 'sefaz', 'controle', 'tce', 'tcu'],
     subSilos: [
       { title: 'Receita Federal', slug: 'receita-federal', type: 'search' },
       { title: 'Secretarias de Fazenda (SEFAZ)', slug: 'sefaz', type: 'search' },
@@ -130,7 +130,7 @@ export const CONTENT_HUBS: ContentHub[] = [
     seoDescription:
       'Encontre concursos abertos e previstos para profissionais da saúde: Ebserh, Enfermagem, Médicos, Anvisa e SUS.',
     keywords: ['saúde', 'enfermagem', 'médico', 'ebserh', 'sus', 'anvisa', 'psicologia', 'nutrição', 'odontologia'],
-    categoryMatch: ['saúde', 'ebserh', 'enfermagem', 'medicina'],
+    categoryMatch: ['saude', 'enfermagem', 'medicina', 'ebserh'],
     subSilos: [
       { title: 'EBSERH (Hospitais Universitários)', slug: 'ebserh', type: 'search' },
       { title: 'Enfermagem & Técnicos', slug: 'enfermagem', type: 'search' },
@@ -149,12 +149,31 @@ export const CONTENT_HUBS: ContentHub[] = [
     seoDescription:
       'Tudo sobre concursos para professores e magistério público em secretarias de educação, IFs e universidades federais.',
     keywords: ['educação', 'professor', 'pedagogia', 'universidade', 'if', 'uf', 'magistério', 'docência'],
-    categoryMatch: ['educação', 'magistério', 'professores', 'institutos-federais'],
+    categoryMatch: ['educacao', 'magisterio', 'professores', 'institutos-federais'],
     subSilos: [
       { title: 'Professores da Educação Básica', slug: 'professor', type: 'search' },
       { title: 'Institutos Federais (IFs)', slug: 'instituto-federal', type: 'search' },
       { title: 'Universidades Federais (UFs)', slug: 'universidade-federal', type: 'search' },
       { title: 'Pedagogos & Orientadores', slug: 'pedagogia', type: 'search' },
+    ],
+  },
+  {
+    slug: 'concursos-administrativos',
+    title: 'Guia de Concursos Administrativos & Legislativo',
+    shortTitle: 'Administrativo & Legislativo',
+    icon: '🏛️',
+    description:
+      'Oportunidades em órgãos administrativos, assembleias, câmaras, autarquias, INSS, CGU e carreiras de gestão pública.',
+    seoDescription:
+      'Acompanhe concursos administrativos e legislativos: analistas, técnicos, assistentes, INSS, CGU, assembleias e câmaras.',
+    keywords: ['administrativo', 'administração', 'legislativo', 'assembleia', 'câmara', 'gestão pública', 'inss', 'cgu'],
+    categoryMatch: ['administracao', 'administrativa', 'legislativo', 'gestao-publica', 'carreiras-publicas', 'nacional', 'federal'],
+    subSilos: [
+      { title: 'Analista & Técnico Administrativo', slug: 'administrativo', type: 'search' },
+      { title: 'Assembleias Legislativas', slug: 'assembleia-legislativa', type: 'search' },
+      { title: 'Câmaras Municipais', slug: 'camara-municipal', type: 'search' },
+      { title: 'INSS & Autarquias Federais', slug: 'inss', type: 'search' },
+      { title: 'CGU & Controle Interno', slug: 'cgu', type: 'search' },
     ],
   },
 ];

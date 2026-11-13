@@ -171,6 +171,14 @@ Conjunto de melhorias implementadas com base na análise do Vercel Analytics (55
 - **Ocultação de Fingerprinting:** Supressão do cabeçalho `X-Powered-By: Next.js` via `poweredByHeader: false`.
 - **Revalidação ISR Blindada (`/api/revalidate`):** Endpoint de purge de cache On-Demand protegido obrigatoriamente pela variável `SANITY_REVALIDATE_SECRET`, com rejeição imediata (HTTP 500/401) e zero segredos estáticos no código-fonte.
 
+### 🔄 18. Cache sempre fresco: webhook do Sanity + data no cliente
+- **Webhook inteligente (`/api/revalidate`):** recebe o documento do Sanity (projeção em `concursos-sanity-backend/scripts/setup-webhook.mjs`), resolve categorias/autor no servidor e dispara `revalidateTag` + `revalidatePath` na home, `/noticias`, `/concursos`, `/hub`, categorias, hubs, estados, bancas, autores, sitemap e feed. Aceita também `{ tags, paths }` do pipeline Python.
+- **`revalidatePath` em toda publicação/edição:** `/` e as listagens de maior autoridade nunca ficam presas em snapshot antigo (matéria nova ganha link interno imediatamente).
+- **Data do topo client-side (`RegionBar.tsx`):** a data é calculada após a hidratação, no fuso `America/Sao_Paulo`, então HTML cacheado não exibe mais uma data congelada.
+- **Host canônico (`src/middleware.ts`):** apex → `https://www.concursosagora.com.br` com **308**, evitando dois caches ISR (apex e www) e duplicação de URLs.
+- **Runbook:** [`docs/cache-e-revalidacao.md`](docs/cache-e-revalidacao.md).
+
+
 ### ✍️ 15. Perfis Editoriais Humanizados & EEAT (`AuthorCard.tsx`)
 - Card de identificação profissional no rodapé dos artigos exibindo a especialidade editorial do jornalista (ex: Especialista em Carreiras Jurídicas, Carreiras Policiais, etc.).
 - Links sociais diretos e verificáveis (LinkedIn, X/Twitter, Instagram, Facebook) com `rel="noopener noreferrer"`.
@@ -195,7 +203,7 @@ Conjunto de melhorias implementadas com base na análise do Vercel Analytics (55
 | `/sitemap.xml` | Static | Sitemap XML dinâmico com todas as rotas programáticas |
 | `/api/categories/resolve` | API Route | Endpoint para o robô Python consultar categorias |
 | `/api/newsletter` | API Route (POST) | Endpoint seguro para cadastro de leitores e alertas na Brevo |
-| `/api/revalidate` | API Route (GET/POST) | Revalidação On-Demand (ISR) blindada com `SANITY_REVALIDATE_SECRET` |
+| `/api/revalidate` | API Route (POST) | Revalidação On-Demand (ISR + Data Cache) via webhook do Sanity, protegida por `SANITY_REVALIDATE_SECRET` |
 
 ---
 

@@ -33,10 +33,20 @@ export async function generateMetadata({ params }: BancaPageProps): Promise<Meta
   const description = `Guia completo dos concursos organizados pela banca ${banca.name} em ${currentYear}. Editais abertos, histórico de provas, dicas de resolução e vagas.`;
   const url = `https://www.concursosagora.com.br/banca/${banca.slug}`;
 
+  // Verifica se há posts para decidir indexação (evita Soft 404 / Thin Content)
+  let hasPosts = true;
+  try {
+    const posts = await getCachedBancaPosts(banca.slug, banca.searchQuery);
+    hasPosts = (posts || []).length >= 2;
+  } catch {
+    // Em caso de erro, mantém indexável para não perder tráfego
+  }
+
   return {
     title,
     description,
     alternates: { canonical: url },
+    ...(hasPosts ? {} : { robots: { index: false, follow: true } }),
     keywords: `concursos ${banca.shortName}, edital banca ${banca.shortName}, provas ${banca.name}, concurso ${banca.shortName} ${currentYear}`,
     openGraph: {
       title,
@@ -60,6 +70,11 @@ export default async function BancaPage({ params }: BancaPageProps) {
   const allBoards = getAllExamBoards();
   const pageUrl = `https://www.concursosagora.com.br/banca/${banca.slug}`;
 
+  // Filtro de segurança: ocultar cancelados e encerrados
+  const activePosts = (posts || []).filter(post => 
+    post.status === 'aberto' || post.status === 'previsto' || post.status === 'em_andamento'
+  );
+
   // JSON-LD
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -79,7 +94,7 @@ export default async function BancaPage({ params }: BancaPageProps) {
         },
         mainEntity: {
           '@type': 'ItemList',
-          itemListElement: (posts || []).slice(0, 20).map((post, index) => ({
+          itemListElement: activePosts.slice(0, 20).map((post, index) => ({
             '@type': 'ListItem',
             position: index + 1,
             name: post.title,
@@ -149,7 +164,7 @@ export default async function BancaPage({ params }: BancaPageProps) {
               <div className="pt-2 flex flex-wrap items-center gap-3">
                 <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse motion-reduce:animate-none" />
-                  {posts.length} {posts.length === 1 ? 'concurso listado' : 'concursos listados'}
+                  {activePosts.length} {activePosts.length === 1 ? 'concurso listado' : 'concursos listados'}
                 </span>
 
                 {banca.website && (
@@ -198,9 +213,9 @@ export default async function BancaPage({ params }: BancaPageProps) {
               Editais Recentes e Abertos pela {banca.shortName}
             </h2>
 
-            {posts.length > 0 ? (
+            {activePosts.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {posts.map((post) => (
+                {activePosts.map((post) => (
                   <PostCard key={post._id} post={post} />
                 ))}
               </div>
