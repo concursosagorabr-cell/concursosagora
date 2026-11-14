@@ -110,7 +110,7 @@ function textOf(post: Post): string {
 }
 
 async function loadPosts(): Promise<Post[]> {
-  if (!tursoConfigured) return []
+  if (!tursoConfigured || !turso) return []
   if (cachePosts && Date.now() - cachePosts.at < TTL_MS) return cachePosts.posts
   const result = await turso.execute(
     `SELECT data FROM posts WHERE review_status = 'published' ORDER BY COALESCE(published_at, created_at) DESC LIMIT 2000`
@@ -131,7 +131,7 @@ async function loadPosts(): Promise<Post[]> {
 }
 
 async function loadCategories(): Promise<Category[]> {
-  if (!tursoConfigured) return []
+  if (!tursoConfigured || !turso) return []
   const result = await turso.execute(
     `SELECT id, slug, title, description, group_name FROM categories ORDER BY title ASC`
   )
@@ -147,7 +147,7 @@ async function loadCategories(): Promise<Category[]> {
 }
 
 async function loadAuthors(): Promise<Author[]> {
-  if (!tursoConfigured) return []
+  if (!tursoConfigured || !turso) return []
   const result = await turso.execute(`SELECT id, slug, name, image, bio FROM authors ORDER BY name ASC`)
   return result.rows.map(
     (row): Author => ({
@@ -212,6 +212,9 @@ function hubMatches(post: Post, params: Params): boolean {
 
 /** Executa a consulta equivalente no Turso. */
 export async function tursoFetch<T = unknown>(query: string, params: Params = {}): Promise<T> {
+  if (typeof window !== 'undefined' || !tursoConfigured || !turso) {
+    throw new Error('tursoFetch só pode ser executado no servidor com TURSO_DATABASE_URL configurado')
+  }
   const q = query.trim()
 
   if (q === allPostsQuery.trim()) {

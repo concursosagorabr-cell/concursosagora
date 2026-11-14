@@ -15,15 +15,18 @@ const authToken = process.env.TURSO_AUTH_TOKEN
 
 export const tursoConfigured = Boolean(url && authToken)
 
-const globalForTurso = globalThis as unknown as { __tursoClient?: Client }
+const globalForTurso = globalThis as unknown as { __tursoClient?: Client | null }
 
-export const turso: Client =
-  globalForTurso.__tursoClient ??
-  createClient({
-    url: url || 'file::memory:',
-    authToken: authToken || undefined,
-  })
+// No navegador, nunca instanciar o cliente (evita URL_SCHEME "file:" e bundle
+// indevido). Em servidor, cria sob demanda apenas se as credenciais existirem.
+export const turso: Client | null =
+  typeof window !== 'undefined'
+    ? null
+    : (globalForTurso.__tursoClient ??
+      (tursoConfigured
+        ? createClient({ url: url as string, authToken: authToken || undefined })
+        : null))
 
-if (!globalForTurso.__tursoClient) {
+if (typeof window === 'undefined' && !globalForTurso.__tursoClient && turso) {
   globalForTurso.__tursoClient = turso
 }
