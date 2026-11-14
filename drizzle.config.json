@@ -1,0 +1,9 @@
+{
+  "schema": "./src/lib/db/schema.ts",
+  "out": "./drizzle",
+  "dialect": "sqlite",
+  "dbCredentials": {
+    "url": "libsql://concursos-agora-marcomelo.aws-sa-east-1.turso.io",
+    "authToken": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3OTQ2MzI4ODgsImlkIjoiMDFhMWQ4NzQtNzMwMS03OWY3LWJiMmItNTI0OTFiMzlhMGQ1Iiwia2lkIjoiYmYwb1ZibjBIS1BLa2xTU0gzS29teVZRZVgwenNRbU52Ul9uNnM3TUFNcyIsInJpZCI6Ijc1YTY3ZGIxLTkzMDUtNDMyMC1iOGIzLTIwNzhlZDRhOTI5YyJ9.tU5sa8Magb4ufH0z9bDLlBAuHeTqQCGMJJRYDu639bre7bUORGw2c9gem6cTV3b5834sTgZJefTegarLIUU8Ag"
+  }
+}

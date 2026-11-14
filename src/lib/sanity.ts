@@ -1,4 +1,4 @@
-import { createClient, type QueryParams } from '@sanity/client';
+﻿import { createClient, type QueryParams } from '@sanity/client';
 import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
 import {
@@ -44,9 +44,34 @@ export const client = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn: token ? false : true,
-  ...(token ? { token } : {}),
+  useCdn: true,
 });
+
+/**
+ * Fonte de dados do site. `CMS_SOURCE=turso` faz o site ler o banco próprio;
+ * qualquer outro valor (padrão) mantém a leitura no Sanity. Não há fallback
+ * automático entre os bancos.
+ */
+export const cmsSource: 'sanity' | 'turso' = process.env.CMS_SOURCE === 'turso' ? 'turso' : 'sanity';
+
+const sanityClientFetch = client.fetch.bind(client);
+
+/**
+ * Substitui `client.fetch` nas consultas do site, roteando para o Turso quando
+ * `CMS_SOURCE=turso`. As consultas são as mesmas constantes GROQ de
+ * `src/lib/queries.ts`, então as projeções devolvidas são idênticas.
+ */
+export async function cmsFetch<T = any>(
+  query: string,
+  params: QueryParams = {},
+  options?: { next?: { revalidate?: number; tags?: string[] }; cache?: RequestCache | 'no-store' | 'force-cache' }
+): Promise<T> {
+  if (cmsSource === 'turso') {
+    const { tursoFetch } = await import('./db/turso');
+    return tursoFetch<T>(query, params as Record<string, unknown>);
+  }
+  return sanityClientFetch<T>(query, params, options as any);
+}
 
 /**
  * Wrapper genérico com Next.js Data Cache (unstable_cache) + React.cache()
@@ -67,7 +92,7 @@ export const sanityFetch = cache(
 
     return unstable_cache(
       async () => {
-        return client.fetch<T>(query, params, {
+        return cmsFetch<T>(query, params, {
           next: { revalidate, tags },
         });
       },
@@ -84,7 +109,7 @@ export const sanityFetch = cache(
  */
 export const getCachedCategories = cache((): Promise<Category[]> => {
   return unstable_cache(
-    async () => (await client.fetch<Category[]>(allCategoriesQuery, {}, { next: { tags: ['categories'] } })) || [],
+    async () => (await cmsFetch<Category[]>(allCategoriesQuery, {}, { next: { tags: ['categories'] } })) || [],
     ['sanity', 'all-categories'],
     { revalidate: 3600, tags: ['categories'] }
   )();
@@ -95,7 +120,7 @@ export const getCachedCategories = cache((): Promise<Category[]> => {
  */
 export const getCachedCategoryBySlug = cache((slug: string): Promise<Category | null> => {
   return unstable_cache(
-    async () => client.fetch<Category | null>(categoryBySlugQuery, { slug }, { next: { tags: ['categories', `category:${slug}`] } }),
+    async () => cmsFetch<Category | null>(categoryBySlugQuery, { slug }, { next: { tags: ['categories', `category:${slug}`] } }),
     ['sanity', 'category', slug],
     { revalidate: 3600, tags: ['categories', `category:${slug}`] }
   )();
@@ -106,7 +131,7 @@ export const getCachedCategoryBySlug = cache((slug: string): Promise<Category | 
  */
 export const getCachedRecentPosts = cache((): Promise<Post[]> => {
   return unstable_cache(
-    async () => (await client.fetch<Post[]>(recentPostsQuery, {}, { next: { tags: ['posts', 'recent-posts'] } })) || [],
+    async () => (await cmsFetch<Post[]>(recentPostsQuery, {}, { next: { tags: ['posts', 'recent-posts'] } })) || [],
     ['sanity', 'recent-posts'],
     { revalidate: 180, tags: ['posts', 'recent-posts'] }
   )();
@@ -160,12 +185,12 @@ export const getCachedTopPosts = cache((limit: number = 5): Promise<Post[]> => {
 
         let topPosts: Post[] = [];
         if (topSlugs.length > 0) {
-          const rawPosts = await client.fetch<Post[]>(postsBySlugsQuery, { slugs: topSlugs });
+          const rawPosts = await cmsFetch<Post[]>(postsBySlugsQuery, { slugs: topSlugs });
           topPosts = orderPostsBySlugs(rawPosts || [], topSlugs);
         }
 
         if (topPosts.length < limit) {
-          const initialRaw = await client.fetch<Post[]>(postsBySlugsQuery, { slugs: INITIAL_TOP_SLUGS });
+          const initialRaw = await cmsFetch<Post[]>(postsBySlugsQuery, { slugs: INITIAL_TOP_SLUGS });
           const initialOrdered = orderPostsBySlugs(initialRaw || [], INITIAL_TOP_SLUGS);
           topPosts = mergeWithFallback(topPosts, initialOrdered, limit);
         }
@@ -174,11 +199,11 @@ export const getCachedTopPosts = cache((limit: number = 5): Promise<Post[]> => {
           return topPosts.slice(0, limit);
         }
 
-        const recent = await client.fetch<Post[]>(recentPostsQuery, {}, { next: { tags: ['posts', 'recent-posts'] } });
+        const recent = await cmsFetch<Post[]>(recentPostsQuery, {}, { next: { tags: ['posts', 'recent-posts'] } });
         return mergeWithFallback(topPosts, recent || [], limit);
       } catch (error) {
         console.error('[getCachedTopPosts] Erro ao buscar ranking, usando fallback de recentes:', error);
-        const fallbackRecent = await client.fetch<Post[]>(recentPostsQuery, {}, { next: { tags: ['posts', 'recent-posts'] } });
+        const fallbackRecent = await cmsFetch<Post[]>(recentPostsQuery, {}, { next: { tags: ['posts', 'recent-posts'] } });
         return (fallbackRecent || []).slice(0, limit);
       }
     },
@@ -193,7 +218,7 @@ export const getCachedTopPosts = cache((limit: number = 5): Promise<Post[]> => {
  */
 export const getCachedPostsPaginated = cache((start: number, end: number): Promise<Post[]> => {
   return unstable_cache(
-    async () => (await client.fetch<Post[]>(postsPaginatedQuery, { start, end }, { next: { tags: ['posts'] } })) || [],
+    async () => (await cmsFetch<Post[]>(postsPaginatedQuery, { start, end }, { next: { tags: ['posts'] } })) || [],
     ['sanity', 'posts-paginated', String(start), String(end)],
     { revalidate: 180, tags: ['posts'] }
   )();
@@ -204,7 +229,7 @@ export const getCachedPostsPaginated = cache((start: number, end: number): Promi
  */
 export const getCachedPostsCount = cache((): Promise<number> => {
   return unstable_cache(
-    async () => (await client.fetch<number>(postsCountQuery, {}, { next: { tags: ['posts'] } })) || 0,
+    async () => (await cmsFetch<number>(postsCountQuery, {}, { next: { tags: ['posts'] } })) || 0,
     ['sanity', 'posts-count'],
     { revalidate: 300, tags: ['posts'] }
   )();
@@ -215,7 +240,7 @@ export const getCachedPostsCount = cache((): Promise<number> => {
  */
 export const getCachedPostBySlug = cache((slug: string): Promise<Post | null> => {
   return unstable_cache(
-    async () => client.fetch<Post | null>(postBySlugQuery, { slug }, { next: { tags: ['posts', `post:${slug}`] } }),
+    async () => cmsFetch<Post | null>(postBySlugQuery, { slug }, { next: { tags: ['posts', `post:${slug}`] } }),
     ['sanity', 'post', slug],
     { revalidate: 1800, tags: ['posts', `post:${slug}`] }
   )();
@@ -227,7 +252,7 @@ export const getCachedPostBySlug = cache((slug: string): Promise<Post | null> =>
 export const getCachedRelatedPosts = cache((currentId: string, categoryIds: string[]): Promise<Post[]> => {
   const sortedCatIds = [...categoryIds].sort().join(',');
   return unstable_cache(
-    async () => (await client.fetch<Post[]>(relatedPostsQuery, { currentId, categoryIds }, { next: { tags: ['posts'] } })) || [],
+    async () => (await cmsFetch<Post[]>(relatedPostsQuery, { currentId, categoryIds }, { next: { tags: ['posts'] } })) || [],
     ['sanity', 'related-posts', currentId, sortedCatIds],
     { revalidate: 600, tags: ['posts'] }
   )();
@@ -239,7 +264,7 @@ export const getCachedRelatedPosts = cache((currentId: string, categoryIds: stri
 export const getCachedRelatedPostsFallback = cache((currentId: string, excludeIds: string[]): Promise<Post[]> => {
   const sortedExcludeIds = [...excludeIds].sort().join(',');
   return unstable_cache(
-    async () => (await client.fetch<Post[]>(relatedPostsFallbackQuery, { currentId, excludeIds }, { next: { tags: ['posts'] } })) || [],
+    async () => (await cmsFetch<Post[]>(relatedPostsFallbackQuery, { currentId, excludeIds }, { next: { tags: ['posts'] } })) || [],
     ['sanity', 'related-fallback', currentId, sortedExcludeIds],
     { revalidate: 600, tags: ['posts'] }
   )();
@@ -266,7 +291,7 @@ export const getCachedPostsByCategory = cache(
     const regionUfs = scope?.regionUfs || [];
     return unstable_cache(
       async () =>
-        (await client.fetch<Post[]>(
+        (await cmsFetch<Post[]>(
           postsByCategoryPaginatedQuery,
           { categorySlug, categorySlugs, start, end, uf, region, regionUfs },
           { next: { tags: ['posts', `category:${categorySlug}`] } }
@@ -292,7 +317,7 @@ export const getCachedPostsByCategoryCount = cache(
     const regionUfs = scope?.regionUfs || [];
     return unstable_cache(
       async () =>
-        (await client.fetch<number>(
+        (await cmsFetch<number>(
           postsByCategoryCountQuery,
           { categorySlug, categorySlugs, uf, region, regionUfs },
           { next: { tags: ['posts', `category:${categorySlug}`] } }
@@ -310,7 +335,7 @@ export const getCachedStatePosts = cache(
   (ufLower: string, ufUpper: string, stateName: string): Promise<Post[]> => {
     return unstable_cache(
       async () =>
-        (await client.fetch<Post[]>(
+        (await cmsFetch<Post[]>(
           statePostsQuery,
           { ufLower, ufUpper, stateName },
           { next: { tags: ['posts', `state:${ufLower}`] } }
@@ -329,7 +354,7 @@ export const getCachedHubPosts = cache(
     const kwKey = keywords.join(',');
     return unstable_cache(
       async () =>
-        (await client.fetch<Post[]>(
+        (await cmsFetch<Post[]>(
           postsByKeywordsPaginatedQuery,
           { hubSlug, keywords, mainKeyword, start, end },
           { next: { tags: ['posts', `hub:${hubSlug}`] } }
@@ -348,7 +373,7 @@ export const getCachedHubPostsCount = cache(
     const kwKey = keywords.join(',');
     return unstable_cache(
       async () =>
-        (await client.fetch<number>(
+        (await cmsFetch<number>(
           postsByKeywordsCountQuery,
           { hubSlug, keywords, mainKeyword },
           { next: { tags: ['posts', `hub:${hubSlug}`] } }
@@ -366,7 +391,7 @@ export const getCachedSearchPosts = cache((searchTerm: string): Promise<Post[]> 
   const cleanTerm = searchTerm.trim().toLowerCase();
   return unstable_cache(
     async () =>
-      (await client.fetch<Post[]>(
+      (await cmsFetch<Post[]>(
         searchPostsQuery,
         { searchTerm: cleanTerm },
         { next: { tags: ['posts'] } }
@@ -381,7 +406,7 @@ export const getCachedSearchPosts = cache((searchTerm: string): Promise<Post[]> 
  */
 export const getCachedAllPostSlugs = cache((): Promise<string[]> => {
   return unstable_cache(
-    async () => (await client.fetch<string[]>(allPostSlugsQuery, {}, { next: { tags: ['posts', 'sitemap'] } })) || [],
+    async () => (await cmsFetch<string[]>(allPostSlugsQuery, {}, { next: { tags: ['posts', 'sitemap'] } })) || [],
     ['sanity', 'all-post-slugs'],
     { revalidate: 1800, tags: ['posts', 'sitemap'] }
   )();
@@ -392,7 +417,7 @@ export const getCachedAllPostSlugs = cache((): Promise<string[]> => {
  */
 export const getCachedAllCategorySlugs = cache((): Promise<string[]> => {
   return unstable_cache(
-    async () => (await client.fetch<string[]>(allCategorySlugsQuery, {}, { next: { tags: ['categories', 'sitemap'] } })) || [],
+    async () => (await cmsFetch<string[]>(allCategorySlugsQuery, {}, { next: { tags: ['categories', 'sitemap'] } })) || [],
     ['sanity', 'all-category-slugs'],
     { revalidate: 3600, tags: ['categories', 'sitemap'] }
   )();
@@ -420,7 +445,7 @@ export const getCachedNewsSitemapPosts = cache((twoDaysAgo: string): Promise<any
   }`;
   return unstable_cache(
     async () => {
-      const posts = await client.fetch<any[]>(query, { twoDaysAgo }, { next: { tags: ['posts', 'sitemap-news'] } });
+      const posts = await cmsFetch<any[]>(query, { twoDaysAgo }, { next: { tags: ['posts', 'sitemap-news'] } });
       return posts || [];
     },
     ['sanity', 'sitemap-news-posts'],
@@ -443,7 +468,7 @@ export const getCachedRssFeedPosts = cache((): Promise<any[]> => {
     "authorName": coalesce(author->name, "Redação Concursos Agora")
   }`;
   return unstable_cache(
-    async () => (await client.fetch<any[]>(query, {}, { next: { tags: ['posts', 'feed'] } })) || [],
+    async () => (await cmsFetch<any[]>(query, {}, { next: { tags: ['posts', 'feed'] } })) || [],
     ['sanity', 'rss-feed-posts'],
     { revalidate: 300, tags: ['posts', 'feed'] }
   )();
@@ -454,7 +479,7 @@ export const getCachedRssFeedPosts = cache((): Promise<any[]> => {
  */
 export const getCachedDirectoryPosts = cache((): Promise<Post[]> => {
   return unstable_cache(
-    async () => (await client.fetch<Post[]>(directoryPostsQuery, {}, { next: { tags: ['posts', 'directory-posts'] } })) || [],
+    async () => (await cmsFetch<Post[]>(directoryPostsQuery, {}, { next: { tags: ['posts', 'directory-posts'] } })) || [],
     ['sanity', 'directory-posts'],
     { revalidate: 180, tags: ['posts', 'directory-posts'] }
   )();
@@ -465,7 +490,7 @@ export const getCachedDirectoryPosts = cache((): Promise<Post[]> => {
  */
 export const getCachedBancaPosts = cache((bancaSlug: string, bancaName: string): Promise<Post[]> => {
   return unstable_cache(
-    async () => (await client.fetch<Post[]>(bancaPostsQuery, { bancaSlug, bancaName }, { next: { tags: ['posts', `banca:${bancaSlug}`] } })) || [],
+    async () => (await cmsFetch<Post[]>(bancaPostsQuery, { bancaSlug, bancaName }, { next: { tags: ['posts', `banca:${bancaSlug}`] } })) || [],
     ['sanity', 'banca-posts', bancaSlug],
     { revalidate: 300, tags: ['posts', `banca:${bancaSlug}`] }
   )();
@@ -482,7 +507,7 @@ export const getCachedEducationAndStatePosts = cache((
   stateName: string
 ): Promise<Post[]> => {
   return unstable_cache(
-    async () => (await client.fetch<Post[]>(educationAndStatePostsQuery, {
+    async () => (await cmsFetch<Post[]>(educationAndStatePostsQuery, {
       education,
       educationLabel,
       ufLower,
@@ -499,7 +524,7 @@ export const getCachedEducationAndStatePosts = cache((
  */
 export const getCachedHighSalaryPosts = cache((): Promise<Post[]> => {
   return unstable_cache(
-    async () => (await client.fetch<Post[]>(highSalaryPostsQuery, {}, { next: { tags: ['posts', 'high-salary-posts'] } })) || [],
+    async () => (await cmsFetch<Post[]>(highSalaryPostsQuery, {}, { next: { tags: ['posts', 'high-salary-posts'] } })) || [],
     ['sanity', 'high-salary-posts'],
     { revalidate: 300, tags: ['posts', 'high-salary-posts'] }
   )();
@@ -512,7 +537,7 @@ export const getCachedHighSalaryPosts = cache((): Promise<Post[]> => {
 export const getCachedPostBySlugHistory = cache((slug: string): Promise<string | null> => {
   return unstable_cache(
     async () => {
-      const result = await client.fetch<{ slug: string } | null>(
+      const result = await cmsFetch<{ slug: string } | null>(
         postBySlugHistoryQuery,
         { slug },
         { next: { tags: ['posts'] } }
@@ -530,7 +555,7 @@ export const getCachedPostBySlugHistory = cache((slug: string): Promise<string |
 export const getCachedAuthorBySlug = cache((slug: string): Promise<Author | null> => {
   return unstable_cache(
     async () =>
-      client.fetch<Author | null>(authorBySlugQuery, { slug }, {
+      cmsFetch<Author | null>(authorBySlugQuery, { slug }, {
         next: { tags: ['authors', `author:${slug}`] },
       }),
     ['sanity', 'author', slug],
@@ -545,7 +570,7 @@ export const getCachedPostsByAuthor = cache(
   (authorId: string, start: number, end: number): Promise<Post[]> => {
     return unstable_cache(
       async () =>
-        (await client.fetch<Post[]>(
+        (await cmsFetch<Post[]>(
           postsByAuthorPaginatedQuery,
           { authorId, start, end },
           { next: { tags: ['posts', `author:${authorId}`] } }
@@ -559,7 +584,7 @@ export const getCachedPostsByAuthor = cache(
 export const getCachedPostsByAuthorCount = cache((authorId: string): Promise<number> => {
   return unstable_cache(
     async () =>
-      (await client.fetch<number>(
+      (await cmsFetch<number>(
         postsByAuthorCountQuery,
         { authorId },
         { next: { tags: ['posts', `author:${authorId}`] } }
@@ -575,7 +600,7 @@ export const getCachedPostsByAuthorCount = cache((authorId: string): Promise<num
 export const getCachedAllAuthorSlugs = cache((): Promise<string[]> => {
   return unstable_cache(
     async () =>
-      (await client.fetch<string[]>(allAuthorSlugsQuery, {}, { next: { tags: ['authors', 'sitemap'] } })) || [],
+      (await cmsFetch<string[]>(allAuthorSlugsQuery, {}, { next: { tags: ['authors', 'sitemap'] } })) || [],
     ['sanity', 'all-author-slugs'],
     { revalidate: 3600, tags: ['authors', 'sitemap'] }
   )();
@@ -588,7 +613,7 @@ export const getCachedRelatedPostsByBanca = cache(
   (currentId: string, banca: string, stateUf: string): Promise<Post[]> => {
     return unstable_cache(
       async () =>
-        (await client.fetch<Post[]>(
+        (await cmsFetch<Post[]>(
           relatedPostsByBancaQuery,
           { currentId, banca: banca || '', stateUf: stateUf || '' },
           { next: { tags: ['posts'] } }
@@ -607,7 +632,7 @@ export const getCachedRelatedPostsByState = cache(
   (currentId: string, stateUf: string): Promise<Post[]> => {
     return unstable_cache(
       async () =>
-        (await client.fetch<Post[]>(
+        (await cmsFetch<Post[]>(
           relatedPostsByStateQuery,
           { currentId, stateUf },
           { next: { tags: ['posts', `state:${stateUf.toLowerCase()}`] } }
@@ -617,6 +642,11 @@ export const getCachedRelatedPostsByState = cache(
     )();
   }
 );
+
+// ─── Camada de CMS com fonte explícita (Sanity ou Turso) ───
+export { getPostBySlug, getRecentPosts, getPostsByCategory } from './cms'
+export type { CMSPost } from './cms'
+
 
 
 

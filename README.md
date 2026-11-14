@@ -212,11 +212,18 @@ Conjunto de melhorias implementadas com base na análise do Vercel Analytics (55
 Crie o arquivo `frontend/.env.local` (ou configure no painel da Vercel):
 
 ```env
-# Sanity CMS
+# Fonte de dados do site: sanity (padrão) ou turso
+CMS_SOURCE=sanity
+
+# Sanity CMS (usado quando CMS_SOURCE=sanity)
 NEXT_PUBLIC_SANITY_PROJECT_ID=sua-chave-aqui
 NEXT_PUBLIC_SANITY_DATASET=production
 NEXT_PUBLIC_SANITY_API_VERSION=2026-07-25
 SANITY_API_TOKEN=sk...
+
+# Turso/libSQL (usado quando CMS_SOURCE=turso)
+TURSO_DATABASE_URL=libsql://...
+TURSO_AUTH_TOKEN=...
 
 # Segredo de Revalidação On-Demand (ISR)
 SANITY_REVALIDATE_SECRET=seu_segredo_de_revalidacao_aqui
@@ -227,6 +234,20 @@ sua-chave-aqui
 # Brevo (Newsletter & Alertas)
 BREVO_API_KEY=xkeysib-...
 ```
+
+### Fonte de dados (`CMS_SOURCE`)
+
+- `CMS_SOURCE=sanity` (padrão): todas as consultas vão para o Sanity, com CDN e
+  sem token na leitura pública.
+- `CMS_SOURCE=turso`: todas as consultas vão para o Turso/libSQL. O documento
+  completo já vem no formato Sanity (`posts.data`), então as páginas renderizam
+  igual.
+- **Não existe fallback automático.** Se a fonte escolhida falhar, a página
+  falha; troque a variável e redeploye.
+- Sanity e Turso são bancos **independentes**: publicar em um não publica no
+  outro. O seletor de banco dos artigos novos fica no painel do `gerente/`.
+- Ao publicar no Turso, o site atualiza quando o cache do CMS expirar (até
+  30 min). O webhook `/api/revalidate` continua sendo o caminho do Sanity.
 
 ---
 
